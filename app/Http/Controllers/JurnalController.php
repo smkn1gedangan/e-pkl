@@ -1,0 +1,176 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Jurnal;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Inertia\Inertia;
+
+use function PHPUnit\Framework\fileExists;
+
+class JurnalController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+        $jurnal = Jurnal::query()->with("user")
+        ->when(Auth::user()->getRoleNames()->first() === "siswa",function($query){
+            $query->where("user_id",'=', Auth::user()->id);
+        })
+       ->when(Auth::user()->getRoleNames()->first() === "pembimbing_pt", function ($query) {
+        $query->whereHas('user.tempat', function ($q2) {
+           
+            $q2->where('pembimbing_id', Auth::id());
+        });
+        })
+       ->when(Auth::user()->getRoleNames()->first() === "pembimbing_sekolah", function ($query) {
+            $query->whereHas('user.pbSkl', function ($q2) {
+                $q2->where('id', Auth::id());
+            });
+        })
+        ->when($request->filled("keterangan"),function($query)use($request){
+            $query->where("jurnals.keterangan","=",$request->input("keterangan"));
+        })
+        ->when($request->filled("start_date") && !$request->filled("end_date"),function($query)use($request){
+            $query->whereDate("jurnals.created_at","=",$request->start_date);
+        })
+        ->when($request->filled(["start_date","end_date"]),function($query)use($request){
+            $query->whereBetween("jurnals.created_at",[$request->start_date, $request->end_date]);
+        })
+        ->when($request->filled("search"),function($query)use($request){
+            $query->whereHas("user",function($q2)use($request){
+                $q2->where("name","like","%{$request->search}%");
+            })
+            ->orWhere("jurnals.keterangan","like","%{$request->search}%")
+            ->orWhere("jurnals.kegiatan","like","%{$request->search}%");
+        })
+        ->when($request->input("sort_by") === "nama",function($query)use($request){
+                $query->join("users", "users.id","=","jurnals.user_id")
+                ->orderBy("users.name",$request->input("sort_order","desc"))
+                ->select("jurnals.*");
+        })
+        ->when($request->input("sort_by") !== "nama",function($query)use($request){
+                $query->orderBy($request->input("sort_by","jurnals.created_at"),$request->input("sort_order","desc"));
+        })
+        ->latest()->paginate(10)->withQueryString();
+        
+
+
+
+        return Inertia::render("Jurnal/Index",[
+            "jurnals"=>$jurnal,
+            "user"=> Jurnal::with(["user.tempat.user","user.pbSkl"])->where("user_id","=",Auth::user()->id)->first(),
+            "filters"=> $request->only(["search","sort_by","sort_order","tahunAjaran","start_date","end_date"])
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+
+        $today = Carbon::today();
+
+        $sudahAda = Jurnal::where("user_id","=",Auth::user()->id)->whereDate("created_at","=",$today)->exists();
+
+        if($sudahAda){
+            return redirect()->back()->with("error","Mohon Maaf, Jurnal Hanya Bisa Diisi 1x setiap Hari");
+        }
+
+        $validate = $request->validate([
+            "keterangan"=>"required",
+            "kegiatan"=>"required|max:75",
+            "photo"=>"required|file"
+        ]);
+
+        if($request->hasFile("photo")){
+            $file = $request->file("photo");
+            $filename = time() . "_" . $file->getClientOriginalName();
+
+
+            $publicPath = public_path("img/jurnal/". $filename);
+            $backupPath = env("BACKUP_PHOTOS") . "jurnal/". $filename;
+
+            // upload to public
+
+            $file->move(public_path("img/jurnal"), $filename);
+
+            if(!file_exists(dirname($backupPath))) {
+                mkdir(dirname($backupPath), 0777, true);
+            }
+            // Simpan juga ke folder backup
+            if(!copy($publicPath, $backupPath)){
+                return Inertia::render("Buku/Form")->with("error","Gambar gagal disimpan");
+            };
+            $validate["photo"] = $filename ?? null;
+        }
+        Jurnal::create(
+            [
+                "user_id"=>Auth::user()->id,
+                "keterangan"=>$validate["keterangan"],
+                "kegiatan"=>$validate["kegiatan"],
+                "photo"=>$validate["photo"],
+            ]);
+        return redirect()->back()->with("success","Sukses Menambah Jurnal");
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $jrnlId = Jurnal::findOrFail($id);
+        
+        if($jrnlId->photo){
+            $publicPath = public_path("img/jurnal/". $jrnlId->photo);
+            $backupPath = env("BACKUP_PHOTOS") . "jurnal/" . $jrnlId->photo;
+
+            if(fileExists($publicPath)){
+                File::delete($publicPath);
+            }
+            if(fileExists($backupPath)){
+                File::delete($backupPath);
+            }
+        }
+        $jrnlId->delete();
+        return redirect()->back()->with("success","Sukses Menghapus Jurnal");
+    }
+}
