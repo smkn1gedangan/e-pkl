@@ -56,7 +56,7 @@ const Welcome = ({ gambars }) => {
             </nav>
 
             <div className="w-full p-2 md:p-8 mt-4">
-                <h1 className="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl">
+                <h1 className="mb-4 text-3xl font-extrabold text-white md:text-5xl lg:text-6xl">
                     <span className="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">
                         MODERN
                     </span>{" "}
@@ -79,7 +79,7 @@ const Welcome = ({ gambars }) => {
                                   <div key={gambar.id} className="relative max-w-md left-1/2 -translate-x-1/2">
                                       <img
                                           className="object-center object-cover rounded-md"
-                                          src={`./img/header/${gambar.url}`}
+                                          src={`./storage/${gambar.url}`}
                                           alt=""
                                       />
                                       <div

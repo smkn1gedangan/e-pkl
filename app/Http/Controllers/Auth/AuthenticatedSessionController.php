@@ -30,12 +30,6 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $siswa = User::with("roles")->where("email",$request->email)->first();
-
-        if($siswa && !$siswa->isAccept && $siswa->hasRole("siswa")){
-            return redirect()->route("login")->with("error","Akun Ini Belum Di Setujui Admin");
-        };
-
         $request->authenticate();
 
         $request->session()->regenerate();

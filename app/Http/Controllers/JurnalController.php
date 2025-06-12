@@ -94,29 +94,29 @@ class JurnalController extends Controller
         $validate = $request->validate([
             "keterangan"=>"required",
             "kegiatan"=>"required|max:75",
-            "photo"=>"required|file"
+            "photo"=>"required|file|max:2400|mimes:jpg,jpeg,avif,png"
+        ],[
+            "photo.max"=>"File Gambar Maksimal 2400 Kb (2,4 mb)",
+            "photo.mimes"=>"Gambar harus Bertipe Jpg,Jpeg,Avif,Png"
         ]);
 
         if($request->hasFile("photo")){
-            $file = $request->file("photo");
-            $filename = time() . "_" . $file->getClientOriginalName();
+             // upload to public
+            $sourcePath = $request->file('photo')->store('jurnals', 'public');
 
-
-            $publicPath = public_path("img/jurnal/". $filename);
-            $backupPath = env("BACKUP_PHOTOS") . "jurnal/". $filename;
+            $backupPath = env("BACKUP_PHOTOS") .  $sourcePath;
 
             // upload to public
 
-            $file->move(public_path("img/jurnal"), $filename);
 
             if(!file_exists(dirname($backupPath))) {
                 mkdir(dirname($backupPath), 0777, true);
             }
             // Simpan juga ke folder backup
-            if(!copy($publicPath, $backupPath)){
+            if(!copy(storage_path("app/public/".$sourcePath), $backupPath)){
                 return Inertia::render("Buku/Form")->with("error","Gambar gagal disimpan");
             };
-            $validate["photo"] = $filename ?? null;
+            $validate["photo"] = $sourcePath ?? null;
         }
         Jurnal::create(
             [
@@ -160,11 +160,10 @@ class JurnalController extends Controller
         $jrnlId = Jurnal::findOrFail($id);
         
         if($jrnlId->photo){
-            $publicPath = public_path("img/jurnal/". $jrnlId->photo);
             $backupPath = env("BACKUP_PHOTOS") . "jurnal/" . $jrnlId->photo;
 
-            if(fileExists($publicPath)){
-                File::delete($publicPath);
+            if(fileExists(storage_path("app/public/".$jrnlId->photo))){
+                File::delete(storage_path("app/public/".$jrnlId->photo));
             }
             if(fileExists($backupPath)){
                 File::delete($backupPath);

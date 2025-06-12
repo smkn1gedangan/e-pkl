@@ -23,6 +23,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        "nisn_id",
         'email',
         'jurusan_id',
         'tahunAjaran_id',
@@ -31,7 +32,6 @@ class User extends Authenticatable
         'pembimbing_sekolah_id',
         'kontak',
         'password',
-        "isAccept"
     ];
 
     /**
@@ -80,5 +80,11 @@ class User extends Authenticatable
         return $this->hasOne(PengajuanTempat::class,"user_id","id");
     }
  
+    public function dataSiswa() : BelongsTo {
+        return $this->belongsTo(Datasiswa::class,"nisn_id","id","datasiswas");
+    }
 
+    public function jurnals() : HasMany {
+        return $this->hasMany(Jurnal::class,"user_id","id");
+    }
 }

@@ -16,16 +16,17 @@ const Form = ({
     isEdit,
     user,
     tempats,
+    dataSiswas,
 }) => {
     const { data, setData, errors, post, processing, reset, put } = useForm({
-        name: isEdit ? user.name : "",
+        nisn: isEdit ? user?.data_siswa.nisn : "",
         email: isEdit ? user.email : "",
-        password: "",
         tahunAjaran_id: isEdit ? user?.tahun_ajaran?.id : "",
         jurusan_id: isEdit ? user?.jurusan?.id : "",
-        kontak: isEdit ? user.kontak : "",
         pembimbing_sekolah_id: isEdit ? user.pb_skl?.id : "",
         tempat_id: isEdit ? user.tempat?.id : "",
+        kontak: isEdit ? user.kontak : "",
+        password: "",
         password_confirmation: "",
     });
     const handleSubmit = (e) => {
@@ -34,11 +35,13 @@ const Form = ({
             put(route("siswa.update", user.id), {
                 onSuccess: (e) => {
                     if (e.props.auth?.flash.success) {
-                        Alert(`${e.props.auth?.flash.success}`);
+                        Alert(`${e.props.auth?.flash.success}`,"success",4000);
+                        window.location.href = route("siswa.index");
                     } else {
                         Alert(`${sccs.props.auth.flash?.error}`, "error", 4000);
                     }
                 },
+         
             });
         } else {
             post(route("siswa.store"), {
@@ -53,6 +56,7 @@ const Form = ({
             });
         }
     };
+
     return (
         <AuthenticatedLayout>
             <Head title="Tambah Siswa" />
@@ -67,24 +71,30 @@ const Form = ({
                 icon={<ClipboardList />}
             ></TitlePage>
             <div className="p-2">
-                {" "}
                 <form onSubmit={handleSubmit} className="p-4 md:p-8">
                     <div className="grid gap-4 mb-4 grid-cols-1 md:grid-cols-2 p-2">
                         <div className="col-span-1 space-y-3">
                             <div className="">
-                                <InputLabel value={" Nama (wajib)"} />
-                                <TextInput
-                                    id="name"
-                                    type="text"
-                                    name="name"
-                                    value={data.name}
-                                    className="mt-1 block w-full"
+                                <InputLabel value={"Siswa Ter Data"} />
+                                <select
                                     onChange={(e) =>
-                                        setData("name", e.target.value)
+                                        setData("nisn", e.target.value)
                                     }
-                                />
+                                    value={data.nisn}
+                                    disabled={isEdit}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-1"
+                                >
+                                    <option value="">default</option>
+                                    {dataSiswas.length > 0 &&
+                                        dataSiswas.map((ds) => (
+                                            <option key={ds.id} value={ds.nisn}>
+                                                {ds.nama} | {ds.nisn}
+                                            </option>
+                                        ))}
+                                </select>
+
                                 <InputError
-                                    message={errors.name}
+                                    message={errors.nisn}
                                     className="mt-2"
                                 />
                             </div>
@@ -159,6 +169,8 @@ const Form = ({
                                     className="mt-2"
                                 />
                             </div>
+                        </div>
+                        <div className="col-span-1 space-y-3">
                             <div className="">
                                 <InputLabel value={"Pembimbing Dari Sekolah"} />
                                 <select
@@ -186,8 +198,6 @@ const Form = ({
                                     className="mt-2"
                                 />
                             </div>
-                        </div>
-                        <div className="col-span-1 space-y-3">
                             <div className="">
                                 <InputLabel value={"Tempat Du/Di"} />
                                 <select

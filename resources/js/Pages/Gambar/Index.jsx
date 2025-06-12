@@ -77,9 +77,7 @@ const Index = () => {
                         seteditModal(null);
                     }
                 },
-                onError: (e) => {
-                    console.log(e);
-                },
+           
             }
         );
     };
@@ -123,7 +121,7 @@ const Index = () => {
                                         <td className="px-4 py-4">
                                             <img
                                                 className="w-32 h-32 object-cover object-center rounded-md left-1/2 -translate-x-1/2 relative"
-                                                src={`./img/header/${gambar.url}`}
+                                                src={`./storage/${gambar.url}`}
                                                 alt=""
                                                 srcSet=""
                                             />
@@ -217,7 +215,7 @@ const Index = () => {
                                                                 ) : (
                                                                     <img
                                                                         className={`h-28 mt-4 w-28 object-center object-cover`}
-                                                                        src={`img/header/${gambar.url}`}
+                                                                        src={`./storage/${gambar.url}`}
                                                                         alt={
                                                                             "No file Store"
                                                                         }

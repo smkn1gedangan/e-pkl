@@ -41,11 +41,13 @@ class JurusanController extends Controller
     public function store(Request $request)
     {
         $validate = $request->validate([
-            "nama"=>"string|min:3|max:40|unique:jurusans,nama"
+            "nama"=>"string|min:3|max:40|unique:jurusans,nama",
+            "isActive"=>"required"
         ],[
             "nama.string"=>"Nama Jurusan Wajib Diisi 3 - 40 Karakter Huruf",
             "nama.unique"=>"Nama Jurusan Telah Ada"
         ]);
+        
         Jurusan::create($validate);
 
         return redirect()->route("jurusan.index")->with("success","Sukses Menambah Jurusan Baru");
@@ -75,15 +77,19 @@ class JurusanController extends Controller
     {
         $jurusanId = Jurusan::findOrFail($id);
 
-        $validate = $request->validate([
-            "nama"=>["string","min:3","max:50",Rule::unique("jurusans","nama")->ignore($id)]
+        if($jurusanId){
+             $validate = $request->validate([
+            "nama"=>["string","min:3","max:50",Rule::unique("jurusans","nama")->ignore($id)],
+             "isActive"=>"required"
         ],[
             "nama.string"=>"Nama Jurusan Wajib Diisi 3 - 30 Karakter Huruf",
             "nama.unique"=>"Nama Jurusan Telah Ada"
         ]);
+        
         $jurusanId ->nama = $validate["nama"]; 
-
+        $jurusanId ->isActive = $validate["isActive"]; 
         $jurusanId->save();
+        }
 
         return redirect()->route("jurusan.index")->with("success","Sukses Mengubah Jurusan");
     }

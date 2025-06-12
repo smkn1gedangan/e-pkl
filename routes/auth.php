@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AktivasiController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -12,10 +13,16 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
-        ->name('register');
+    // Route::get('register/{id}', [RegisteredUserController::class, 'create'])
+    //     ->name('register');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    // Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::resource("register",RegisteredUserController::class);
+    Route::get('aktivasi', [AktivasiController::class, 'create'])
+        ->name('aktivasi');
+
+    Route::post('aktivasi', [AktivasiController::class, 'store']);
+
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');

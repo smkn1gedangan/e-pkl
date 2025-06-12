@@ -14,6 +14,20 @@ export const useTypeAjuanTempat = create(
         }
     )
 );
+export const useTypeImportSiswa = create(
+    persist(
+        (set, get) => ({
+            type: "import",
+            setType: (type) => {
+                set({ type });
+            },
+        }),
+        {
+            name: "type",
+            storage: createJSONStorage(() => localStorage),
+        }
+    )
+);
 export const useTypeDashbard = create(
     persist(
         (set, get) => ({

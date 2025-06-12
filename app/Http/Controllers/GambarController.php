@@ -34,33 +34,30 @@ class GambarController extends Controller
     public function store(Request $request)
     {
          $validate = $request->validate([
-            "url"=>"required|file|max:1200|mimes:jpg,jpeg,avif,png"
+            "url"=>"required|file|max:2400|mimes:jpg,jpeg,avif,png"
         ],[
             "url.required"=>"Gambar Wajib Diisi",
-            "url.mimes"=>"Gambar Type Jpg,Jpeg,Avif,Png",
-            "url.max"=>"File Gambar Maksimal 1200 Kb (1,2 mb)"
+            "url.mimes"=>"Gambar harus Bertipe Jpg,Jpeg,Avif,Png",
+            "url.max"=>"File Gambar Maksimal 2400 Kb (2,4 mb)"
         ]);
 
         if($request->hasFile("url")){
-            $file = $request->file("url");
-            $filename = time() . "_" . $file->getClientOriginalName();
 
-
-            $publicPath = public_path("img/header/". $filename);
-            $backupPath = env("BACKUP_PHOTOS") . "header/". $filename;
-
+            
             // upload to public
+            $sourcePath = $request->file('url')->store('headers', 'public');
 
-            $file->move(public_path("img/header"), $filename);
+            // backup path
+            $backupPath = env("BACKUP_PHOTOS") . $sourcePath;
 
             if(!file_exists(dirname($backupPath))) {
                 mkdir(dirname($backupPath), 0777, true);
             }
             // Simpan juga ke folder backup
-            if(!copy($publicPath, $backupPath)){
+            if(!File::copy(storage_path("app/public/".$sourcePath), $backupPath)){
                 return Inertia::render("Gambar/Index")->with("error","Gambar gagal disimpan");
             };
-            $validate["url"] =  $filename ?? null;
+            $validate["url"] =  $sourcePath ?? null;
         }
         Gambar::create($validate);
         return redirect()->back()->with("success","Sukses Menambah Slider / Gambar Baru");
@@ -88,22 +85,23 @@ class GambarController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            "url"=>"required|file|max:1200|mimes:jpg,jpeg,avif,png"
+            "url"=>"required|file|max:2400|mimes:jpg,jpeg,avif,png"
         ],[
             "url.required"=>"Gambar Wajib Diisi",
-            "url.mimes"=>"Gambar Type Jpg,Jpeg,Avif,Png",
-            "url.max"=>"File Gambar Maksimal 1200 Kb (1,2 mb)"
+            "url.mimes"=>"Gambar harus Bertipe Jpg,Jpeg,Avif,Png",
+            "url.max"=>"File Gambar Maksimal 2400 Kb (2,4 mb)"
         ]);
         
         $gambarId = Gambar::findOrFail($id);
         if ($request->hasFile('url')) {
             if ($gambarId->url) {
-                $publicPath = public_path('img/header/' . $gambarId->url); // Lokasi pertama (public)
-                $backupPath = env("BACKUP_PHOTOS") ."header/" . $gambarId->url; // Lokasi kedua (backup)
+                
+            
+                $backupPath = env("BACKUP_PHOTOS") . $gambarId->url; // Lokasi kedua (backup)
 
                 // Hapus file di lokasi pertama (public)
-                if (File::exists($publicPath)) {
-                    File::delete($publicPath);
+                if (File::exists(storage_path("app/public/". $gambarId->url))) {
+                    File::delete(storage_path("app/public/". $gambarId->url));
                 }
 
                 // Hapus file di lokasi kedua (backup)
@@ -112,23 +110,21 @@ class GambarController extends Controller
                 }
             }
 
-            $file = $request->file('url');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $publicPath = public_path("img/header/" . $filename);
-            $backupPath = env("BACKUP_PHOTOS") . "header/" . $filename;
+            $sourcePath = $request->file('url')->store('headers', 'public'); //lokasi pertama
+
+            $backupPath = env("BACKUP_PHOTOS") . $sourcePath;
 
             // upload to public
-            $file->move(public_path('img/header'), $filename);
 
             if (!file_exists(dirname($backupPath))) {
                 mkdir(dirname($backupPath), 0777, true);
             }
             // Simpan juga ke folder backup
-            if(!copy($publicPath, $backupPath)){
-                return redirect()->back()->with("error","Kesalahan SErvevr Mengenai Gambar , Coba Beberapa Saat Lagi");
+            if(!File::copy(storage_path("app/public/".$sourcePath), $backupPath)){
+                return redirect()->back()->with("error","Kesalahan Server Mengenai Gambar , Coba Beberapa Saat Lagi");
             };
 
-           $gambarId->url = $filename ?? null;
+            $gambarId->url =  $sourcePath ?? null;
         }
         $gambarId->save();
         return redirect()->back()->with("success","Sukses Mengubah Gambar");
@@ -142,11 +138,10 @@ class GambarController extends Controller
         $gmbrId = Gambar::findOrFail($id);
         
         if($gmbrId->url){
-            $publicPath = public_path("img/header/". $gmbrId->url);
-            $backupPath = env("BACKUP_PHOTOS") . "header/" . $gmbrId->url;
+            $backupPath = env("BACKUP_PHOTOS") . $gmbrId->url;
 
-            if(fileExists($publicPath)){
-                File::delete($publicPath);
+            if (File::exists(storage_path("app/public/". $gmbrId->url))) {
+                    File::delete(storage_path("app/public/". $gmbrId->url));
             }
             if(fileExists($backupPath)){
                 File::delete($backupPath);

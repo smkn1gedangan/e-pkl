@@ -20,6 +20,7 @@ const Index = () => {
     const [editModal, seteditModal] = useState(false);
     const { data, setData, errors, post, processing, reset, put } = useForm({
         nama: "",
+        isActive: "tidak",
     });
     const { data: dataSearch, setData: setDataSearch } = useForm({
         search: filters.search ?? "",
@@ -57,6 +58,7 @@ const Index = () => {
         const filtered = jurusans.data.find((jurusan) => jurusan.id === id);
         if (filtered) {
             setData("nama", filtered.nama);
+            setData("isActive" ,filtered.isActive);
             seteditModal(filtered);
         }
     };
@@ -92,6 +94,7 @@ const Index = () => {
             preserveScroll: true,
         });
     };
+    console.log(jurusans);
     return (
         <AuthenticatedLayout>
             <Head title="Jurusan" />
@@ -116,6 +119,7 @@ const Index = () => {
                         headers={[
                             { nama: "#" },
                             { nama: "Nama Jurusan" },
+                            { nama: "Keaktifan" },
                             { nama: "Opsi" },
                         ]}
                     >
@@ -132,6 +136,11 @@ const Index = () => {
 
                                         <td className="px-4 text-center py-4">
                                             {jurusan.nama}
+                                        </td>
+                                        <td className="px-4 text-center py-4">
+                                            {jurusan.isActive === "aktif"
+                                                ? "Aktif"
+                                                : "Tidak Aktif"}
                                         </td>
 
                                         <td className="px-4 text-center py-4 flex justify-center gap-2">
@@ -194,6 +203,52 @@ const Index = () => {
                                                                 <InputError
                                                                     message={
                                                                         errors.nama
+                                                                    }
+                                                                    className="mt-2"
+                                                                />
+                                                            </div>
+                                                            <div className="col-span-2">
+                                                                <InputLabel
+                                                                    value={
+                                                                        "Keaktifan"
+                                                                    }
+                                                                />
+                                                                <select
+                                                                    onChange={(
+                                                                        e
+                                                                    ) =>
+                                                                        setData(
+                                                                            "isActive",
+                                                                            e
+                                                                                .target
+                                                                                .value
+                                                                        )
+                                                                    }
+                                                                    value={
+                                                                        data.isActive
+                                                                    }
+                                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-1"
+                                                                >
+                                                                    <option
+                                                                        value={
+                                                                            "aktif"
+                                                                        }
+                                                                    >
+                                                                        Aktif
+                                                                    </option>
+                                                                    <option
+                                                                        value={
+                                                                            "tidak"
+                                                                        }
+                                                                    >
+                                                                        Tidak
+                                                                        Aktif
+                                                                    </option>
+                                                                </select>
+
+                                                                <InputError
+                                                                    message={
+                                                                        errors.isActive
                                                                     }
                                                                     className="mt-2"
                                                                 />
@@ -277,6 +332,24 @@ const Index = () => {
                                 />
                                 <InputError
                                     message={errors.nama}
+                                    className="mt-2"
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <InputLabel value={"Keaktifan"} />
+                                <select
+                                    onChange={(e) =>
+                                        setData("isActive", e.target.value)
+                                    }
+                                    value={data.isActive}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-1"
+                                >
+                                    <option value={"aktif"}>Aktif</option>
+                                    <option value={"tidak"}>Tidak Aktif</option>
+                                </select>
+
+                                <InputError
+                                    message={errors.isActive}
                                     className="mt-2"
                                 />
                             </div>

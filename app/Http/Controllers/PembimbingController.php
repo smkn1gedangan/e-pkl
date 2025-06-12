@@ -68,7 +68,7 @@ class PembimbingController extends Controller
     public function create()
     {
         return Inertia::render("Pembimbing/Form",[
-            "jurusans"=>Jurusan::get(),
+            "jurusans"=>Jurusan::where("isActive","=","aktif")->get(),
             "tahunAjarans"=>TahunAjaran::get(),
             "tempats"=>Tempat::get(),
         ]);
@@ -125,7 +125,7 @@ class PembimbingController extends Controller
     {
          return Inertia::render("Pembimbing/Form",[
             "user"=> User::with(["tahunAjaran","jurusan","roles"])->where("id",'=',$id)->first(),
-            "jurusans"=>Jurusan::get(),
+            "jurusans"=>Jurusan::where("isActive","=","aktif")->get(),
             "tahunAjarans"=>TahunAjaran::get(),
             "tempats"=>Tempat::get(),
             "isEdit"=>true

@@ -17,35 +17,45 @@ class JurusanSeeder extends Seeder
             [
                 "nama"=>"Sistem Informatika Jaringan Aplikasi",
                 "samaran"=>"SIJA",
+                "isActive"=>"aktif"
             ],
             [
                 "nama"=>"Akuntansi",
                 "samaran"=>"AK",
+                "isActive"=>"tidak"
             ],
             [
                 "nama"=>"Busana",
                 "samaran"=>"TBS",
+                "isActive"=>"tidak"
             ],
             [
                 "nama"=>"Desain Komunikasi Visual",
                 "samaran"=>"DKV",
+                "isActive"=>"tidak"
             ],
             [
                 "nama"=>"Animasi",
                 "samaran"=>"ANIMASI",
+                "isActive"=>"tidak"
             ],
             [
                 "nama"=>"Teknik Kendaraan Ringan",
                 "samaran"=>"TKR",
+                "isActive"=>"tidak"
             ],
             [
                 "nama"=>"Boga",
                 "samaran"=>"TBG",
+                "isActive"=>"tidak"
             ],
         ];
         foreach ($datas as $data) {
             Jurusan::create(  
-                ['nama' => $data['nama']]);
+                [
+                    'nama' => $data['nama'],
+                    'isActive' => $data['isActive']
+                ]);
         }
     }
 }

@@ -25,9 +25,6 @@ class AppServiceProvider extends ServiceProvider
     {
         Vite::prefetch(concurrency: 3);
         Inertia::share([
-            "siswaCount"=>function(){
-                return User::with("roles")->where("isAccept","=","false")->role("siswa")->count();
-            },
             "ptCount"=>function(){
                 return PengajuanTempat::count();
             }

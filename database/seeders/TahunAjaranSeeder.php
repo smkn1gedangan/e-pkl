@@ -15,7 +15,6 @@ class TahunAjaranSeeder extends Seeder
     {
         $datas = [
             ["tahun"=>"2025 - 2026"],
-            ["tahun"=>"2026 - 2027"],
         ];
 
         foreach ($datas as $data) {

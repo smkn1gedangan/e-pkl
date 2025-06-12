@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Jurnal extends Model
 {
     use HasFactory;
-    protected $fillable = ["photo","keterangan","kegiatan","user_id"];
+    protected $fillable = ["photo","keterangan","kegiatan","user_id","mark"];
 
     public function user() : BelongsTo {
         return $this->belongsTo(User::class);

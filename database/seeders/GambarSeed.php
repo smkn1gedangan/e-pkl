@@ -15,13 +15,13 @@ class GambarSeed extends Seeder
     {
         $datas = [
             [
-                "url"=>"static_1.jpg"
+                "url"=>"headers/static_1.jpg"
             ],
             [
-                "url"=>"static_2.jpg"
+                "url"=>"headers/static_2.jpg"
             ],
             [
-                "url"=>"static_3.jpg"
+                "url"=>"headers/static_3.jpg"
             ]
             ];
             foreach ($datas as $data) {

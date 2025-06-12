@@ -8,22 +8,25 @@ import {
     Check,
     CheckCircle2,
     Edit,
+    FileSliders,
+    GpuIcon,
     IdCard,
     Image,
     LayoutIcon,
+    ListStartIcon,
     LogOut,
     User,
     UserPen,
     Users,
 } from "lucide-react";
-import { useEffect } from "react";
 
 const SideMenu = ({ children, ...props }) => {
-    const { auth, ptCount, siswaCount } = usePage().props;
+    const { auth, ptCount } = usePage().props;
     const routes = [
         {
             id: 1,
             nama: "Dashbaord",
+            pathname: "dashboard",
             route: route("dashboard"),
             icon: <LayoutIcon />,
             isLink: true,
@@ -36,17 +39,17 @@ const SideMenu = ({ children, ...props }) => {
         },
         {
             id: 20,
-            nama: "Register User",
-            route: route("regis.index"),
+            nama: "User Terdata",
+            pathname: "data_siswa",
+            route: route("data_siswa.index"),
             icon: <IdCard />,
             rolePermision: ["admin"],
             isLink: true,
-            isAlert: true,
-            alert: siswaCount,
         },
         {
             id: 100,
             nama: auth.role === "admin" ? "Ajuan Tempat" : "Ajukan Tempat",
+            pathname: "pengajuanTempat",
             route:
                 auth.role === "admin"
                     ? route("pengajuanTempat.index")
@@ -60,6 +63,7 @@ const SideMenu = ({ children, ...props }) => {
         {
             id: 25,
             nama: "Slider",
+            pathname: "gambar",
             route: route("gambar.index"),
             icon: <Image />,
             rolePermision: ["admin"],
@@ -68,6 +72,7 @@ const SideMenu = ({ children, ...props }) => {
         {
             id: 5,
             nama: "Jurusan",
+            pathname: "jurusan",
             route: route("jurusan.index"),
             icon: <Book />,
             rolePermision: ["admin"],
@@ -76,6 +81,7 @@ const SideMenu = ({ children, ...props }) => {
         {
             id: 3,
             nama: "Tahun Ajaran",
+            pathname: "tahunAjaran",
             route: route("tahunAjaran.index"),
             icon: <Calendar />,
             rolePermision: ["admin"],
@@ -84,6 +90,7 @@ const SideMenu = ({ children, ...props }) => {
         {
             id: 4,
             nama: "Tempat Du/Di",
+            pathname: "tempat",
             route: route("tempat.index"),
             icon: <Castle />,
             rolePermision: ["admin"],
@@ -92,6 +99,7 @@ const SideMenu = ({ children, ...props }) => {
         {
             id: 2,
             nama: "Pembimbing",
+            pathname: "pembimbing",
             route: route("pembimbing.index"),
             icon: <UserPen />,
             rolePermision: ["admin"],
@@ -100,14 +108,21 @@ const SideMenu = ({ children, ...props }) => {
         {
             id: 10,
             nama: "Siswa",
+            pathname: "siswa",
             route: route("siswa.index"),
             icon: <User />,
-            rolePermision: ["admin", "pembimbing_pt", "pembimbing_sekolah","siswa"],
+            rolePermision: [
+                "admin",
+                "pembimbing_pt",
+                "pembimbing_sekolah",
+                "siswa",
+            ],
             isLink: true,
         },
         {
             id: 11,
             nama: "Jurnal",
+            pathname: "rekap",
             route: route("rekap.index"),
             icon: <BookCopy />,
             isLink: true,
@@ -122,8 +137,23 @@ const SideMenu = ({ children, ...props }) => {
         {
             id: 6,
             nama: "Edit Akun",
+            pathname: "profile",
             route: route("profile.edit"),
             icon: <Edit />,
+            isLink: true,
+            rolePermision: [
+                "siswa",
+                "pembimbing_pt",
+                "pembimbing_sekolah",
+                "admin",
+            ],
+        },
+        {
+            id: 1202,
+            nama: "Dokumentasi",
+            pathname: "dokumentasi",
+            route: route("dokumentasi"),
+            icon: <FileSliders />,
             isLink: true,
             rolePermision: [
                 "siswa",
@@ -162,7 +192,14 @@ const SideMenu = ({ children, ...props }) => {
                             <Link
                                 as="button"
                                 href={route.route}
-                                className="w-full flex items-center p-2 text-gray-900 rounded-lg dark:text-slate-800 hover:bg-stone-300 group"
+                                className={`${
+                                    window.location.pathname.replace(
+                                        "/",
+                                        ""
+                                    ) === route.pathname
+                                        ? "bg-blue-700 text-white hover:bg-blue-600"
+                                        : "text-gray-900 hover:bg-stone-300"
+                                } w-full flex items-center p-2 rounded-lg   group`}
                             >
                                 <span className="">{route.icon}</span>
                                 <span className="ms-3 hidden sm:text-xs md:text-base sm:block">

@@ -26,7 +26,8 @@ const Form = ({ jurusans, tahunAjarans, tempats, isEdit, user }) => {
             put(route("pembimbing.update", user.id), {
                 onSuccess: (e) => {
                     if (e.props.auth?.flash.success) {
-                        Alert(`${e.props.auth?.flash.success}`);
+                        Alert(`${e.props.auth?.flash.success}`,"success",4000);
+                        window.location.href =route("pembimbing.index")
                     } else {
                         Alert(`${e.props.auth?.flash.error}`, "error", 4000);
                     }
@@ -36,7 +37,14 @@ const Form = ({ jurusans, tahunAjarans, tempats, isEdit, user }) => {
             post(route("pembimbing.store"), {
                 onSuccess: (e) => {
                     if (e.props.auth?.flash.success) {
-                        reset();
+                        setData("email","");
+                        setData("jurusan_id","");
+                        setData("kontak","");
+                        setData("name","");
+                        setData("password","");
+                        setData("password_confirmation","");
+                        setData("role","");
+                        setData("tahunAjaran_id","");
                         Alert(`${e.props.auth?.flash.success}`);
                     } else {
                         Alert(`${e.props.auth?.flash.error}`, "error", 4000);

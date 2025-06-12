@@ -21,15 +21,15 @@ class DashboardController extends Controller
 
         $rekapPb = User::query()->with(["tempat","roles"])
         ->when(Auth::user()->getRoleNames()->first() === "pembimbing_sekolah",function($query){
-            $query->where("pembimbing_sekolah_id","=",Auth::user()->id);
+            $query->withCount("jurnals")->where("pembimbing_sekolah_id","=",Auth::user()->id);
         })
         ->when(Auth::user()->getRoleNames()->first() === "pembimbing_pt",function($query){
-            $query->whereHas("tempat",function($q2) {
-                 $q2->where("pembimbing_id","=",Auth::user()->id);
-            });
-        })
-        ->count();
-        
+            $query->withCount("jurnals")->whereHas("tempat",function($q2){
+                    $q2->where("pembimbing_id",Auth::user()->id);
+                });
+            })
+        ->get();
+                
         $statistik = [
             "tempat"=>Tempat::count(),
             "siswa"=>User::with("roles")->role("siswa")->count(),

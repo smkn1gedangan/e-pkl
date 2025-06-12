@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Jurnal;
 use App\Models\Nilai;
 use Illuminate\Http\Request;
 
@@ -70,7 +71,13 @@ class NilaiController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+       $jurnalId = Jurnal::findOrFail($id);
+
+       if($jurnalId){
+            $jurnalId->mark = true;
+            $jurnalId->save();
+       }
+       return redirect()->route("rekap.index")->with("success","Sukses Menandai Jurnal");
     }
 
     /**
@@ -78,6 +85,6 @@ class NilaiController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        //  
     }
 }

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SiswaRequest;
+use App\Models\Datasiswa;
 use App\Models\Jurusan;
 use App\Models\TahunAjaran;
 use App\Models\Tempat;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -84,7 +87,7 @@ class SiswaController extends Controller
         })
 
         ->orderBy($request->input("sort_by","users.created_at"),$request->input("sort_order","desc"))
-        ->where("isAccept","=",true)->role("siswa")->paginate(10);
+        ->role("siswa")->paginate(10);
         return Inertia::render("Siswa/Index",[
             "siswas"=> $datas,
             "filters"=> $request->only(["search","sort_by","sort_order","tahunAjaran","tempat","jurusan"]),
@@ -101,8 +104,9 @@ class SiswaController extends Controller
     {
         return Inertia::render("Siswa/Form",[
             "pembimbing_sekolahs"=> User::with("roles")->role('pembimbing_sekolah')->get(),
-            "jurusans"=>Jurusan::get(),
+            "jurusans"=>Jurusan::where("isActive","=","aktif")->get(),
             "tempats"=>Tempat::get(),
+            "dataSiswas"=>Datasiswa::where("isActive","=",false)->get(),
             "tahunAjarans"=>TahunAjaran::get(),
         ]);
     }
@@ -110,30 +114,20 @@ class SiswaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(SiswaRequest $request):RedirectResponse
     {
-         $validate = $request->validate([
-            "name"=>['required'],
-            "email"=>['required', 'string', 'email',"unique:users,email"],
-            "jurusan_id"=>['required'],
-            "tahunAjaran_id"=>['nullable'],
-            "pembimbing_sekolah_id"=>['nullable'],
-            "tempat_id"=>['nullable'],
-            "kontak"=>['required',"regex:/^0[0-9]{9,12}$/"],
-            "password"=>['required','string',"confirmed"],
-        ],[
-            "nama.required"=>"Nama Wajib Diisi",
-            "email.required"=>"email Wajib Diisi",
-            "email.unique"=>"Email Telah Terdaftar",
-            "kontak.required"=>"Kontak Wajib Diisi",
-            "kontak.regex"=>"Kontak Wajib 10 - 13 Karakter Dan Diawali Angka 0",
-            "jurusan_id.required"=>"Jurusan Wajib Diisi",
-            "password.required"=>"Password Wajib Diisi",
-            "password.confirmed"=>"Konfirmasi Password Tidak Sama"
-        ]);
+         
+        $validate = $request->validated();
+
+        $dataSiswa = Datasiswa::where("nisn","=",$validate["nisn"])->first();
+
+        $dataSiswa->isActive = true;
+
+        $dataSiswa->save();
 
         $siswa = User::create([
-            "name"=> $validate["name"],
+            "name"=> $dataSiswa->nama,
+            "nisn_id"=> $dataSiswa->id,
             "email"=> $validate["email"],
             "jurusan_id"=> $validate["jurusan_id"],
             "tahunAjaran_id"=> $validate["tahunAjaran_id"],
@@ -141,7 +135,6 @@ class SiswaController extends Controller
             "tempat_id"=> $validate["tempat_id"],
             "kontak"=> $validate["kontak"],
             "password"=> Hash::make($validate["password"]),
-            "isAccept"=> true,
         ]);
         $siswa->syncRoles("siswa");
         return redirect()->route("siswa.create")->with("success","Sukses Menambah Data Siswa Baru");
@@ -161,9 +154,10 @@ class SiswaController extends Controller
     public function edit(string $id)
     {
           return Inertia::render("Siswa/Form",[
-            "user"=> User::with(["jurusan","tahunAjaran","pbSkl","tempat.user"])->role("siswa")->where("id","=",$id)->first(),
+            "user"=> User::with(["jurusan","tahunAjaran","pbSkl","tempat.user","dataSiswa"])->role("siswa")->where("id","=",$id)->first(),
             "pembimbing_sekolahs"=> User::with("roles")->role('pembimbing_sekolah')->get(),
-            "jurusans"=>Jurusan::get(),
+            "dataSiswas"=>Datasiswa::get(),
+            "jurusans"=>Jurusan::where("isActive","=","aktif")->get(),
             "tempats"=>Tempat::get(),
             "tahunAjarans"=>TahunAjaran::get(),
             "isEdit"=>true
@@ -173,26 +167,15 @@ class SiswaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(SiswaRequest $request, string $id)
     {
         $siswaId = User::findOrFail($id);
-        $validate = $request->validate([
-            "name"=>['required'],
-            "email"=>['required', 'string', 'email',Rule::unique("users","email")->ignore($id)],
-            "jurusan_id"=>['required'],
-            "tahunAjaran_id"=>['nullable'],
-            "pembimbing_sekolah_id"=>['nullable'],
-            "tempat_id"=>['nullable'],
-            "kontak"=>['required',"regex:/^0[0-9]{9,12}$/"],
-        ],[
-            "nama.required"=>"Nama Wajib Diisi",
-            "email.required"=>"email Wajib Diisi",
-            "email.unique"=>"Email Telah Terdaftar",
-            "kontak.required"=>"Kontak Wajib Diisi",
-            "jurusan_id.required"=>"Jurusan Wajib Diisi",
-            "kontak.regex"=>"Kontak Wajib 10 - 13 Karakter Dan Diawali Angka 0",
-        ]);
-        $siswaId->name = $validate["name"];
+        $validate = $request->validated();
+
+        $dataSiswa = Datasiswa::where("nisn","=",$validate["nisn"])->first();
+        $siswaId->name = $dataSiswa->nama;
+        $siswaId->nisn_id = $dataSiswa->id;
+
         $siswaId->email = $validate["email"];
         $siswaId->tahunAjaran_id =  $request->filled("tahunAjaran_id") ?$validate["tahunAjaran_id"]:$siswaId->tahunAjaran_id;
         $siswaId->pembimbing_sekolah_id =  $request->filled("pembimbing_sekolah_id") ?$validate["pembimbing_sekolah_id"]:$siswaId->pembimbing_sekolah_id;
@@ -210,7 +193,12 @@ class SiswaController extends Controller
     public function destroy(string $id)
     {
         $siswaId = User::findOrFail($id);
+
         if($siswaId){
+            $siswaId->dataSiswa->isActive = false;
+            $siswaId->save();
+
+
             $siswaId->delete();
         }
          return redirect()->route("siswa.index")->with("success","Sukses Menghapus Data Siswa");

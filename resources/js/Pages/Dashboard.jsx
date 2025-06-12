@@ -7,7 +7,7 @@ import React, { useEffect } from "react";
 
 const Dashboard = () => {
     const { auth, rekapSiswa, rekapPb, statistik } = usePage().props;
-
+    console.log(rekapPb);
     return (
         <AuthenticatedLayout>
             <Head title="Dashboard" />
@@ -25,12 +25,18 @@ const Dashboard = () => {
                 )}
                 {auth.role === "pembimbing_sekolah" && (
                     <div className="w-4/5">
-                        <BarChart datas={[rekapPb]} labels={["Jumlah Siswa"]} />
+                        <BarChart
+                            datas={rekapPb.map((item) => item.jurnals_count)}
+                            labels={rekapPb.map((item) => item.name)}
+                        />
                     </div>
                 )}
                 {auth.role === "pembimbing_pt" && (
                     <div className="w-4/5">
-                        <BarChart datas={[rekapPb]} labels={["Jumlah Siswa"]} />
+                        <BarChart
+                            datas={rekapPb.map((item) => item.jurnals_count)}
+                            labels={rekapPb.map((item) => item.name)}
+                        />
                     </div>
                 )}
                 {auth.role === "admin" && (

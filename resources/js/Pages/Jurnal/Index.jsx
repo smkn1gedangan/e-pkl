@@ -3,7 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import TitlePage from "@/Components/TitlePage";
 import Modal from "@/Components/Modal";
 import { Head, router, useForm, usePage } from "@inertiajs/react";
-import { Edit, Plus, Trash, X } from "lucide-react";
+import { Check, Edit, Plus, Trash, X } from "lucide-react";
 import TextInput from "@/Components/TextInput";
 import InputLabel from "@/Components/InputLabel";
 import InputError from "@/Components/InputError";
@@ -19,6 +19,7 @@ const Index = () => {
     const { jurnals, auth, user, filters } = usePage().props;
     const [createModal, setCreateModal] = useState(false);
     const [sortModal, setSortModal] = useState(false);
+    const [resizeImg, setResizeImg] = useState(null);
     const [img, setImg] = useState(null);
     const { data, setData, errors, post, processing, reset, put } = useForm({
         keterangan: "",
@@ -60,6 +61,13 @@ const Index = () => {
             },
         });
     };
+
+    const handleMarkJurnal = (e, id) => {
+        e.preventDefault();
+        router.put(route("nilai.update", id), {
+            mark: true,
+        });
+    };
     const handleSearchChange = (e) => {
         e.preventDefault();
         const { name, value } = e.target;
@@ -82,6 +90,13 @@ const Index = () => {
             preserveState: true,
             preserveScroll: true,
         });
+    };
+    const handleResizeImg = (e, id) => {
+        e.preventDefault();
+        const filtered = jurnals.data.find((j) => j.id === id);
+        if (filtered) {
+            setResizeImg(filtered);
+        }
     };
     return (
         <AuthenticatedLayout>
@@ -122,6 +137,7 @@ const Index = () => {
                             { nama: "Kegiatan" },
                             { nama: "Photo" },
                             { nama: "Dibuat Pada" },
+                            { nama: "Mark" },
                             { nama: "Opsi" },
                         ]}
                     >
@@ -146,12 +162,51 @@ const Index = () => {
                                             {jurnal.kegiatan}
                                         </td>
                                         <td className="px-4 text-center py-4">
-                                            <img
-                                                className="w-12 relative left-1/2 -translate-x-1/2 rounded-md h-12 object-cover object-center"
-                                                src={`/img/jurnal/${jurnal.photo}`}
-                                                alt=""
-                                            />
+                                            <div className="flex justify-center items-center">
+                                                <img
+                                                    onClick={(e) =>
+                                                        handleResizeImg(
+                                                            e,
+                                                            jurnal.id
+                                                        )
+                                                    }
+                                                    className="w-12 rounded-md h-12 object-cover object-center"
+                                                    src={`./storage/${jurnal.photo}`}
+                                                    alt=""
+                                                />
+                                                <Modal
+                                                    show={
+                                                        resizeImg?.id ===
+                                                        jurnal.id
+                                                    }
+                                                    onClose={() =>
+                                                        setResizeImg(null)
+                                                    }
+                                                >
+                                                    <div className="rounded-lg bg-white shadow-sm">
+                                                        <TitleModal
+                                                            icon={<X />}
+                                                            title={
+                                                                "Detail Foto"
+                                                            }
+                                                            onClick={() => {
+                                                                setResizeImg(
+                                                                    null
+                                                                );
+                                                            }}
+                                                        ></TitleModal>
+                                                        <div className="p-2 flex justify-center">
+                                                            <img
+                                                                className="max-w-sm rounded-md h-auto object-cover object-center"
+                                                                src={`./storage/${jurnal.photo}`}
+                                                                alt=""
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </Modal>
+                                            </div>
                                         </td>
+
                                         <td className="px-4 text-center py-4">
                                             {(() => {
                                                 const date = new Date(
@@ -167,8 +222,36 @@ const Index = () => {
                                                 return `${day}-${month}-${year}`;
                                             })()}
                                         </td>
-
-                                        <td className="px-4 text-center py-4 flex justify-center gap-2">
+                                        <td className="px-4 text-center py-4 ">
+                                            {jurnal.mark ? (
+                                                auth.role === "siswa" ? (
+                                                    <p className="text-blue-700">
+                                                        Dilihat
+                                                    </p>
+                                                ) : (
+                                                    <div className="flex justify-center text-blue-700">
+                                                        <Check />
+                                                    </div>
+                                                )
+                                            ) : auth.role === "siswa" ? (
+                                                <p className="text-red-700">
+                                                    Belum Dilihat
+                                                </p>
+                                            ) : (
+                                                <div
+                                                    onClick={(e) =>
+                                                        handleMarkJurnal(
+                                                            e,
+                                                            jurnal.id
+                                                        )
+                                                    }
+                                                    className="flex justify-center text-red-700"
+                                                >
+                                                    <X />
+                                                </div>
+                                            )}
+                                        </td>
+                                        <td className="px-4 text-center py-4 ">
                                             {auth.role === "siswa" && (
                                                 <div
                                                     onClick={(e) =>
@@ -177,7 +260,7 @@ const Index = () => {
                                                             jurnal.id
                                                         )
                                                     }
-                                                    className="font-medium text-red-800 hover:text-red-700 transition-all cursor-pointer"
+                                                    className="font-medium text-red-800 hover:text-red-700 transition-all cursor-pointer flex justify-center gap-2"
                                                 >
                                                     <Trash />
                                                 </div>

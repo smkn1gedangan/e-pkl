@@ -1,26 +1,29 @@
 import Checkbox from "@/Components/Checkbox";
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
+import Modal from "@/Components/Modal";
 import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
+import TitleModal from "@/Components/TitleModal";
 import { Head, Link, useForm, usePage } from "@inertiajs/react";
+import { X } from "lucide-react";
+import { useEffect, useState } from "react";
 
-export default function Login({ status, canResetPassword }) {
+export default function Aktivasi() {
     const { auth } = usePage().props;
+    const [panduan, setPanduan] = useState(false);
     const { data, setData, post, processing, errors, reset } = useForm({
-        email: "",
-        password: "",
-        remember: false,
+        nisn: "",
     });
 
     const submit = (e) => {
         e.preventDefault();
-
-        post(route("login"), {
-            onFinish: () => reset("password"),
+        post(route("aktivasi"), {
+            onSuccess: () => {
+                reset();
+            },
         });
     };
-
     return (
         <div
             style={{ background: "url(./header2.avif)" }}
@@ -54,103 +57,90 @@ export default function Login({ status, canResetPassword }) {
                         ""
                     )}
                     <form onSubmit={submit}>
-                        <div>
+                        <div className="">
                             <InputLabel
-                                htmlFor="email"
                                 className="text-white"
-                                value="Email"
+                                htmlFor="nisn"
+                                value="Nomor Aktivasi Akun"
                             />
 
                             <TextInput
-                                id="email"
+                                id="nisn"
                                 type="text"
-                                name="email"
-                                value={data.email}
+                                name="nisn"
+                                value={data.nisn}
                                 className="mt-1 block w-full"
                                 onChange={(e) =>
-                                    setData("email", e.target.value)
+                                    setData("nisn", e.target.value)
                                 }
                             />
 
                             <InputError
-                                message={errors.email}
+                                message={errors.nisn}
                                 className="mt-2 bg-red-50 text-center p-1 rounded-md inline-block"
                             />
-                        </div>
-
-                        <div className="mt-4">
-                            <InputLabel
-                                className="text-white"
-                                htmlFor="password"
-                                value="Password"
-                            />
-
-                            <TextInput
-                                id="password"
-                                type="password"
-                                name="password"
-                                value={data.password}
-                                className="mt-1 block w-full"
-                                autoComplete="current-password"
-                                onChange={(e) =>
-                                    setData("password", e.target.value)
-                                }
-                            />
-
-                            <InputError
-                                message={errors.password}
-                                className="mt-2 bg-red-50 text-center p-1 rounded-md inline-block"
-                            />
-                        </div>
-
-                        <div className="mt-4 block">
-                            <label className="flex items-center">
-                                <Checkbox
-                                    name="remember"
-                                    checked={data.remember}
-                                    onChange={(e) =>
-                                        setData("remember", e.target.checked)
-                                    }
-                                />
-                                <span className="text-white ms-2 text-sm">
-                                    Remember me
-                                </span>
-                            </label>
                         </div>
                         <div className="mt-4 block">
                             <label className="flex items-center">
                                 <p className="rounded-md text-sm text-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                    Don't have an account?{" "}
+                                    have an account?{" "}
                                     <Link
                                         className="text-white hover:text-gray-900 underline"
-                                        href={route("aktivasi")}
+                                        href={route("login")}
                                     >
-                                        register
+                                        Login
                                     </Link>
                                 </p>
                             </label>
                         </div>
-
-                        <div className="mt-4 flex items-center justify-end">
-                            {/* {canResetPassword && (
-                                <Link
-                                    href={route("password.request")}
-                                    className="rounded-md text-sm text-gray-50 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        <div className="mt-4 flex items-center justify-between">
+                            <label className="flex items-center">
+                                <PrimaryButton
+                                    onClick={() => setPanduan(!panduan)}
+                                    className=""
                                 >
-                                    Forgot your password?
-                                </Link>
-                            )} */}
-
+                                    Panduan
+                                </PrimaryButton>
+                            </label>
                             <PrimaryButton
                                 className="ms-4 bg-gradient-to-br from-emerald-700 to-sky-700  hover:bg-emerald-800 border border-white focus:border-emerald-400"
                                 disabled={processing}
                             >
-                                Log in
+                                Aktivasi Akun
                             </PrimaryButton>
                         </div>
                     </form>
                 </div>
             </div>
+            <Modal show={panduan} onClose={() => setPanduan(!panduan)}>
+                <div className="relative bg-white rounded-lg shadow-sm ">
+                    <TitleModal
+                        icon={<X />}
+                        title={"Panduan Aktivasi Akun"}
+                        onClick={() => {
+                            setPanduan(!panduan);
+                        }}
+                    ></TitleModal>
+                    <div className="p-4 text-slate-900">
+                        <p className="lowercase">
+                            Untuk menjaga keamanan dan validitas data, aktivasi
+                            akun diperlukan agar pihak pengembang atau admin
+                            sekolah dapat memastikan bahwa pengguna yang
+                            mendaftar benar-benar merupakan siswa aktif SMKN 1
+                            Gedangan.
+                        </p>
+                        <p className="font-bold">
+                            Contoh Aktivasi (no induk + no jurusan)
+                        </p>
+                        <p>Jika kamu memiliki no induk = 1201</p>
+                        <p>dan memiliki no induk = 0001.001</p>
+
+                        <p className="font-bold">
+                            Maka Penulisan Aktivasi Adalah 12010001.001
+                        </p>
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 }

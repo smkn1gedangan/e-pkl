@@ -19,14 +19,12 @@ class TempatSeeder extends Seeder
             "kontak"=>"09878714352",
             "bidang_usaha"=>"jahit1",
             "lokasi"=>"Sample",
-            "pembimbing_id"=>3,
             ],
             [
             "nama"=>"pt_jaya_berkah2",
             "kontak"=>"09218713452",
             "bidang_usaha"=>"jahit2",
             "lokasi"=>"Sample2",
-            "pembimbing_id"=>4,
             ],
         ];
         foreach ($datas as $data) {
