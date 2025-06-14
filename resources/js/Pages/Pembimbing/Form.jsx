@@ -27,7 +27,7 @@ const Form = ({ jurusans, tahunAjarans, tempats, isEdit, user }) => {
                 onSuccess: (e) => {
                     if (e.props.auth?.flash.success) {
                         Alert(`${e.props.auth?.flash.success}`,"success",4000);
-                        window.location.href =route("pembimbing.index")
+                        // window.location.href =route("pembimbing.index")
                     } else {
                         Alert(`${e.props.auth?.flash.error}`, "error", 4000);
                     }

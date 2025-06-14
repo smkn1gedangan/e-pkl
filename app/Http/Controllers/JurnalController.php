@@ -33,6 +33,9 @@ class JurnalController extends Controller
                 $q2->where('id', Auth::id());
             });
         })
+        ->when($request->filled("marking"),function($query) use($request){
+            $query->where("mark","=",filter_var($request->input("marking"),FILTER_VALIDATE_BOOLEAN));
+        })
         ->when($request->filled("keterangan"),function($query)use($request){
             $query->where("jurnals.keterangan","=",$request->input("keterangan"));
         })
@@ -65,7 +68,7 @@ class JurnalController extends Controller
         return Inertia::render("Jurnal/Index",[
             "jurnals"=>$jurnal,
             "user"=> Jurnal::with(["user.tempat.user","user.pbSkl"])->where("user_id","=",Auth::user()->id)->first(),
-            "filters"=> $request->only(["search","sort_by","sort_order","tahunAjaran","start_date","end_date"])
+            "filters"=> $request->only(["search","sort_by","sort_order","tahunAjaran","start_date","end_date","keterangan","marking"])
         ]);
     }
 

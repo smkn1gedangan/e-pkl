@@ -3,6 +3,7 @@ import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import Modal from "@/Components/Modal";
 import PrimaryButton from "@/Components/PrimaryButton";
+import SecondaryButton from "@/Components/SecondaryButton";
 import TextInput from "@/Components/TextInput";
 import TitleModal from "@/Components/TitleModal";
 import { Head, Link, useForm, usePage } from "@inertiajs/react";
@@ -95,12 +96,12 @@ export default function Aktivasi() {
                         </div>
                         <div className="mt-4 flex items-center justify-between">
                             <label className="flex items-center">
-                                <PrimaryButton
+                                <div
                                     onClick={() => setPanduan(!panduan)}
-                                    className=""
+                                    className="inline-flex items-center rounded-md border border-transparent  px-4 py-2 text-xs font-semibold uppercase tracking-widest transition duration-150 ease-in-out bg-black hover:bg-gray-700 focus:bg-gray-700  text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900"
                                 >
                                     Panduan
-                                </PrimaryButton>
+                                </div>
                             </label>
                             <PrimaryButton
                                 className="ms-4 bg-gradient-to-br from-emerald-700 to-sky-700  hover:bg-emerald-800 border border-white focus:border-emerald-400"

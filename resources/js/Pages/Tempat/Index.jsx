@@ -20,13 +20,14 @@ const Index = () => {
     const [createModal, setCreateModal] = useState(false);
     const [sortModal, setSortModal] = useState(false);
     const [editModal, seteditModal] = useState(null);
-    const { data, setData, errors, post, processing, reset, put } = useForm({
-        nama: "",
-        kontak: "",
-        lokasi: "",
-        bidang_usaha: "",
-        pembimbing_id: "",
-    });
+    const { data, setData, errors, post, processing, reset, put, setError } =
+        useForm({
+            nama: "",
+            kontak: "",
+            lokasi: "",
+            bidang_usaha: "",
+            pembimbing_id: "",
+        });
     const { data: dataSearch, setData: setDataSearch } = useForm({
         search: filters?.search ?? "",
         sort_by: filters?.sort_by ?? "",
@@ -61,13 +62,18 @@ const Index = () => {
 
     const handleEdit = (e, id) => {
         e.preventDefault();
+        setError("bidang_usaha", "");
+        setError("kontak", "");
+        setError("lokasi", "");
+        setError("nama", "");
         const filtered = tempats.data.find((tempat) => tempat.id === id);
         if (filtered) {
+            console.log(filtered)
             setData("nama", filtered.nama);
             setData("kontak", filtered.kontak);
             setData("lokasi", filtered.lokasi);
             setData("bidang_usaha", filtered.bidang_usaha);
-            setData("pembimbing_id", filtered.user?.id);
+            setData("pembimbing_id", filtered.user?.id ?? "");
             seteditModal(filtered);
         }
     };
@@ -297,6 +303,38 @@ const Index = () => {
                                                                 <InputError
                                                                     message={
                                                                         errors.bidang_usaha
+                                                                    }
+                                                                    className="mt-2"
+                                                                />
+                                                            </div>
+                                                            <div className="col-span-2">
+                                                                <InputLabel
+                                                                    value={
+                                                                        "Lokasi Du/Di"
+                                                                    }
+                                                                />
+                                                                <TextInput
+                                                                    id="lokasi"
+                                                                    type="text"
+                                                                    name="lokasi"
+                                                                    value={
+                                                                        data.lokasi
+                                                                    }
+                                                                    className="mt-1 block w-full"
+                                                                    onChange={(
+                                                                        e
+                                                                    ) =>
+                                                                        setData(
+                                                                            "lokasi",
+                                                                            e
+                                                                                .target
+                                                                                .value
+                                                                        )
+                                                                    }
+                                                                />
+                                                                <InputError
+                                                                    message={
+                                                                        errors.lokasi
                                                                     }
                                                                     className="mt-2"
                                                                 />

@@ -31,6 +31,7 @@ const Index = () => {
         sort_by: filters?.sort_by ?? "",
         sort_order: filters?.sort_order ?? "",
         keterangan: filters?.keterangan ?? "",
+        marking: filters?.marking ?? "",
         start_date: filters?.start_date ?? "",
         end_date: filters?.end_date ?? "",
     });
@@ -81,6 +82,7 @@ const Index = () => {
         if (update.sort_by !== "") params.sort_by = update.sort_by;
         if (update.sort_by !== "" && update.sort_order !== "")
             params.sort_order = update.sort_order;
+        if (update.marking !== "") params.marking = update.marking;
         if (update.keterangan !== "") params.keterangan = update.keterangan;
         if (update.start_date !== "") params.start_date = update.start_date;
         if (update.start_date !== "" && update.end_date !== "")
@@ -222,7 +224,7 @@ const Index = () => {
                                                 return `${day}-${month}-${year}`;
                                             })()}
                                         </td>
-                                        <td className="px-4 text-center py-4 ">
+                                        <td className="px-4 text-center py-4 cursor-pointer">
                                             {jurnal.mark ? (
                                                 auth.role === "siswa" ? (
                                                     <p className="text-blue-700">
@@ -247,7 +249,7 @@ const Index = () => {
                                                     }
                                                     className="flex justify-center text-red-700"
                                                 >
-                                                    <X />
+                                                    < X />
                                                 </div>
                                             )}
                                         </td>
@@ -409,6 +411,22 @@ const Index = () => {
                                 Filter Jurnal
                             </h3>
                         )}
+                        <div className="grid gap-4 mb-4 grid-cols-1">
+                            <div className="">
+                                <InputLabel value={"Marking"} />
+                                <select
+                                    onChange={(e) => handleSearchChange(e)}
+                                    value={dataSearch.marking}
+                                    id="marking"
+                                    name="marking"
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-stone-500 focus:border-stone-500 block w-full p-2.5 "
+                                >
+                                    <option value="">Default</option>
+                                    <option value={"true"}>Dilihat</option>
+                                    <option value={"false"}>Belum Dilihat</option>
+                                </select>
+                            </div>
+                        </div>
                         <div className="grid gap-4 mb-4 grid-cols-1">
                             <div className="">
                                 <InputLabel value={"Keterangan"} />

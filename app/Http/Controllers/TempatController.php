@@ -99,6 +99,7 @@ class TempatController extends Controller
             "nama"=>["string","required",Rule::unique("tempats","nama")->ignore($id)],
             "kontak"=>["string","required",Rule::unique("tempats","kontak")->ignore($id)],
             "bidang_usaha"=>"string|required",
+            "lokasi"=>"string|required",
             "pembimbing_id"=>"nullable",
         ],[
             "nama.required"=>"Nama Du/Di Wajib Diisi",
@@ -106,8 +107,8 @@ class TempatController extends Controller
             "kontak.required"=>"Kontak Du/Di Wajib Diisi",
             "kontak.unique"=>"Kontak Telah Ada dan Tidak Boleh Sama",
             "bidang_usaha.required"=>"Bidang Usaha Du/Di Wajib Diisi",
+            "lokasi.required"=>"Lokasi Du/Di Wajib Diisi",
         ]);
-
         $tpId = Tempat::with("user")->where("pembimbing_id",$validate["pembimbing_id"])->first();
         if($request->input("pembimbing_id") !== $tpId?->pembimbing_id && $tpId){
             return redirect()->route("tempat.index")->with("error","Pembimbing {$tpId?->user?->name} Telah Membimbing Pt Lain");
@@ -116,6 +117,7 @@ class TempatController extends Controller
         $tempatId->nama = $validate["nama"];
         $tempatId->kontak = $validate["kontak"];
         $tempatId->bidang_usaha = $validate["bidang_usaha"];
+        $tempatId->lokasi = $validate["lokasi"];
         $tempatId->pembimbing_id = $validate["pembimbing_id"];
 
         $tempatId->save();
