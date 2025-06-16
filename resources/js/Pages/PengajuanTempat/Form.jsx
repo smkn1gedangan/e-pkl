@@ -12,6 +12,7 @@ import { useTypeAjuanTempat } from "@/state/Zustand";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import { ArrowLeft, ClipboardList, Plus, QuoteIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
 
 const Form = () => {
     const { auth, tempats, pengajuanTempats } = usePage().props;
@@ -32,9 +33,9 @@ const Form = () => {
             onSuccess: (sccs) => {
                 if (sccs.props.auth?.flash.success) {
                     reset();
-                    Alert(`${sccs.props.auth?.flash.success}`);
+                    toast.success(`${sccs.props.auth.flash?.success}`);
                 } else {
-                    Alert(`${sccs.props.auth.flash?.error}`, "error", 4000);
+                    toast.error(`${sccs.props.auth.flash?.error}`);
                 }
             },
         });
@@ -42,6 +43,8 @@ const Form = () => {
     return (
         <AuthenticatedLayout>
             <Head title="Pengajuan Tempat" />
+                        <ToastContainer className={`w-96`} />
+
             {pengajuanTempats.some((p) => p.user_id === auth.user.id) ? (
                 <h1 className="text-center text-2xl mt-8 font-medium capitalize text-slate-900">
                     Anda Telah Mengajukan Tempat Magang, Tunggu Keputusan Dari

@@ -20,7 +20,7 @@ class DataSiswaController extends Controller
             $query->whereRaw('SUBSTRING_INDEX(nisn,".",-1)=?',[$request->kode]);
         })
         ->when($request->filled("aktivasi"),function($query) use($request){
-            $query->where('isActive',"=",filter_var($request->query('aktivasi'), FILTER_VALIDATE_BOOLEAN));
+            $query->where('isActive',"=",filter_var($request->input('aktivasi'), FILTER_VALIDATE_BOOLEAN));
         })
         ->when($request->filled("search") , function($query)use($request){
             $query->where("nama","like","%{$request->search}%")

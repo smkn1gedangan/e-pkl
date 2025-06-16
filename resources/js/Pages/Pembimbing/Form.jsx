@@ -8,6 +8,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, useForm } from "@inertiajs/react";
 import { ArrowLeft, ClipboardList, Plus, QuoteIcon } from "lucide-react";
 import React, { useEffect } from "react";
+import { toast, ToastContainer } from "react-toastify";
 
 const Form = ({ jurusans, tahunAjarans, tempats, isEdit, user }) => {
     const { data, setData, errors, post, processing, reset, put } = useForm({
@@ -24,30 +25,29 @@ const Form = ({ jurusans, tahunAjarans, tempats, isEdit, user }) => {
         e.preventDefault();
         if (isEdit) {
             put(route("pembimbing.update", user.id), {
-                onSuccess: (e) => {
-                    if (e.props.auth?.flash.success) {
-                        Alert(`${e.props.auth?.flash.success}`,"success",4000);
-                        // window.location.href =route("pembimbing.index")
+                onSuccess: (sccs) => {
+                    if (sccs.props.auth?.flash.success) {
+                        toast.success(`${sccs.props.auth.flash?.success}`);
                     } else {
-                        Alert(`${e.props.auth?.flash.error}`, "error", 4000);
+                        toast.error(`${sccs.props.auth.flash?.error}`);
                     }
                 },
             });
         } else {
             post(route("pembimbing.store"), {
-                onSuccess: (e) => {
-                    if (e.props.auth?.flash.success) {
-                        setData("email","");
-                        setData("jurusan_id","");
-                        setData("kontak","");
-                        setData("name","");
-                        setData("password","");
-                        setData("password_confirmation","");
-                        setData("role","");
-                        setData("tahunAjaran_id","");
-                        Alert(`${e.props.auth?.flash.success}`);
+                onSuccess: (sccs) => {
+                    if (sccs.props.auth?.flash.success) {
+                        setData("email", "");
+                        setData("jurusan_id", "");
+                        setData("kontak", "");
+                        setData("name", "");
+                        setData("password", "");
+                        setData("password_confirmation", "");
+                        setData("role", "");
+                        setData("tahunAjaran_id", "");
+                        toast.success(`${sccs.props.auth.flash?.success}`);
                     } else {
-                        Alert(`${e.props.auth?.flash.error}`, "error", 4000);
+                        toast.error(`${sccs.props.auth.flash?.error}`);
                     }
                 },
             });
@@ -56,7 +56,7 @@ const Form = ({ jurusans, tahunAjarans, tempats, isEdit, user }) => {
     return (
         <AuthenticatedLayout>
             <Head title="Tambah Pembimbing" />
-
+            <ToastContainer className={`w-96`} />
             <TitlePage
                 title={"Pembimbing"}
                 quote={`${

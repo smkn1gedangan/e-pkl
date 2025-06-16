@@ -5,9 +5,11 @@ import TextInput from "@/Components/TextInput";
 import TitlePage from "@/Components/TitlePage";
 import { Alert } from "@/Helpers/Alert";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { useGetProvince, useGetRegencies } from "@/services/api_call";
 import { Head, useForm } from "@inertiajs/react";
 import { ArrowLeft, ClipboardList, Plus, QuoteIcon } from "lucide-react";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
 
 const Form = ({
     jurusans,
@@ -18,9 +20,14 @@ const Form = ({
     tempats,
     dataSiswas,
 }) => {
+    const { data: provinceData } = useGetProvince();
+    const [provinceId, setProvinceId] = useState("35");
+    const { data: regenciesData } = useGetRegencies(provinceId);
     const { data, setData, errors, post, processing, reset, put } = useForm({
         nisn: isEdit ? user?.data_siswa.nisn : "",
         email: isEdit ? user.email : "",
+        tempat_lahir: isEdit ? user.tempat_lahir : "",
+        tanggal_lahir: isEdit ? user.tanggal_lahir : "",
         tahunAjaran_id: isEdit ? user?.tahun_ajaran?.id : "",
         jurusan_id: isEdit ? user?.jurusan?.id : "",
         pembimbing_sekolah_id: isEdit ? user.pb_skl?.id : "",
@@ -33,24 +40,22 @@ const Form = ({
         e.preventDefault();
         if (isEdit) {
             put(route("siswa.update", user.id), {
-                onSuccess: (e) => {
-                    if (e.props.auth?.flash.success) {
-                        Alert(`${e.props.auth?.flash.success}`,"success",4000);
-                        window.location.href = route("siswa.index");
+                onSuccess: (sccs) => {
+                    if (sccs.props.auth?.flash.success) {
+                        toast.success(`${sccs.props.auth.flash?.success}`);
                     } else {
-                        Alert(`${sccs.props.auth.flash?.error}`, "error", 4000);
+                        toast.error(`${sccs.props.auth.flash?.error}`);
                     }
                 },
-         
             });
         } else {
             post(route("siswa.store"), {
                 onSuccess: (sccs) => {
                     if (sccs.props.auth?.flash.success) {
                         reset();
-                        Alert(`${sccs.props.auth?.flash.success}`);
+                        toast.success(`${sccs.props.auth.flash?.success}`);
                     } else {
-                        Alert(`${sccs.props.auth.flash?.error}`, "error", 4000);
+                        toast.error(`${sccs.props.auth.flash?.error}`);
                     }
                 },
             });
@@ -60,6 +65,7 @@ const Form = ({
     return (
         <AuthenticatedLayout>
             <Head title="Tambah Siswa" />
+            <ToastContainer className={`w-96`} />
 
             <TitlePage
                 title={"Siswa"}
@@ -169,8 +175,82 @@ const Form = ({
                                     className="mt-2"
                                 />
                             </div>
+                            <div className="">
+                                <InputLabel value={"Tempat Lahir"} />
+                                <select
+                                    onChange={(e) =>
+                                        setProvinceId(e.target.value)
+                                    }
+                                    value={provinceId}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-1 "
+                                >
+                                    {provinceData &&
+                                        provinceData.map((province) => (
+                                            <option
+                                                key={province.id}
+                                                value={province.id}
+                                            >
+                                                {province.name}
+                                            </option>
+                                        ))}
+                                </select>
+                            </div>
+                            {provinceId !== "" && (
+                                <div className="">
+                                    <select
+                                        onChange={(e) =>
+                                            setData(
+                                                "tempat_lahir",
+                                                e.target.value
+                                            )
+                                        }
+                                        value={data.tempat_lahir}
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                                    >
+                                        <option value="">Default</option>
+                                        {regenciesData &&
+                                            regenciesData.map((reg) => (
+                                                <option
+                                                    key={reg.id}
+                                                    value={reg.name}
+                                                >
+                                                    {reg.name}
+                                                </option>
+                                            ))}
+                                    </select>
+
+                                    <InputError
+                                        message={errors.tempat_lahir}
+                                        className="mt-2"
+                                    />
+                                </div>
+                            )}
                         </div>
                         <div className="col-span-1 space-y-3">
+                            <div>
+                                <InputLabel
+                                    className="text-white"
+                                    htmlFor="tanggal_lahir"
+                                    value="tanggal_lahir"
+                                />
+
+                                <TextInput
+                                    id="tanggal_lahir"
+                                    type="date"
+                                    value={data.tanggal_lahir}
+                                    className="mt-1 block w-full"
+                                    autoComplete="tanggal_lahir"
+                                    onChange={(e) =>
+                                        setData("tanggal_lahir", e.target.value)
+                                    }
+                                    required
+                                />
+
+                                <InputError
+                                    message={errors.tanggal_lahir}
+                                    className="mt-2"
+                                />
+                            </div>
                             <div className="">
                                 <InputLabel value={"Pembimbing Dari Sekolah"} />
                                 <select

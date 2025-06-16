@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import TitlePage from "@/Components/TitlePage";
 import { Head, router, useForm, usePage } from "@inertiajs/react";
-import { Edit, Plus, Trash, X } from "lucide-react";
+import { Edit, Eye, Plus, Trash, X } from "lucide-react";
 import Pagination from "@/Components/Pagination";
-import Swal from "sweetalert2";
 import { Alert, AlertConfirm } from "@/Helpers/Alert";
 import Modal from "@/Components/Modal";
 import TitleModal from "@/Components/TitleModal";
@@ -15,11 +14,14 @@ import PrimaryButton from "@/Components/PrimaryButton";
 import Filter from "@/Components/Filter";
 import { OptionSorting } from "@/Components/Option";
 import Table from "@/Components/Table";
+import { toast, ToastContainer } from "react-toastify";
+import SecondaryButton from "@/Components/SecondaryButton";
 const Index = () => {
     const { siswas, auth, filters, jurusans, tahunAjarans, tempats } =
         usePage().props;
     const [errors, setErrors] = useState({});
     const [createNilaiModal, setCreateNilaiModal] = useState(null);
+    const [showModal, setShowModal] = useState(null);
     const [sortModal, setSortModal] = useState(false);
     const { data, setData, processing, reset } = useForm({
         user_id: "",
@@ -41,7 +43,7 @@ const Index = () => {
         const cb = () =>
             router.delete(route("siswa.destroy", id), {
                 onSuccess: (sccs) => {
-                    Alert(`${sccs.props.auth?.flash?.success}`);
+                    toast.success(`${sccs.props.auth.flash?.success}`);
                 },
             });
         AlertConfirm(text, "warning", cb);
@@ -67,16 +69,12 @@ const Index = () => {
                 router.post(route("nilai.store"), datas, {
                     onSuccess: (sccs) => {
                         if (sccs.props.auth.flash?.success) {
-                            Alert(`${sccs.props.auth.flash?.success}`);
+                            toast.success(`${sccs.props.auth.flash?.success}`);
                             reset();
                             setCreateNilaiModal(null);
                         } else {
                             setCreateNilaiModal(null);
-                            Alert(
-                                `${sccs.props.auth.flash?.error}`,
-                                "error",
-                                4000
-                            );
+                            toast.error(`${sccs.props.auth.flash?.error}`);
                         }
                     },
                     onError: (e) => {
@@ -110,16 +108,54 @@ const Index = () => {
             preserveScroll: true,
         });
     };
+    const handleExport = (e) => {
+        e.preventDefault();
+        AlertConfirm(
+            `Apakah anda yakin ingin export data siswa`,
+            "question",
+            () => {
+                window.location.href = route(
+                    "siswa.export",
+                    {
+                        search: dataSearch.search,
+                        sort_by: dataSearch.sort_by,
+                        sort_order: dataSearch.sort_order,
+                        jurusan: dataSearch.jurusan,
+                        tahunAjaran: dataSearch.tahunAjaran,
+                        tempat: dataSearch.tempat,
+                    },
+                    true
+                );
+                toast.success(`sukses meng export data siswa ke excel`);
+            },
+            "Ya, Export!"
+        );
+    };
+    const handleShow = (e, id) => {
+        e.preventDefault();
+        const filtered = siswas.data.find((s) => s.id === id);
+        if (filtered) {
+            setShowModal(filtered);
+        }
+    };
     return (
         <AuthenticatedLayout>
             <Head title="Siswa" />
+            <ToastContainer className={`w-96`} />
 
             <TitlePage
-                nameRoute={`${auth.role === "admin" ? "Tambah Siswa" : ""}`}
+                nameRoute={`${auth.role == "admin" ? "Tambah Siswa" : ""}`}
                 quote={"list siswa sistem rekap kegiatan pkl secara digital"}
                 title={`Data Siswa Milik ${auth.user.name}  `}
                 onClick={() => (window.location.href = route("siswa.create"))}
-            ></TitlePage>
+            >
+                <SecondaryButton
+                    className="bg-blue-700 text-white"
+                    onClick={(e) => handleExport(e)}
+                >
+                    Export
+                </SecondaryButton>
+            </TitlePage>
             {auth.role !== "siswa" && (
                 <Filter
                     sortModal={sortModal}
@@ -134,7 +170,9 @@ const Index = () => {
                         headers={[
                             { nama: "#" },
                             { nama: "Nama" },
+                            { nama: "Nisn" },
                             { nama: "Email" },
+                            { nama: "TTL" },
                             { nama: "Kontak" },
                             { nama: "Jurusan" },
                             { nama: "Tahun Ajaran" },
@@ -160,7 +198,15 @@ const Index = () => {
                                             {siswa.name}
                                         </td>
                                         <td className="px-4 text-center py-4">
+                                            {siswa.data_siswa?.nisn}
+                                        </td>
+                                        <td className="px-4 text-center py-4">
                                             {siswa.email}
+                                        </td>
+                                        <td className="px-4 text-center py-4">
+                                            {siswa?.tempat_lahir}
+                                            ,&nbsp;&nbsp;
+                                            {siswa?.tanggal_lahir}
                                         </td>
                                         <td className="px-4 text-center py-4">
                                             {siswa.kontak ?? "Belum Diisi"}
@@ -215,168 +261,383 @@ const Index = () => {
                                         </td>
 
                                         <td className="px-4 text-center py-4 ">
-                                            {auth.role === "admin" && (
-                                                <div className="flex justify-center gap-2">
-                                                    {" "}
-                                                    <div
-                                                        onClick={(e) =>
-                                                            (window.location.href =
-                                                                route(
-                                                                    "siswa.edit",
+                                            <div className="flex justify-center gap-2">
+                                                {auth.role === "admin" && (
+                                                    <>
+                                                        <div
+                                                            onClick={(e) =>
+                                                                (window.location.href =
+                                                                    route(
+                                                                        "siswa.edit",
+                                                                        siswa.id
+                                                                    ))
+                                                            }
+                                                            className="font-medium text-blue-600 hover:text-blue-500 cursor-pointer"
+                                                        >
+                                                            <Edit />
+                                                        </div>
+                                                        <div
+                                                            onClick={(e) =>
+                                                                handleDelete(
+                                                                    e,
+                                                                    siswa.id,
+                                                                    siswa.name
+                                                                )
+                                                            }
+                                                            className="font-medium text-red-800 hover:text-red-700 transition-all cursor-pointer"
+                                                        >
+                                                            <Trash />
+                                                        </div>
+                                                    </>
+                                                )}
+                                                {(auth.role ===
+                                                    "pembimbing_pt" ||
+                                                    auth.role ===
+                                                        "pembimbing_sekolah") && (
+                                                    <>
+                                                        <div
+                                                            onClick={(e) =>
+                                                                handleCreateNilai(
+                                                                    e,
                                                                     siswa.id
-                                                                ))
-                                                        }
-                                                        className="font-medium text-blue-600 hover:text-blue-500 cursor-pointer"
-                                                    >
-                                                        <Edit />
-                                                    </div>
-                                                    <div
-                                                        onClick={(e) =>
-                                                            handleDelete(
-                                                                e,
-                                                                siswa.id,
-                                                                siswa.name
-                                                            )
-                                                        }
-                                                        className="font-medium text-red-800 hover:text-red-700 transition-all cursor-pointer"
-                                                    >
-                                                        <Trash />
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {(auth.role === "pembimbing_pt" ||
-                                                auth.role ===
-                                                    "pembimbing_sekolah") && (
-                                                <>
-                                                    <div
-                                                        onClick={(e) =>
-                                                            handleCreateNilai(
-                                                                e,
+                                                                )
+                                                            }
+                                                            className="font-medium text-blue-600 hover:text-blue-500 cursor-pointer"
+                                                        >
+                                                            <Edit />
+                                                        </div>
+                                                        <Modal
+                                                            show={
+                                                                createNilaiModal?.id ===
                                                                 siswa.id
-                                                            )
-                                                        }
-                                                        className="font-medium text-blue-600 hover:text-blue-500 cursor-pointer"
-                                                    >
-                                                        <Edit />
-                                                    </div>
-                                                    <Modal
-                                                        show={
-                                                            createNilaiModal?.id ===
-                                                            siswa.id
-                                                        }
-                                                        onClose={() =>
-                                                            setCreateNilaiModal(
-                                                                null
-                                                            )
-                                                        }
-                                                    >
-                                                        <div className="relative bg-white rounded-lg shadow-sm ">
-                                                            <TitleModal
-                                                                icon={<X />}
-                                                                title={
-                                                                    "Nilai Akhir"
+                                                            }
+                                                            onClose={() =>
+                                                                setCreateNilaiModal(
+                                                                    null
+                                                                )
+                                                            }
+                                                        >
+                                                            <div className="relative bg-white rounded-lg shadow-sm ">
+                                                                <TitleModal
+                                                                    icon={<X />}
+                                                                    title={
+                                                                        "Nilai Akhir"
+                                                                    }
+                                                                    onClick={() =>
+                                                                        setCreateNilaiModal(
+                                                                            null
+                                                                        )
+                                                                    }
+                                                                ></TitleModal>
+                                                                <form
+                                                                    onSubmit={
+                                                                        handleStore
+                                                                    }
+                                                                    className="p-4 md:p-5"
+                                                                >
+                                                                    <div className="grid gap-4 mb-4 grid-cols-2">
+                                                                        <div className="col-span-2">
+                                                                            <InputLabel
+                                                                                value={
+                                                                                    "Nilai"
+                                                                                }
+                                                                            />
+                                                                            <TextInput
+                                                                                id="nilai"
+                                                                                type="number"
+                                                                                min="0"
+                                                                                max="100"
+                                                                                name="nilai"
+                                                                                value={
+                                                                                    data.nilai
+                                                                                }
+                                                                                className="mt-1 block w-full"
+                                                                                onChange={(
+                                                                                    e
+                                                                                ) =>
+                                                                                    setData(
+                                                                                        "nilai",
+                                                                                        e
+                                                                                            .target
+                                                                                            .value
+                                                                                    )
+                                                                                }
+                                                                            />
+                                                                            <InputError
+                                                                                message={
+                                                                                    errors.nilai
+                                                                                }
+                                                                                className="mt-2"
+                                                                            />
+                                                                        </div>
+                                                                        <div className="col-span-2">
+                                                                            <InputLabel
+                                                                                value={
+                                                                                    "keterangan"
+                                                                                }
+                                                                            />
+                                                                            <textarea
+                                                                                id="keterangan"
+                                                                                value={
+                                                                                    data.keterangan
+                                                                                }
+                                                                                onChange={(
+                                                                                    e
+                                                                                ) =>
+                                                                                    setData(
+                                                                                        "keterangan",
+                                                                                        e
+                                                                                            .target
+                                                                                            .value
+                                                                                    )
+                                                                                }
+                                                                                name="keterangan"
+                                                                                rows="2"
+                                                                                className="block p-2.5 w-full text-sm text-gray-900  rounded-lg shadow-sm border border-gray-300 focus:ring-primary-500 focus:border-primary-500 placeholder:text-gray-700 resize-none"
+                                                                                placeholder="deskripsikan keterangan anda.."
+                                                                            ></textarea>
+                                                                            <InputError
+                                                                                message={
+                                                                                    errors.keterangan
+                                                                                }
+                                                                                className="mt-2"
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <PrimaryButton
+                                                                        type="submit"
+                                                                        className="gap-2"
+                                                                        disabled={
+                                                                            processing
+                                                                        }
+                                                                    >
+                                                                        <Plus />
+                                                                        <span className="hidden sm:block">
+                                                                            {processing
+                                                                                ? "Proses..."
+                                                                                : "Tambahkan Nilai"}
+                                                                        </span>
+                                                                    </PrimaryButton>
+                                                                </form>
+                                                            </div>
+                                                        </Modal>
+                                                    </>
+                                                )}
+                                                <div
+                                                    onClick={(e) =>
+                                                        handleShow(e, siswa.id)
+                                                    }
+                                                    className="text-green-500 cursor-pointer"
+                                                >
+                                                    <Eye />
+                                                </div>
+                                                <Modal
+                                                    show={
+                                                        showModal?.id ===
+                                                        siswa.id
+                                                    }
+                                                    onClose={() =>
+                                                        setShowModal(null)
+                                                    }
+                                                >
+                                                    <div className="relative bg-white rounded-lg shadow-sm ">
+                                                        <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
+                                                            <h3 className="text-lg font-semibold text-gray-900 ">
+                                                                Data{" "}
+                                                                {
+                                                                    showModal?.name
                                                                 }
+                                                            </h3>
+                                                            <button
+                                                                type="button"
                                                                 onClick={() =>
-                                                                    setCreateNilaiModal(
+                                                                    setShowModal(
                                                                         null
                                                                     )
                                                                 }
-                                                            ></TitleModal>
-                                                            <form
-                                                                onSubmit={
-                                                                    handleStore
-                                                                }
-                                                                className="p-4 md:p-5"
+                                                                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
                                                             >
-                                                                <div className="grid gap-4 mb-4 grid-cols-2">
-                                                                    <div className="col-span-2">
-                                                                        <InputLabel
-                                                                            value={
-                                                                                "Nilai"
+                                                                <X />
+                                                                <span className="sr-only">
+                                                                    Close modal
+                                                                </span>
+                                                            </button>
+                                                        </div>
+                                                        <div>
+                                                            <div className="grid gap-2 mb-4 grid-cols-1 p-4">
+                                                                <h1 className="font-medium text-xl text-black">
+                                                                    Data Siswa
+                                                                </h1>
+                                                                <div className="table ">
+                                                                    <div className="table-row">
+                                                                        <div className="table-cell pr-4 pt-2">
+                                                                            <b>
+                                                                                Nama
+                                                                                Siswa
+                                                                            </b>
+                                                                        </div>
+                                                                        <div className="table-cell">
+                                                                            :{" "}
+                                                                            {
+                                                                                showModal?.name
                                                                             }
-                                                                        />
-                                                                        <TextInput
-                                                                            id="nilai"
-                                                                            type="number"
-                                                                            min="0"
-                                                                            max="100"
-                                                                            name="nilai"
-                                                                            value={
-                                                                                data.nilai
-                                                                            }
-                                                                            className="mt-1 block w-full"
-                                                                            onChange={(
-                                                                                e
-                                                                            ) =>
-                                                                                setData(
-                                                                                    "nilai",
-                                                                                    e
-                                                                                        .target
-                                                                                        .value
-                                                                                )
-                                                                            }
-                                                                        />
-                                                                        <InputError
-                                                                            message={
-                                                                                errors.nilai
-                                                                            }
-                                                                            className="mt-2"
-                                                                        />
+                                                                        </div>
                                                                     </div>
-                                                                    <div className="col-span-2">
-                                                                        <InputLabel
-                                                                            value={
-                                                                                "keterangan"
+                                                                    <div className="table-row">
+                                                                        <div className="table-cell pr-4 pt-2">
+                                                                            <b>
+                                                                                Tempat,
+                                                                                Tanggal
+                                                                                Lahir
+                                                                            </b>
+                                                                        </div>
+                                                                        <div className="table-cell">
+                                                                            :{" "}
+                                                                            {
+                                                                                showModal?.tempat_lahir
                                                                             }
-                                                                        />
-                                                                        <textarea
-                                                                            id="keterangan"
-                                                                            value={
-                                                                                data.keterangan
+                                                                            ,&nbsp;&nbsp;
+                                                                            {
+                                                                                showModal?.tanggal_lahir
                                                                             }
-                                                                            onChange={(
-                                                                                e
-                                                                            ) =>
-                                                                                setData(
-                                                                                    "keterangan",
-                                                                                    e
-                                                                                        .target
-                                                                                        .value
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="table-row">
+                                                                        <div className="table-cell pr-4 pt-2">
+                                                                            <b>
+                                                                                Kontak
+                                                                            </b>
+                                                                        </div>
+                                                                        <div className="table-cell">
+                                                                            :{" "}
+                                                                            {
+                                                                                showModal?.kontak
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="table-row">
+                                                                        <div className="table-cell pr-4 pt-2">
+                                                                            <b>
+                                                                                Jurusan
+                                                                            </b>
+                                                                        </div>
+                                                                        <div className="table-cell">
+                                                                            :{" "}
+                                                                            {
+                                                                                showModal
+                                                                                    ?.jurusan
+                                                                                    ?.nama
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="table-row">
+                                                                        <div className="table-cell pr-4 pt-2">
+                                                                            <b>
+                                                                                Tahun
+                                                                                Ajaran
+                                                                            </b>
+                                                                        </div>
+                                                                        <div className="table-cell">
+                                                                            :{" "}
+                                                                            {
+                                                                                showModal
+                                                                                    ?.tahun_ajaran
+                                                                                    ?.tahun
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="table-row">
+                                                                        <div className="table-cell pr-4 pt-2">
+                                                                            <b>
+                                                                                Tempat
+                                                                                Pkl
+                                                                            </b>
+                                                                        </div>
+                                                                        <div className="table-cell">
+                                                                            :{" "}
+                                                                            {
+                                                                                showModal
+                                                                                    ?.tempat
+                                                                                    ?.nama
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="table-row">
+                                                                        <div className="table-cell pr-4 pt-2">
+                                                                            <b>
+                                                                                Pembimbing
+                                                                                Pkl
+                                                                            </b>
+                                                                        </div>
+                                                                        <div className="table-cell">
+                                                                            :{" "}
+                                                                            {
+                                                                                showModal
+                                                                                    ?.tempat
+                                                                                    ?.user
+                                                                                    ?.name
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="table-row">
+                                                                        <div className="table-cell pr-4 pt-2">
+                                                                            <b>
+                                                                                Pembimbing
+                                                                                Sekolah
+                                                                            </b>
+                                                                        </div>
+                                                                        <div className="table-cell">
+                                                                            :{" "}
+                                                                            {
+                                                                                showModal
+                                                                                    ?.pb_skl
+                                                                                    ?.name
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="table-row">
+                                                                        <div className="table-cell pr-4 pt-2">
+                                                                            <b>
+                                                                                Nilai
+                                                                            </b>
+                                                                        </div>
+                                                                        <div className="table-cell">
+                                                                            :{" "}
+                                                                            {showModal?.nilai
+                                                                                ?.map(
+                                                                                    (
+                                                                                        n
+                                                                                    ) =>
+                                                                                        n.nilai
                                                                                 )
-                                                                            }
-                                                                            name="keterangan"
-                                                                            rows="2"
-                                                                            className="block p-2.5 w-full text-sm text-gray-900  rounded-lg shadow-sm border border-gray-300 focus:ring-primary-500 focus:border-primary-500 placeholder:text-gray-700 resize-none"
-                                                                            placeholder="deskripsikan keterangan anda.."
-                                                                        ></textarea>
-                                                                        <InputError
-                                                                            message={
-                                                                                errors.keterangan
-                                                                            }
-                                                                            className="mt-2"
-                                                                        />
+                                                                                .join(
+                                                                                    " ,"
+                                                                                )}
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-
-                                                                <PrimaryButton
-                                                                    type="submit"
-                                                                    className="gap-2"
-                                                                    disabled={
-                                                                        processing
-                                                                    }
-                                                                >
-                                                                    <Plus />
-                                                                    <span className="hidden sm:block">
-                                                                        {processing
-                                                                            ? "Proses..."
-                                                                            : "Tambahkan Nilai"}
-                                                                    </span>
-                                                                </PrimaryButton>
-                                                            </form>
+                                                                {showModal?.id && (
+                                                                    <a
+                                                                        className="flex justify-center items-center rounded-md border border-gray-300 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-100 bg-gray-900 shadow-sm transition duration-150 ease-in-out hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-25 gap-2 cursor-pointer mt-4"
+                                                                        href={route(
+                                                                            "export_siswa",
+                                                                            showModal?.id
+                                                                        )}
+                                                                    >
+                                                                        <span className="block">
+                                                                            Export
+                                                                            to
+                                                                            Pdf
+                                                                        </span>
+                                                                        <Plus />
+                                                                    </a>
+                                                                )}
+                                                            </div>
                                                         </div>
-                                                    </Modal>
-                                                </>
-                                            )}
+                                                    </div>
+                                                </Modal>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))

@@ -64,6 +64,8 @@ class RegisteredUserController extends Controller
     {
         $request->validated();
 
+
+
         $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
         'secret' => env('VITE_SECRET_KEY'),
         'response' => $request->input('g-recaptcha-response'),
@@ -83,12 +85,14 @@ class RegisteredUserController extends Controller
             'kontak' => $request->kontak,
             'tahunAjaran_id' => $request->tahunAjaran_id,
             'email' => $request->email,
+            'tempat_lahir' => $request->tempat_lahir,
+            'tanggal_lahir' => $request->tanggal_lahir,
             'password' => Hash::make($request->password),
         ]);
         $user->assignRole("siswa");
 
         event(new Registered($user));
-
+        
         return redirect()->route('login')->with("success","Sukses Aktivasi dan Registrasi Akun Baru");
     }
 }

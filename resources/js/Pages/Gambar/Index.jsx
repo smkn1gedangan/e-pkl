@@ -14,6 +14,7 @@ import Swal from "sweetalert2";
 import { Alert, AlertConfirm } from "@/Helpers/Alert";
 import Filter from "@/Components/Filter";
 import Table from "@/Components/Table";
+import { toast, ToastContainer } from "react-toastify";
 const Index = () => {
     const { gambars } = usePage().props;
     const [createModal, setCreateModal] = useState(false);
@@ -29,7 +30,7 @@ const Index = () => {
         const cb = () =>
             router.delete(route("gambar.destroy", id), {
                 onSuccess: (sccs) => {
-                    Alert(`${sccs.props.auth.flash?.success}`);
+                    toast.success(`${sccs.props.auth.flash?.success}`);
                 },
             });
         AlertConfirm(text, "warning", cb);
@@ -39,11 +40,11 @@ const Index = () => {
         post(route("gambar.store"), {
             onSuccess: (sccs) => {
                 if (sccs.props.auth.flash?.success) {
-                    Alert(`${sccs.props.auth.flash?.success}`);
+                    toast.success(`${sccs.props.auth.flash?.success}`);
                     reset();
                     setCreateModal(false);
                 } else {
-                    Alert(`${sccs.props.auth.flash?.error}`, "error", 4000);
+                    toast.success(`${sccs.props.auth.flash?.error}`);
                     setCreateModal(false);
                 }
             },
@@ -69,22 +70,21 @@ const Index = () => {
                 forceFormData: true,
                 onSuccess: (sccs) => {
                     if (sccs.props.auth.flash?.success) {
-                        Alert(`${sccs.props.auth.flash?.success}`);
+                        toast.success(`${sccs.props.auth.flash?.success}`);
                         reset();
                         seteditModal(null);
                     } else {
-                        Alert(`${sccs.props.auth.flash?.error}`, "error", 4000);
+                        toast.success(`${sccs.props.auth.flash?.error}`);
                         seteditModal(null);
                     }
                 },
-           
             }
         );
     };
     return (
         <AuthenticatedLayout>
             <Head title="Slider" />
-
+            <ToastContainer className={`w-96`} />
             <TitlePage
                 nameRoute={"Tambah Gambar"}
                 quote={

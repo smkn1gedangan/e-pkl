@@ -28,6 +28,8 @@ class UserRequest extends FormRequest
             'tahunAjaran_id' => 'required',
             'g-recaptcha-response' => 'required',
             'kontak' => 'required|regex:/^0[0-9]{9,12}$/',
+            'tempat_lahir' => 'required',
+            'tanggal_lahir' => 'required',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ];
@@ -36,6 +38,8 @@ class UserRequest extends FormRequest
         return [
             "nisn.required"=>"Nama Wajib Diisi",
             "jurusan_id.required"=>"Jurusan Wajib Dipilih",
+            "tempat_lahir.required"=>"Tempat Lahir Wajib Dipilih",
+            "tanggal_lahir.required"=>"Tanggal Lahir Wajib Diisi",
             "tahunAjaran_id.required"=>"tahun Ajaran Wajib Dipilih",
             "kontak.regex"=>"Kontak Wajib Diisi 10 - 13 Karakter Dan Diawali Angka 0",
             "email.required"=>"Email Wajib Diisi",

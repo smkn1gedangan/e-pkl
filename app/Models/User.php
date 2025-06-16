@@ -30,6 +30,8 @@ class User extends Authenticatable
         'tempat_id',
         'pembimbing_pt_id',
         'pembimbing_sekolah_id',
+        "tempat_lahir",
+        "tanggal_lahir",
         'kontak',
         'password',
     ];

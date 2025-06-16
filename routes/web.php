@@ -23,6 +23,12 @@ use Inertia\Inertia;
 Route::get('/', [FeController::class,"welcome"])->name("welcome");
 
 
+Route::get('data_siswa/export/', [ImportController::class, 'exportDataSiswa'])->name('data_siswa.export')->middleware(["role:admin"]);
+
+Route::get('siswa/export/', [ImportController::class, 'exportSiswa'])->name('siswa.export')->middleware(["role:admin|pembimbing_pt|pembimbing|sekolah"]);
+
+Route::get('siswa/export/{id}', [ImportController::class, 'exportSiswaToPdf'])->name('export_siswa');
+
 Route::middleware(['auth', 'verified'])->group(function(){
     Route::get('/dashboard', [DashboardController::class,"index"])->middleware("role:admin|pembimbing_sekolah|pembimbing_pt|siswa")->name("dashboard");
     Route::get('/dokumentasi', function(){
@@ -30,7 +36,11 @@ Route::middleware(['auth', 'verified'])->group(function(){
     })->middleware("role:admin|pembimbing_sekolah|pembimbing_pt|siswa")->name("dokumentasi");
     
     Route::resource("data_siswa",DataSiswaController::class)->middleware(["role:admin"]);
+    
+
     Route::post('data_siswa/import', [ImportController::class, 'importRegisterUser'])->name('data_siswa.import')->middleware(["role:admin"]);
+
+
     Route::resource("jurusan",JurusanController::class)->middleware(["role:admin"]);
     Route::resource("gambar",GambarController::class)->middleware(["role:admin"]);
     Route::resource("tahunAjaran",TahunAjaranController::class)->middleware(["role:admin"]);

@@ -15,6 +15,7 @@ import Filter from "@/Components/Filter";
 import Table from "@/Components/Table";
 import { OptionSorting } from "@/Components/Option";
 import Textarea from "@/Components/Textarea";
+import { toast, ToastContainer, Zoom } from "react-toastify";
 const Index = () => {
     const { jurnals, auth, user, filters } = usePage().props;
     const [createModal, setCreateModal] = useState(false);
@@ -41,7 +42,7 @@ const Index = () => {
         const cb = () =>
             router.delete(route("rekap.destroy", id), {
                 onSuccess: (sccs) => {
-                    Alert(`${sccs.props.auth.flash?.success}`);
+                    toast.success(`${sccs.props.auth.flash?.success}`);
                 },
             });
         AlertConfirm(text, "warning", cb);
@@ -51,12 +52,12 @@ const Index = () => {
         post(route("rekap.store"), {
             onSuccess: (sccs) => {
                 if (sccs.props.auth.flash.success) {
-                    Alert(`${sccs.props.auth.flash.success}`);
+                    toast.success(`${sccs.props.auth.flash?.success}`);
                     setCreateModal(false);
                     setImg(null);
                     reset();
                 } else {
-                    Alert(`${sccs.props.auth.flash.error}`, "error", 4000);
+                    toast.error(`${sccs.props.auth.flash?.error}`);
                     setCreateModal(false);
                 }
             },
@@ -103,6 +104,7 @@ const Index = () => {
     return (
         <AuthenticatedLayout>
             <Head title="Jurnal" />
+            <ToastContainer transition={Zoom} className={`w-96`} />
             <TitlePage
                 nameRoute={`${auth.role === "siswa" ? "Tambah Jurnal" : ""}`}
                 quote={`${
@@ -249,7 +251,7 @@ const Index = () => {
                                                     }
                                                     className="flex justify-center text-red-700"
                                                 >
-                                                    < X />
+                                                    <X />
                                                 </div>
                                             )}
                                         </td>
@@ -423,7 +425,9 @@ const Index = () => {
                                 >
                                     <option value="">Default</option>
                                     <option value={"true"}>Dilihat</option>
-                                    <option value={"false"}>Belum Dilihat</option>
+                                    <option value={"false"}>
+                                        Belum Dilihat
+                                    </option>
                                 </select>
                             </div>
                         </div>

@@ -16,6 +16,7 @@ import SecondaryButton from "@/Components/SecondaryButton";
 import InputError from "@/Components/InputError";
 import TextInput from "@/Components/TextInput";
 import { useTypeImportSiswa } from "@/state/Zustand";
+import { toast, ToastContainer } from "react-toastify";
 const Index = () => {
     const { siswas, auth, filters, dataSiswas } = usePage().props;
     const [createModal, setCreateModal] = useState(false);
@@ -44,9 +45,9 @@ const Index = () => {
             router.delete(route("data_siswa.destroy", id), {
                 onSuccess: (sccs) => {
                     if (sccs.props.auth?.flash?.success) {
-                        Alert(`${sccs.props.auth?.flash?.success}`);
+                        toast.success(`${sccs.props.auth.flash?.success}`);
                     } else {
-                        Alert(`${sccs.props.auth.flash?.error}`, "error", 4000);
+                        toast.error(`${sccs.props.auth.flash?.error}`);
                     }
                 },
             });
@@ -70,11 +71,11 @@ const Index = () => {
         put(route("data_siswa.update", editModal.id), {
             onSuccess: (sccs) => {
                 if (sccs.props.auth.flash?.success) {
-                    Alert(`${sccs.props.auth.flash?.success}`);
+                    toast.success(`${sccs.props.auth.flash?.success}`);
                     reset();
                     seteditModal(null);
                 } else {
-                    Alert(`${sccs.props.auth.flash?.error}`, "error", 4000);
+                    toast.error(`${sccs.props.auth.flash?.error}`);
 
                     seteditModal(null);
                 }
@@ -102,7 +103,28 @@ const Index = () => {
             preserveScroll: true,
         });
     };
-
+    const handleExport = (e) => {
+        e.preventDefault();
+        AlertConfirm(
+            `Apakah anda yakin ingin export data siswa`,
+            "question",
+            () => {
+                window.location.href = route(
+                    "data_siswa.export",
+                    {
+                        search: dataSearch.search,
+                        sort_by: dataSearch.sort_by,
+                        sort_order: dataSearch.sort_order,
+                        kode: dataSearch.kode,
+                        aktivasi: dataSearch.aktivasi,
+                    },
+                    true
+                );
+                toast.success(`sukses meng export data ke excel`);
+            },
+            "Ya, Export!"
+        );
+    };
     const handleStore = (e) => {
         e.preventDefault();
         if (type === "import") {
@@ -110,11 +132,11 @@ const Index = () => {
                 forceFormData: true,
                 onSuccess: (sccs) => {
                     if (sccs.props.auth.flash.success) {
-                        Alert(`${sccs.props.auth.flash.success}`);
+                        toast.success(`${sccs.props.auth.flash?.success}`);
                         setCreateModal(false);
                         reset();
                     } else {
-                        Alert(`${sccs.props.auth.flash.error}`, "error", 4000);
+                        toast.error(`${sccs.props.auth.flash?.error}`);
                         setCreateModal(false);
                     }
                 },
@@ -122,13 +144,12 @@ const Index = () => {
         } else {
             post(route("data_siswa.store"), {
                 onSuccess: (sccs) => {
-                  
                     if (sccs.props.auth.flash.success) {
-                        Alert(`${sccs.props.auth.flash.success}`);
+                        toast.success(`${sccs.props.auth.flash?.success}`);
                         setCreateModal(false);
                         reset();
                     } else {
-                        Alert(`${sccs.props.auth.flash.error}`, "error", 4000);
+                        toast.error(`${sccs.props.auth.flash?.error}`);
                         setCreateModal(false);
                     }
                 },
@@ -138,13 +159,20 @@ const Index = () => {
     return (
         <AuthenticatedLayout>
             <Head title="User Terdata" />
-
+            <ToastContainer className={`w-96`} />
             <TitlePage
                 nameRoute={`Tambah Siswa`}
                 quote={"List User yang Terdata Saat Ini"}
                 title={`User`}
                 onClick={() => setCreateModal(!createModal)}
-            ></TitlePage>
+            >
+                <SecondaryButton
+                    className="bg-blue-700 text-white"
+                    onClick={(e) => handleExport(e)}
+                >
+                    Export
+                </SecondaryButton>
+            </TitlePage>
             <Filter
                 sortModal={sortModal}
                 value={dataSearch.search}
@@ -168,7 +196,7 @@ const Index = () => {
                                         key={index}
                                         className={`${
                                             siswa.isActive
-                                                ? "bg-blue-700 text-white"
+                                                ? "bg-blue-700 text-white border     border-white"
                                                 : "bg-white border-b  border-gray-200"
                                         }`}
                                     >

@@ -6,6 +6,7 @@ import Pagination from "@/Components/Pagination";
 import { Alert, AlertConfirm } from "@/Helpers/Alert";
 import Table from "@/Components/Table";
 import TitlePage from "@/Components/TitlePage";
+import { toast, ToastContainer } from "react-toastify";
 const Index = () => {
     const { pengajuanTempats } = usePage().props;
     const handleDelete = (e, id, nama) => {
@@ -14,7 +15,7 @@ const Index = () => {
         const cb = () =>
             router.delete(route("pengajuanTempat.destroy", id), {
                 onSuccess: (sccs) => {
-                    Alert(`${sccs.props.auth.flash?.success}`);
+                    toast.success(`${sccs.props.auth.flash?.success}`);
                 },
             });
         AlertConfirm(text, "warning", cb, "Ya , Tolak!");
@@ -36,18 +37,11 @@ const Index = () => {
                         router.put(route("pengajuanTempat.update", id), datas, {
                             onSuccess: (sccs) => {
                                 if (sccs.props.auth.flash?.success) {
-                                    Alert(`${sccs.props.auth.flash?.success}`);
+                                    toast.success(`${sccs.props.auth.flash?.success}`);
                                 } else {
-                                    Alert(
-                                        `${sccs.props.auth.flash?.error}`,
-                                        "error",
-                                        4000
-                                    );
+                                    toast.error(`${sccs.props.auth.flash?.error}`);
                                 }
                                 resolve();
-                            },
-                            onError: (e) => {
-                                console.log(e);
                             },
                         });
                     });
@@ -60,6 +54,8 @@ const Index = () => {
     return (
         <AuthenticatedLayout>
             <Head title="Pengajuan tempat" />
+                        <ToastContainer className={`w-96`} />
+
             <TitlePage
                 quote={"list tempat yang diajukan oleh siswa "}
                 title={"Pengajuan Tempat"}

@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\DataSiswaExport;
+use App\Exports\siswaExport;
 use App\Imports\DataSiswaImport;
+use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -25,5 +29,22 @@ class ImportController extends Controller
                 ]);
             }
         return redirect()->back()->with('success', 'Data siswa berhasil diimport!');
+    }
+
+    public function exportDataSiswa(Request $request) {
+        return Excel::download(new DataSiswaExport($request), 'data-siswa.xlsx');
+    }
+    
+    public function exportSiswa(Request $request) {
+        return Excel::download(new siswaExport($request), 'siswa.xlsx');
+    }
+
+    public function exportSiswaToPdf($id)  {
+        $siswa = User::with(["jurusan","tahunAjaran","pbSkl","tempat.user","nilai.pembimbing","dataSiswa"])->findOrFail($id);
+
+        // view PDF dengan data $siswa
+        $pdf = Pdf::loadView('pdf.siswa', compact('siswa'));
+
+        return $pdf->download('siswa-' . $siswa->name . '.pdf');
     }
 }

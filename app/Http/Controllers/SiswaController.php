@@ -30,7 +30,7 @@ class SiswaController extends Controller
         ];
         $sortBy = $request->input('sort_by');
         $sortOrder = $request->input('sort_order', 'asc');
-        $datas = User::query()->with(["jurusan","tahunAjaran","pbSkl","tempat.user","nilai.pembimbing"])
+        $datas = User::query()->with(["jurusan","tahunAjaran","pbSkl","tempat.user","nilai.pembimbing","dataSiswa"])
         ->when(Auth::user()->getRoleNames()->first() === "pembimbing_sekolah",function($query){
             $query->where("pembimbing_sekolah_id","=",Auth::user()->id);
         })
@@ -128,6 +128,8 @@ class SiswaController extends Controller
         $siswa = User::create([
             "name"=> $dataSiswa->nama,
             "nisn_id"=> $dataSiswa->id,
+            'tempat_lahir' => $validate["tempat_lahir"],
+            'tanggal_lahir' => $validate["tanggal_lahir"],
             "email"=> $validate["email"],
             "jurusan_id"=> $validate["jurusan_id"],
             "tahunAjaran_id"=> $validate["tahunAjaran_id"],

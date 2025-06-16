@@ -26,6 +26,8 @@ class SiswaRequest extends FormRequest
             "nisn"=>['required',Rule::exists("datasiswas","nisn")],
             "email"=>['required', 'string', 'email',Rule::unique("users","email")->ignore($this->route("siswa"))],
             "jurusan_id"=>['required'],
+            "tempat_lahir"=>['required'],
+            "tanggal_lahir"=>['required'],
             "tahunAjaran_id"=>['nullable'],
             "pembimbing_sekolah_id"=>['nullable'],
             "tempat_id"=>['nullable'],
@@ -37,6 +39,8 @@ class SiswaRequest extends FormRequest
         return [
             "nisn.required"=>"Nisn Wajib Diisi",
             "email.required"=>"email Wajib Diisi",
+            "tempat_lahir.required"=>"Tempat Lahir Wajib dipilih",
+            "tanggal_lahir.required"=>"Tempat Lahir Wajib Diisi",
             "email.unique"=>"Email Telah Terdaftar",
             "kontak.required"=>"Kontak Wajib Diisi",
             "kontak.regex"=>"Kontak Wajib 10 - 13 Karakter Dan Diawali Angka 0",

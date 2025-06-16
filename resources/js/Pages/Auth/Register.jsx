@@ -5,16 +5,22 @@ import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
 import { Alert } from "@/Helpers/Alert";
 import GuestLayout from "@/Layouts/GuestLayout";
+import { useGetProvince, useGetRegencies } from "@/services/api_call";
 import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import { useEffect, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 
 export default function Register() {
+    const { data: provinceData } = useGetProvince();
+    const [provinceId, setProvinceId] = useState("35");
+    const { data: regenciesData } = useGetRegencies(provinceId);
     const { jurusans, tahunAjarans, auth, siswa } = usePage().props;
     const { data, setData, post, processing, errors, reset } = useForm({
         nisn: siswa?.nisn ?? "",
         email: "",
         kontak: "",
+        tempat_lahir: "",
+        tanggal_lahir: "",
         jurusan_id: "",
         tahunAjaran_id: "",
         "g-recaptcha-response": "",
@@ -28,7 +34,7 @@ export default function Register() {
         post(route("register.store"), {
             onSuccess: (sccs) => {
                 if (sccs.props.auth.flash?.success) {
-                    Alert(`${sccs.props.auth.flash?.success}`,"success",5000);
+                    Alert(`${sccs.props.auth.flash?.success}`, "success", 5000);
                     reset();
                 } else {
                     Alert(`${sccs.props.auth.flash?.error}`, "error", 4000);
@@ -70,7 +76,10 @@ export default function Register() {
                     <form className="grid grid-cols-2 gap-2" onSubmit={submit}>
                         <div className="col-span-2 md:col-span-1  space-y-4">
                             <div className="">
-                                <InputLabel className="text-white" value={"Nama"} />
+                                <InputLabel
+                                    className="text-white"
+                                    value={"Nama"}
+                                />
                                 <select
                                     onChange={(e) =>
                                         setData("nisn", e.target.value)
@@ -78,7 +87,11 @@ export default function Register() {
                                     value={data.nisn}
                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-1"
                                 >
-                                    <option disabled key={siswa.id} value={siswa.nisn}>
+                                    <option
+                                        disabled
+                                        key={siswa.id}
+                                        value={siswa.nisn}
+                                    >
                                         {siswa.nama} | {siswa.nisn}
                                     </option>
                                 </select>
@@ -114,6 +127,7 @@ export default function Register() {
                                     className="mt-2"
                                 />
                             </div>
+
                             <div>
                                 <InputLabel
                                     className="text-white"
@@ -170,8 +184,85 @@ export default function Register() {
                                     className="mt-2 bg-red-50 text-center p-1 rounded-md inline-block"
                                 />
                             </div>
+                            <div>
+                                <InputLabel
+                                    className="text-white"
+                                    htmlFor="tanggal_lahir"
+                                    value="tanggal_lahir"
+                                />
+
+                                <TextInput
+                                    id="tanggal_lahir"
+                                    type="date"
+                                    value={data.tanggal_lahir}
+                                    className="mt-1 block w-full"
+                                    autoComplete="tanggal_lahir"
+                                    onChange={(e) =>
+                                        setData("tanggal_lahir", e.target.value)
+                                    }
+                                    required
+                                />
+
+                                <InputError
+                                    message={errors.tanggal_lahir}
+                                    className="mt-2"
+                                />
+                            </div>
                         </div>
                         <div className="col-span-2 md:col-span-1 space-y-4">
+                            <div className="">
+                                <InputLabel
+                                    className="text-white"
+                                    value={"Tempat Lahir"}
+                                />
+                                <select
+                                    onChange={(e) =>
+                                        setProvinceId(e.target.value)
+                                    }
+                                    value={provinceId}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-1 "
+                                >
+                                    {provinceData &&
+                                        provinceData.map((province) => (
+                                            <option
+                                                key={province.id}
+                                                value={province.id}
+                                            >
+                                                {province.name}
+                                            </option>
+                                        ))}
+                                </select>
+                            </div>
+                            {provinceId !== "" && (
+                                <div className="">
+                                    <select
+                                        onChange={(e) =>
+                                            setData(
+                                                "tempat_lahir",
+                                                e.target.value
+                                            )
+                                        }
+                                        value={data.tempat_lahir}
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
+                                    >
+                                        <option value="">Default</option>
+                                        {regenciesData &&
+                                            regenciesData.map((reg) => (
+                                                <option
+                                                    key={reg.id}
+                                                    value={reg.name}
+                                                >
+                                                    {reg.name}
+                                                </option>
+                                            ))}
+                                    </select>
+
+                                    <InputError
+                                        message={errors.tempat_lahir}
+                                        className="mt-2"
+                                    />
+                                </div>
+                            )}
                             <div>
                                 <InputLabel
                                     className="text-white"
@@ -280,7 +371,7 @@ export default function Register() {
                                     />
                                     <span className="text-slate-900 ms-2 text-sm">
                                         Saya Benar Benar Yakin Bahwa Saya Adalah
-                                        Siswa / Siswi Smkn 1 Gedangan
+                                        Siswa / Siswi Smkn 1 Gedangan Dan Data Yang Saya Kirim Benar Benar Data Sesungguhnya
                                     </span>
                                 </label>
                             </div>

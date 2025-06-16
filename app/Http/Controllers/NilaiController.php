@@ -39,10 +39,10 @@ class NilaiController extends Controller
             "keterangan.required"=>"Keterangan Wajib Diisi Minimal 1 Kata",
             "keterangan.max"=>"Keterangan Maksimal 200 Kata",
         ]);
-        $nilaiId = Nilai::where("user_id","=",$validate["user_id"])->where("pembimbing_id","=",$validate["pembimbing_id"])->first();
+        $nilaiId = Nilai::with("siswa")->where("user_id","=",$validate["user_id"])->where("pembimbing_id","=",$validate["pembimbing_id"])->first();
 
         if($nilaiId){
-           return redirect()->route("siswa.index")->with("error","Anda Telah Menambah Nilai Untuk Siswa Ini");
+           return redirect()->route("siswa.index")->with("error","Anda Telah Menambah Nilai Untuk {$nilaiId->siswa->name}");
         }
 
         Nilai::create($validate);

@@ -13,6 +13,7 @@ import TitleModal from "@/Components/TitleModal";
 import Swal from "sweetalert2";
 import { Alert, AlertConfirm } from "@/Helpers/Alert";
 import Table from "@/Components/Table";
+import { toast, ToastContainer } from "react-toastify";
 const Index = () => {
     const { tahunAjarans } = usePage().props;
     const [createModal, setCreateModal] = useState(false);
@@ -26,7 +27,7 @@ const Index = () => {
         const cb = () =>
             router.delete(route("tahunAjaran.destroy", id), {
                 onSuccess: (sccs) => {
-                    Alert(`${sccs.props.auth.flash?.success}`);
+                    toast.success(`${sccs.props.auth.flash?.success}`);
                 },
             });
         AlertConfirm(text, "warning", cb);
@@ -36,11 +37,11 @@ const Index = () => {
         post(route("tahunAjaran.store"), {
             onSuccess: (sccs) => {
                 if (sccs.props.auth.flash?.success) {
-                    Alert(`${sccs.props.auth.flash?.success}`);
+                    toast.success(`${sccs.props.auth.flash?.success}`);
                     reset();
                     setCreateModal(false);
                 } else {
-                    Alert(`${sccs.props.auth.flash?.error}`, "error", 4000);
+                    toast.error(`${sccs.props.auth.flash?.error}`);
 
                     setCreateModal(false);
                 }
@@ -61,11 +62,11 @@ const Index = () => {
         put(route("tahunAjaran.update", editModal.id), {
             onSuccess: (sccs) => {
                 if (sccs.props.auth.flash?.success) {
-                    Alert(`${sccs.props.auth.flash?.success}`);
+                    toast.success(`${sccs.props.auth.flash?.success}`);
                     reset();
                     seteditModal(null);
                 } else {
-                    Alert(`${sccs.props.auth.flash?.error}`, "error", 4000);
+                    toast.error(`${sccs.props.auth.flash?.error}`);
                     seteditModal(null);
                 }
             },
@@ -74,6 +75,7 @@ const Index = () => {
     return (
         <AuthenticatedLayout>
             <Head title="Tahun Ajaran" />
+            <ToastContainer className={`w-96`} />
 
             <TitlePage
                 nameRoute={"Tambah Tahun Ajaran"}

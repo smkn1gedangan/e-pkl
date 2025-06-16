@@ -12,6 +12,7 @@ import TitleModal from "@/Components/TitleModal";
 import InputLabel from "@/Components/InputLabel";
 import Table from "@/Components/Table";
 import { OptionSorting } from "@/Components/Option";
+import { toast, ToastContainer } from "react-toastify";
 const Index = () => {
     const { pembimbings, filters, jurusans, tahunAjarans } = usePage().props;
     const [sortModal, setSortModal] = useState(false);
@@ -28,7 +29,7 @@ const Index = () => {
         const cb = () =>
             router.delete(route("pembimbing.destroy", id), {
                 onSuccess: (sccs) => {
-                    Alert(`${sccs.props.auth?.flash?.success}`);
+                    toast.success(`${sccs.props.auth.flash?.success}`);
                 },
             });
         AlertConfirm(text, "warning", cb);
@@ -57,6 +58,7 @@ const Index = () => {
     return (
         <AuthenticatedLayout>
             <Head title="Pembimbing" />
+            <ToastContainer className={`w-96`} />
 
             <TitlePage
                 nameRoute={"Tambah Pembimbing"}

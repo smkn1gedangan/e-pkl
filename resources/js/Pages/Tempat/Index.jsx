@@ -15,6 +15,7 @@ import { Alert, AlertConfirm } from "@/Helpers/Alert";
 import Filter from "@/Components/Filter";
 import { OptionSorting } from "@/Components/Option";
 import Table from "@/Components/Table";
+import { toast, ToastContainer } from "react-toastify";
 const Index = () => {
     const { tempats, pembimbings, flash, filters } = usePage().props;
     const [createModal, setCreateModal] = useState(false);
@@ -39,7 +40,7 @@ const Index = () => {
         const cb = () =>
             router.delete(route("tempat.destroy", id), {
                 onSuccess: (sccs) => {
-                    Alert(`${sccs.props.auth.flash?.success}`);
+                    toast.success(`${sccs.props.auth.flash?.success}`);
                 },
             });
         AlertConfirm(text, "warning", cb);
@@ -50,9 +51,9 @@ const Index = () => {
             onSuccess: (sccs) => {
                 if (sccs.props.auth?.flash?.success) {
                     setCreateModal(false);
-                    Alert(`${sccs.props.auth?.flash?.success}`);
+                    toast.success(`${sccs.props.auth.flash?.success}`);
                 } else {
-                    Alert(`${sccs.props.auth?.flash?.error}`, "error", 4000);
+                    toast.error(`${sccs.props.auth.flash?.error}`);
                     setCreateModal(false);
                     reset();
                 }
@@ -68,7 +69,7 @@ const Index = () => {
         setError("nama", "");
         const filtered = tempats.data.find((tempat) => tempat.id === id);
         if (filtered) {
-            console.log(filtered)
+            console.log(filtered);
             setData("nama", filtered.nama);
             setData("kontak", filtered.kontak);
             setData("lokasi", filtered.lokasi);
@@ -81,13 +82,14 @@ const Index = () => {
         e.preventDefault();
         put(route("tempat.update", editModal.id), {
             onSuccess: (sccs) => {
-                if (sccs.props.auth?.flash?.error) {
-                    seteditModal(null);
-                    Alert(`${sccs.props.auth?.flash?.error}`, "error", 4000);
-                } else {
-                    Alert(`${sccs.props.auth?.flash?.success}`);
+                if (sccs.props.auth?.flash?.success) {
+                    toast.success(`${sccs.props.auth.flash?.success}`);
+
                     seteditModal(null);
                     reset();
+                } else {
+                    seteditModal(null);
+                    toast.error(`${sccs.props.auth.flash?.error}`);
                 }
             },
         });
@@ -114,6 +116,7 @@ const Index = () => {
     return (
         <AuthenticatedLayout>
             <Head title="Tempat Du/Di" />
+            <ToastContainer className={`w-96`} />
 
             <TitlePage
                 nameRoute={"Tambah Tempat"}
