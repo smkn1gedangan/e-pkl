@@ -16,19 +16,31 @@ import { OptionSorting } from "@/Components/Option";
 import Table from "@/Components/Table";
 import { toast, ToastContainer } from "react-toastify";
 import SecondaryButton from "@/Components/SecondaryButton";
+import { useGetProvince, useGetRegencies } from "@/services/api_call";
 const Index = () => {
     const { siswas, auth, filters, jurusans, tahunAjarans, tempats } =
         usePage().props;
+    const { data: provinceData } = useGetProvince();
+    const [provinceId, setProvinceId] = useState("35");
+    const { data: regenciesData } = useGetRegencies(provinceId);
     const [errors, setErrors] = useState({});
     const [createNilaiModal, setCreateNilaiModal] = useState(null);
     const [showModal, setShowModal] = useState(null);
     const [sortModal, setSortModal] = useState(false);
+    const [editTTlModal, setEditTTlModal] = useState(null);
     const { data, setData, processing, reset } = useForm({
         user_id: "",
         pembimbing_id: auth.user.id,
         nilai: 0,
         keterangan: "",
     });
+    const {
+        data: dataTll,
+        setData: setDataTll,
+        errors: errorsTll,
+        processing: processingTll,
+        put: putTll,
+    } = useForm({});
     const { data: dataSearch, setData: setDataSearch } = useForm({
         search: filters?.search ?? "",
         sort_by: filters?.sort_by ?? "",
@@ -138,6 +150,36 @@ const Index = () => {
             setShowModal(filtered);
         }
     };
+    const handleEditTTL = (e, id) => {
+        e.preventDefault();
+        const filtered = siswas.data.find((s) => s.id === id);
+        if (filtered) {
+            setEditTTlModal(filtered);
+            const datas = {
+                ...filtered,
+                tempat_lahir: "",
+                tanggal_lahir: "",
+                nisn: filtered.data_siswa?.nisn,
+            };
+            setDataTll(datas);
+        }
+    };
+    const handleUpdateTTl = (e) => {
+        e.preventDefault();
+        putTll(route("siswa.update", dataTll?.id), {
+            onSuccess: (sccs) => {
+                if (sccs.props.auth?.flash.success) {
+                    setEditTTlModal(null);
+                    toast.success(`${sccs.props.auth.flash?.success}`);
+                } else {
+                    toast.error(`${sccs.props.auth.flash?.error}`);
+                }
+            },
+            onError: (e) => {
+                console.log(e);
+            },
+        });
+    };
     return (
         <AuthenticatedLayout>
             <Head title="Siswa" />
@@ -204,9 +246,209 @@ const Index = () => {
                                             {siswa.email}
                                         </td>
                                         <td className="px-4 text-center py-4">
-                                            {siswa?.tempat_lahir}
-                                            ,&nbsp;&nbsp;
-                                            {siswa?.tanggal_lahir}
+                                            {siswa?.tempat_lahir &&
+                                            siswa?.tanggal_lahir ? (
+                                                siswa?.tempat_lahir +
+                                                " , " +
+                                                siswa?.tanggal_lahir
+                                            ) : auth.role === "siswa" ? (
+                                                <SecondaryButton
+                                                    onClick={(e) =>
+                                                        handleEditTTL(
+                                                            e,
+                                                            siswa.id
+                                                        )
+                                                    }
+                                                    className="bg-blue-700 text-white"
+                                                >
+                                                    <Edit />
+                                                </SecondaryButton>
+                                            ) : (
+                                                "Belum Diisi"
+                                            )}
+                                            <Modal
+                                                show={
+                                                    editTTlModal?.id ===
+                                                    siswa.id
+                                                }
+                                                onClose={() =>
+                                                    setEditTTlModal(null)
+                                                }
+                                            >
+                                                <div className="relative bg-white rounded-lg shadow-sm ">
+                                                    <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
+                                                        <h3 className="text-lg font-semibold text-gray-900 ">
+                                                            Ubah{" "}
+                                                            {editTTlModal?.name}
+                                                        </h3>
+                                                        <SecondaryButton
+                                                            className="hover:bg-slate-600 hover:text-white transition-all duration-100"
+                                                            onClick={() =>
+                                                                setEditTTlModal(
+                                                                    null
+                                                                )
+                                                            }
+                                                        >
+                                                            <X />{" "}
+                                                        </SecondaryButton>
+                                                    </div>
+                                                    <form
+                                                        onSubmit={
+                                                            handleUpdateTTl
+                                                        }
+                                                        className="p-4 md:p-5"
+                                                    >
+                                                        <div className="grid gap-4 mb-4 grid-cols-2">
+                                                            <div className="col-span-2 md:col-span-1">
+                                                                <InputLabel
+                                                                    value={
+                                                                        "Tempat Lahir"
+                                                                    }
+                                                                />
+                                                                <select
+                                                                    onChange={(
+                                                                        e
+                                                                    ) =>
+                                                                        setProvinceId(
+                                                                            e
+                                                                                .target
+                                                                                .value
+                                                                        )
+                                                                    }
+                                                                    value={
+                                                                        provinceId
+                                                                    }
+                                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-1 "
+                                                                >
+                                                                    {provinceData &&
+                                                                        provinceData.map(
+                                                                            (
+                                                                                province
+                                                                            ) => (
+                                                                                <option
+                                                                                    key={
+                                                                                        province.id
+                                                                                    }
+                                                                                    value={
+                                                                                        province.id
+                                                                                    }
+                                                                                >
+                                                                                    {
+                                                                                        province.name
+                                                                                    }
+                                                                                </option>
+                                                                            )
+                                                                        )}
+                                                                </select>
+                                                            </div>
+                                                            {provinceId !==
+                                                                "" && (
+                                                                <div className="col-span-2 md:col-span-1">
+                                                                    <InputLabel
+                                                                        value={
+                                                                            "Kabupaten"
+                                                                        }
+                                                                    />
+                                                                    <select
+                                                                        onChange={(
+                                                                            e
+                                                                        ) =>
+                                                                            setDataTll(
+                                                                                "tempat_lahir",
+                                                                                e
+                                                                                    .target
+                                                                                    .value
+                                                                            )
+                                                                        }
+                                                                        value={
+                                                                            dataTll.tempat_lahir
+                                                                        }
+                                                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-1 "
+                                                                    >
+                                                                        <option value="">
+                                                                            Default
+                                                                        </option>
+                                                                        {regenciesData &&
+                                                                            regenciesData.map(
+                                                                                (
+                                                                                    reg
+                                                                                ) => (
+                                                                                    <option
+                                                                                        key={
+                                                                                            reg.id
+                                                                                        }
+                                                                                        value={
+                                                                                            reg.name
+                                                                                        }
+                                                                                    >
+                                                                                        {
+                                                                                            reg.name
+                                                                                        }
+                                                                                    </option>
+                                                                                )
+                                                                            )}
+                                                                    </select>
+
+                                                                    <InputError
+                                                                        message={
+                                                                            errorsTll.tempat_lahir
+                                                                        }
+                                                                        className="mt-2"
+                                                                    />
+                                                                </div>
+                                                            )}
+                                                            <div className="col-span-2 md:col-span-1">
+                                                                <InputLabel
+                                                                    htmlFor="tanggal_lahir"
+                                                                    value="Tanggal Lahir"
+                                                                />
+
+                                                                <TextInput
+                                                                    id="tanggal_lahir"
+                                                                    type="date"
+                                                                    value={
+                                                                        dataTll.tanggal_lahir
+                                                                    }
+                                                                    className="mt-1 block w-full"
+                                                                    autoComplete="tanggal_lahir"
+                                                                    onChange={(
+                                                                        e
+                                                                    ) =>
+                                                                        setDataTll(
+                                                                            "tanggal_lahir",
+                                                                            e
+                                                                                .target
+                                                                                .value
+                                                                        )
+                                                                    }
+                                                                    required
+                                                                />
+
+                                                                <InputError
+                                                                    message={
+                                                                        errorsTll.tanggal_lahir
+                                                                    }
+                                                                    className="mt-2"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <PrimaryButton
+                                                            type="submit"
+                                                            className="gap-2"
+                                                            disabled={
+                                                                processingTll
+                                                            }
+                                                        >
+                                                            <Edit />
+                                                            <span className="hidden sm:block">
+                                                                {processingTll
+                                                                    ? "proses..."
+                                                                    : "Ubah Data"}
+                                                            </span>
+                                                        </PrimaryButton>
+                                                    </form>
+                                                </div>
+                                            </Modal>
                                         </td>
                                         <td className="px-4 text-center py-4">
                                             {siswa.kontak ?? "Belum Diisi"}

@@ -16,8 +16,10 @@ import Table from "@/Components/Table";
 import { OptionSorting } from "@/Components/Option";
 import Textarea from "@/Components/Textarea";
 import { toast, ToastContainer, Zoom } from "react-toastify";
+import moment from "moment";
 const Index = () => {
     const { jurnals, auth, user, filters } = usePage().props;
+    const [currentDate, setCurrentDate] = useState("");
     const [createModal, setCreateModal] = useState(false);
     const [sortModal, setSortModal] = useState(false);
     const [resizeImg, setResizeImg] = useState(null);
@@ -101,6 +103,35 @@ const Index = () => {
             setResizeImg(filtered);
         }
     };
+    const handleTimeLeft = () => {
+        const now = moment();
+        let target = moment().set({
+            hour: 24,
+            minute: 0,
+            second: 0,
+            millisecond: 0,
+        });
+        if (now.isAfter(target)) {
+            target = target.add(1, "day");
+        }
+        const duration = moment.duration(target.diff(now));
+
+        return {
+            hours: String(duration.hours()).padStart(2, "0"),
+            minutes: String(duration.minutes()).padStart(2, "0"),
+            seconds: String(duration.seconds()).padStart(2, "0"),
+        };
+    };
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const t = handleTimeLeft();
+            setCurrentDate(`${t.hours}-${t.minutes}-${t.seconds}`);
+        }, 1000);
+
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
     return (
         <AuthenticatedLayout>
             <Head title="Jurnal" />
@@ -115,7 +146,7 @@ const Index = () => {
                               user?.user.tempat?.user?.name ?? "Belum Diisi"
                           } Dari Pt ${user?.user.tempat?.nama ?? "Belum Diisi"}
                 `
-                        : "jurnal sistem rekap kegiatan pkl secara digital"
+                        : `list jurnal sistem rekap kegiatan pkl secara digital`
                 }`}
                 title={`Jurnal Milik ${auth.user.name}`}
                 onClick={() => {
@@ -125,6 +156,9 @@ const Index = () => {
                     setData("photo", "");
                 }}
             ></TitlePage>
+            <span className="block text-sm text-gray-700 text-center">
+                Batas Pengumpulan Jurnal Hari Ini : {currentDate}
+            </span>
             <Filter
                 sortModal={sortModal}
                 value={dataSearch.search}
@@ -160,7 +194,21 @@ const Index = () => {
                                             {jurnal.user.name}
                                         </td>
                                         <td className="px-4 text-center py-4">
-                                            {jurnal.keterangan}
+                                            {jurnal.keterangan === "hadir" && (
+                                                <span className="bg-green-100 text-green-800 text-sm font-medium ring-2 me-2 px-2.5 py-0.5 rounded-md ring-green-500">
+                                                    {jurnal.keterangan}
+                                                </span>
+                                            )}
+                                            {jurnal.keterangan === "sakit" && (
+                                                <span className="bg-blue-100 text-blue-800 text-sm font-medium ring-2 me-2 px-2.5 py-0.5 rounded-md ring-blue-500">
+                                                    {jurnal.keterangan}
+                                                </span>
+                                            )}
+                                            {jurnal.keterangan === "izin" && (
+                                                <span className="bg-red-100 text-red-800 text-sm font-medium ring-2 ring-red-500 me-2 px-2.5 py-0.5 rounded-md">
+                                                    {jurnal.keterangan}
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-4 text-center py-4">
                                             {jurnal.kegiatan}
@@ -334,7 +382,7 @@ const Index = () => {
                                         setData("kegiatan", e.target.value)
                                     }
                                     name="kegiatan"
-                                    placeholder={`Deskripsikan Kegiatn Anda`}
+                                    placeholder={`Deskripsikan Kegiatan Anda`}
                                 />
                                 <InputError
                                     message={errors.kegiatan}
@@ -380,7 +428,7 @@ const Index = () => {
                             disabled={processing}
                         >
                             <Plus />
-                            <span className="hidden sm:block">
+                            <span className="block">
                                 {processing ? "Proses..." : "Tambah Jurnal"}
                             </span>
                         </PrimaryButton>

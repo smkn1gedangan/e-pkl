@@ -184,32 +184,7 @@ export default function Register() {
                                     className="mt-2 bg-red-50 text-center p-1 rounded-md inline-block"
                                 />
                             </div>
-                            <div>
-                                <InputLabel
-                                    className="text-white"
-                                    htmlFor="tanggal_lahir"
-                                    value="tanggal_lahir"
-                                />
 
-                                <TextInput
-                                    id="tanggal_lahir"
-                                    type="date"
-                                    value={data.tanggal_lahir}
-                                    className="mt-1 block w-full"
-                                    autoComplete="tanggal_lahir"
-                                    onChange={(e) =>
-                                        setData("tanggal_lahir", e.target.value)
-                                    }
-                                    required
-                                />
-
-                                <InputError
-                                    message={errors.tanggal_lahir}
-                                    className="mt-2"
-                                />
-                            </div>
-                        </div>
-                        <div className="col-span-2 md:col-span-1 space-y-4">
                             <div className="">
                                 <InputLabel
                                     className="text-white"
@@ -263,6 +238,32 @@ export default function Register() {
                                     />
                                 </div>
                             )}
+                        </div>
+                        <div className="col-span-2 md:col-span-1 space-y-4">
+                            <div>
+                                <InputLabel
+                                    className="text-white"
+                                    htmlFor="tanggal_lahir"
+                                    value="Tanggal Lahir"
+                                />
+
+                                <TextInput
+                                    id="tanggal_lahir"
+                                    type="date"
+                                    value={data.tanggal_lahir}
+                                    className="mt-1 block w-full"
+                                    autoComplete="tanggal_lahir"
+                                    onChange={(e) =>
+                                        setData("tanggal_lahir", e.target.value)
+                                    }
+                                    required
+                                />
+
+                                <InputError
+                                    message={errors.tanggal_lahir}
+                                    className="mt-2"
+                                />
+                            </div>
                             <div>
                                 <InputLabel
                                     className="text-white"
@@ -371,7 +372,9 @@ export default function Register() {
                                     />
                                     <span className="text-slate-900 ms-2 text-sm">
                                         Saya Benar Benar Yakin Bahwa Saya Adalah
-                                        Siswa / Siswi Smkn 1 Gedangan Dan Data Yang Saya Kirim Benar Benar Data Sesungguhnya
+                                        Siswa / Siswi Smkn 1 Gedangan Dan Data
+                                        Yang Saya Kirim Benar Benar Data
+                                        Sesungguhnya
                                     </span>
                                 </label>
                             </div>

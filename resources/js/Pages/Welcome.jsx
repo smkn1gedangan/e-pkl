@@ -3,7 +3,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { Head, Link } from "@inertiajs/react";
-import Footer from "@/Components/Maps";
+import Footer from "@/Components/Footer";
 import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 import ReCAPTCHA from "react-google-recaptcha";

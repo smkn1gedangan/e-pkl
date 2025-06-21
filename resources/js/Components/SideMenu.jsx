@@ -19,6 +19,7 @@ import {
     UserPen,
     Users,
 } from "lucide-react";
+import { useEffect } from "react";
 
 const SideMenu = ({ children, ...props }) => {
     const { auth, ptCount } = usePage().props;
@@ -49,7 +50,10 @@ const SideMenu = ({ children, ...props }) => {
         {
             id: 100,
             nama: auth.role === "admin" ? "Ajuan Tempat" : "Ajukan Tempat",
-            pathname: "pengajuanTempat",
+            pathname:
+                window.location.pathname.split("/",3)[1] === "pengajuanTempat"
+                    ? window.location.pathname.replace("/", "")
+                    : "",
             route:
                 auth.role === "admin"
                     ? route("pengajuanTempat.index")
@@ -182,7 +186,6 @@ const SideMenu = ({ children, ...props }) => {
             "Ya , Logout"
         );
     };
-
     return (
         <>
             {routes.map((route) => (

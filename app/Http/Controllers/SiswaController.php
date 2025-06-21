@@ -173,12 +173,13 @@ class SiswaController extends Controller
     {
         $siswaId = User::findOrFail($id);
         $validate = $request->validated();
-
         $dataSiswa = Datasiswa::where("nisn","=",$validate["nisn"])->first();
         $siswaId->name = $dataSiswa->nama;
         $siswaId->nisn_id = $dataSiswa->id;
 
         $siswaId->email = $validate["email"];
+        $siswaId->tempat_lahir= $validate["tempat_lahir"];
+        $siswaId->tanggal_lahir= $validate["tanggal_lahir"];
         $siswaId->tahunAjaran_id =  $request->filled("tahunAjaran_id") ?$validate["tahunAjaran_id"]:$siswaId->tahunAjaran_id;
         $siswaId->pembimbing_sekolah_id =  $request->filled("pembimbing_sekolah_id") ?$validate["pembimbing_sekolah_id"]:$siswaId->pembimbing_sekolah_id;
         $siswaId->jurusan_id =  $request->filled("jurusan_id") ?$validate["jurusan_id"]:$siswaId->jurusan_id;
@@ -186,7 +187,7 @@ class SiswaController extends Controller
         $siswaId->kontak = $validate["kontak"];
         
         $siswaId->save();
-        return redirect()->route("siswa.edit",$id)->with("success","Sukses Mengubah Data Siswa");
+        return redirect()->back()->with("success","Sukses Mengubah Data Milik $siswaId->name");
     }
 
     /**

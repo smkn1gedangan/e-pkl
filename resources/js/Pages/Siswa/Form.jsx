@@ -7,7 +7,7 @@ import { Alert } from "@/Helpers/Alert";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { useGetProvince, useGetRegencies } from "@/services/api_call";
 import { Head, useForm } from "@inertiajs/react";
-import { ArrowLeft, ClipboardList, Plus, QuoteIcon } from "lucide-react";
+import { ArrowLeft, ClipboardList, Edit, Plus, QuoteIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
@@ -52,7 +52,15 @@ const Form = ({
             post(route("siswa.store"), {
                 onSuccess: (sccs) => {
                     if (sccs.props.auth?.flash.success) {
-                        reset();
+                        setData("email", "");
+                        setData("tahunAjaran_id", "");
+                        setData("jurusan_id", "");
+                        setData("tempat_lahir", "");
+                        setData("pembimbing_sekolah_id", "");
+                        setData("tempat_id", "");
+                        setData("kontak", "");
+                        setData("password", "");
+                        setData("password_confirmation", "");
                         toast.success(`${sccs.props.auth.flash?.success}`);
                     } else {
                         toast.error(`${sccs.props.auth.flash?.error}`);
@@ -231,7 +239,7 @@ const Form = ({
                                 <InputLabel
                                     className="text-white"
                                     htmlFor="tanggal_lahir"
-                                    value="tanggal_lahir"
+                                    value="Tanggal Lahir"
                                 />
 
                                 <TextInput
@@ -374,7 +382,7 @@ const Form = ({
                                 className="gap-2"
                                 disabled={processing}
                             >
-                                <Plus />
+                                {isEdit ? <Edit /> : <Plus />}
                                 <span className="hidden sm:block">
                                     {processing
                                         ? "Proses..."

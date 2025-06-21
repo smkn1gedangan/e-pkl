@@ -550,7 +550,7 @@ const Index = () => {
                         {type === "import" && (
                             <div className="space-y-4">
                                 <InputError
-                                    message={"Contoh Format Di Excel"}
+                                    message={"Contoh Format Di Excel, Jika Berasal Dari Smkn 1 Gedangan , cukup kirimkan absensi"}
                                 />
                                 <img src="./img/sampleUser.png" alt="" />
                                 <div>

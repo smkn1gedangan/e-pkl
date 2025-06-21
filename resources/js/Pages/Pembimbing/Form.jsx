@@ -6,7 +6,7 @@ import TitlePage from "@/Components/TitlePage";
 import { Alert } from "@/Helpers/Alert";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, useForm } from "@inertiajs/react";
-import { ArrowLeft, ClipboardList, Plus, QuoteIcon } from "lucide-react";
+import { ArrowLeft, ClipboardList, Edit, Plus, QuoteIcon } from "lucide-react";
 import React, { useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
@@ -281,7 +281,7 @@ const Form = ({ jurusans, tahunAjarans, tempats, isEdit, user }) => {
                                 className="gap-2"
                                 disabled={processing}
                             >
-                                <Plus />
+                                {isEdit ? <Edit /> : <Plus />}
                                 <span className="hidden sm:block">
                                     {processing
                                         ? "Proses..."

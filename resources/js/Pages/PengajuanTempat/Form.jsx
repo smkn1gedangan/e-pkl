@@ -43,7 +43,7 @@ const Form = () => {
     return (
         <AuthenticatedLayout>
             <Head title="Pengajuan Tempat" />
-                        <ToastContainer className={`w-96`} />
+            <ToastContainer className={`w-96`} />
 
             {pengajuanTempats.some((p) => p.user_id === auth.user.id) ? (
                 <h1 className="text-center text-2xl mt-8 font-medium capitalize text-slate-900">
@@ -165,8 +165,8 @@ const Form = () => {
                                 </div>
                             )}
                             {type === "siswa" && (
-                                <div className="grid gap-4 mb-4 grid-cols-1 md:grid-cols-2 p-2">
-                                    <div className="col-span-1 space-y-3">
+                                <div className="grid grid-cols-2 gap-4 mb-4 p-2">
+                                    <div className="col-span-2 md:col-span-1  space-y-3 ">
                                         <div className="">
                                             <InputLabel
                                                 value={
@@ -213,7 +213,7 @@ const Form = () => {
                                             />
                                         </div>
                                     </div>
-                                    <div className="col-span-1 space-y-3">
+                                    <div className="col-span-2 md:col-span-1 space-y-3">
                                         <div className="">
                                             <InputLabel
                                                 value={"Bidang Usaha"}
@@ -310,7 +310,7 @@ const Form = () => {
                                         disabled={(processing, !data.checked)}
                                     >
                                         <Plus />
-                                        <span className="hidden sm:block">
+                                        <span className="block">
                                             {processing
                                                 ? "Proses..."
                                                 : "Ajukan Tempat"}

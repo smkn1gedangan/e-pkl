@@ -37,7 +37,7 @@ const Dashboard = () => {
                                 daftarkan.
                             </li>
                             <li>
-                                Jika berhasil {auth.user.name} akan Masuk ke
+                                Jika berhasil, {auth.user.name} akan Masuk ke
                                 dashboard.
                             </li>
                             <li>

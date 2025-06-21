@@ -96,10 +96,11 @@ class JurnalController extends Controller
 
         $validate = $request->validate([
             "keterangan"=>"required",
-            "kegiatan"=>"required|max:75",
+            "kegiatan"=>"required|max:150",
             "photo"=>"required|file|max:2400|mimes:jpg,jpeg,avif,png"
         ],[
             "photo.max"=>"File Gambar Maksimal 2400 Kb (2,4 mb)",
+            "kegiatan.max"=>"Kegiatan Wajib Diisi 1 - 150 karakter Huruf",
             "photo.mimes"=>"Gambar harus Bertipe Jpg,Jpeg,Avif,Png"
         ]);
 

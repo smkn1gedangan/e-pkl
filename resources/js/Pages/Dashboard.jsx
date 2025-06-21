@@ -7,7 +7,6 @@ import React, { useEffect } from "react";
 
 const Dashboard = () => {
     const { auth, rekapSiswa, rekapPb, statistik } = usePage().props;
-    console.log(rekapPb);
     return (
         <AuthenticatedLayout>
             <Head title="Dashboard" />
@@ -16,8 +15,8 @@ const Dashboard = () => {
             </h1>
             <div className="flex justify-center mt-8">
                 {auth.role === "siswa" && (
-                    <div className="w-4/5">
-                        <BarChart
+                    <div className="w-4/5 sm:w-3/5 md:w-2/5">
+                        <DoughnutChart
                             datas={Object.values(rekapSiswa)}
                             labels={Object.keys(rekapSiswa)}
                         />

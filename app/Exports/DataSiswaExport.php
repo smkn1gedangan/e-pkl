@@ -2,11 +2,11 @@
 
 namespace App\Exports;
 
-use App\Models\DataSiswa;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
+use App\Models\Datasiswa;
+use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
 
-class DataSiswaExport implements FromCollection,WithHeadings
+class DataSiswaExport implements FromView
 {
 
     public function __construct(public $request)  {
@@ -15,7 +15,7 @@ class DataSiswaExport implements FromCollection,WithHeadings
     /**
     * @return \Illuminate\Support\Collection
     */
-    public function collection()
+    public function view():View
     {
         $datas = Datasiswa::query()
         ->when($this->request->filled("kode"),function($query){
@@ -32,16 +32,11 @@ class DataSiswaExport implements FromCollection,WithHeadings
         ->get()->map(function($query){
             return [
                 "nama"=>$query->nama,
-                "No Induk"=>substr($query->nisn,0,4),
-                "No Jurusan"=>substr($query->nisn,-7),
+                "induk"=>substr($query->nisn,0,4),
+                "jurusan"=>substr($query->nisn,-7),
                 "aktivasi"=> $query->isActive ? "Aktif":"Belum Aktif"
             ];
         });
-        return $datas;
-    }
-    public function headings() : array {
-        return [
-            "nama",'No Induk','No Jurusan',"aktivasi"
-        ];
+        return view("excel.datasiswa",compact("datas"));
     }
 }
