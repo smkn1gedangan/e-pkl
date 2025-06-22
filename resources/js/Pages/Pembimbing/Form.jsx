@@ -282,12 +282,12 @@ const Form = ({ jurusans, tahunAjarans, tempats, isEdit, user }) => {
                                 disabled={processing}
                             >
                                 {isEdit ? <Edit /> : <Plus />}
-                                <span className="hidden sm:block">
+                                <span className="block">
                                     {processing
                                         ? "Proses..."
                                         : isEdit
-                                        ? "Ubah Pembimbing"
-                                        : "Tambah Pembimbing"}
+                                        ? "Ubah"
+                                        : "Tambah"}
                                 </span>
                             </PrimaryButton>
                         </div>

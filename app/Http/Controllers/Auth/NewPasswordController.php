@@ -7,6 +7,7 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
@@ -59,9 +60,11 @@ class NewPasswordController extends Controller
         // the application's home authenticated view. If there is an error we can
         // redirect them back to where they came from with their error message.
         if ($status == Password::PASSWORD_RESET) {
-            return redirect()->route('login')->with('status', __($status));
+            return redirect()->route('login')->with(['status', __($status),"success"=> "sukses Mereset Password Akun Anda"]);
         }
 
+        Log::channel("authSession")->info($request->email ."Telah Merubah Password Pada" . now()->format("d-m-Y h-i-s A"));
+        
         throw ValidationException::withMessages([
             'email' => [trans($status)],
         ]);

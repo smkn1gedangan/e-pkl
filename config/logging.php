@@ -64,6 +64,11 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
             'replace_placeholders' => true,
         ],
+        'authSession' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/session.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+        ],
 
         'daily' => [
             'driver' => 'daily',

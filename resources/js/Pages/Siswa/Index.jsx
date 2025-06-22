@@ -346,7 +346,7 @@ const Index = () => {
                                                                 <div className="col-span-2 md:col-span-1">
                                                                     <InputLabel
                                                                         value={
-                                                                            "Kabupaten"
+                                                                            "Kabupaten/Kota"
                                                                         }
                                                                     />
                                                                     <select

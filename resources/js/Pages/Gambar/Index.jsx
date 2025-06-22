@@ -231,7 +231,7 @@ const Index = () => {
                                                                 }
                                                             >
                                                                 <Edit />
-                                                                <span className="hidden sm:block">
+                                                                <span className="block">
                                                                     {processing
                                                                         ? "Proses..."
                                                                         : "Ubah Gambar"}
@@ -326,7 +326,7 @@ const Index = () => {
                             disabled={processing}
                         >
                             <Plus />
-                            <span className="hidden sm:block">
+                            <span className="block">
                                 {processing ? "Proses..." : "Tambah Gambar"}
                             </span>
                         </PrimaryButton>

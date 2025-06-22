@@ -40,10 +40,13 @@ class ImportController extends Controller
     }
 
     public function exportSiswaToPdf($id)  {
-        $siswa = User::with(["jurusan","tahunAjaran","pbSkl","tempat.user","nilai.pembimbing","dataSiswa"])->findOrFail($id);
+        $siswa = User::with(["jurusan","tahunAjaran","pbSkl","tempat.user","nilai.pembimbing","dataSiswa","jurnals"])->withCount("jurnals")->findOrFail($id);
 
+        $hadirs =$siswa->jurnals->where("keterangan","hadir")->count();
+        $sakits =$siswa->jurnals->where("keterangan","sakit")->count();
+        $izins =$siswa->jurnals->where("keterangan","izin")->count();
         // view PDF dengan data $siswa
-        $pdf = Pdf::loadView('pdf.siswa', compact('siswa'));
+        $pdf = Pdf::loadView('pdf.siswa', compact('siswa','hadirs','sakits','izins'));
 
         return $pdf->download('siswa-' . $siswa->name . '.pdf');
     }

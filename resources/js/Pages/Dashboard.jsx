@@ -15,7 +15,7 @@ const Dashboard = () => {
             </h1>
             <div className="flex justify-center mt-8">
                 {auth.role === "siswa" && (
-                    <div className="w-4/5 sm:w-3/5 md:w-2/5">
+                    <div className="w-4/5 sm:w-3/5 md:w-2/5 flex justify-center">
                         <DoughnutChart
                             datas={Object.values(rekapSiswa)}
                             labels={Object.keys(rekapSiswa)}

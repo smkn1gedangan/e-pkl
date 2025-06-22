@@ -383,12 +383,12 @@ const Form = ({
                                 disabled={processing}
                             >
                                 {isEdit ? <Edit /> : <Plus />}
-                                <span className="hidden sm:block">
+                                <span className="block">
                                     {processing
                                         ? "Proses..."
                                         : isEdit
-                                        ? "Ubah Data Siswa"
-                                        : "Tambah Siswa"}
+                                        ? "Ubah"
+                                        : "Tambah"}
                                 </span>
                             </PrimaryButton>
                         </div>

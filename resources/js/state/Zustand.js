@@ -9,7 +9,7 @@ export const useTypeAjuanTempat = create(
             },
         }),
         {
-            name: "type",
+            name: "typeAjuanTempat",
             storage: createJSONStorage(() => localStorage),
         }
     )
@@ -23,7 +23,7 @@ export const useTypeImportSiswa = create(
             },
         }),
         {
-            name: "type",
+            name: "typeImportSiswa",
             storage: createJSONStorage(() => localStorage),
         }
     )

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Datasiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
@@ -49,6 +50,7 @@ class AktivasiController extends Controller
             $dataId->isActive = true;
             $dataId->save();
         }
+
         return redirect()->route("register.edit",[
             "register"=>Crypt::encrypt($dataId->id)
         ]);

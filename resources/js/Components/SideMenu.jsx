@@ -178,7 +178,7 @@ const SideMenu = ({ children, ...props }) => {
 
         AlertConfirm(
             "Anda Akan Logout!",
-            "warning",
+            "question",
 
             () => {
                 router.post(route("logout"));

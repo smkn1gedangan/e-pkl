@@ -89,7 +89,7 @@ class DataSiswaController extends Controller
         $dataId = Datasiswa::findOrFail($id);
 
         $validate = $request->validated();
-        
+
         $dataId->nisn = $validate["induk"].$validate["jurusan"];
         $dataId->nama = $validate["nama"];
 

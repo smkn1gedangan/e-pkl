@@ -4,6 +4,7 @@ import InputLabel from "./InputLabel";
 export const OptionSorting = ({ datas, handleSearchChange, dataSearch }) => {
     return (
         <div className="grid gap-4 mb-4 grid-cols-2 p-4">
+            
             <div className="">
                 <InputLabel value={"Data"} />
                 <select
@@ -38,5 +39,3 @@ export const OptionSorting = ({ datas, handleSearchChange, dataSearch }) => {
         </div>
     );
 };
-
-

@@ -40,7 +40,7 @@ const Index = () => {
     });
     const handleDelete = (e, id) => {
         e.preventDefault();
-        const text = `Apakah Anda Yakin Ingin Menghapus Jurnal Milik ${auth.user.name}`;
+        const text = `Apakah Anda Yakin Ingin Menghapus Jurnal Ini ?`;
         const cb = () =>
             router.delete(route("rekap.destroy", id), {
                 onSuccess: (sccs) => {
@@ -309,7 +309,8 @@ const Index = () => {
                                                     onClick={(e) =>
                                                         handleDelete(
                                                             e,
-                                                            jurnal.id
+                                                            jurnal.id,
+                                                            jurnal.id,
                                                         )
                                                     }
                                                     className="font-medium text-red-800 hover:text-red-700 transition-all cursor-pointer flex justify-center gap-2"
@@ -444,6 +445,7 @@ const Index = () => {
                             setSortModal(!sortModal);
                         }}
                     ></TitleModal>
+
                     <OptionSorting
                         dataSearch={dataSearch}
                         handleSearchChange={handleSearchChange}
@@ -456,11 +458,9 @@ const Index = () => {
                         ]}
                     />
                     <div className="p-4 md:p-5">
-                        {auth.role !== "siswa" && (
-                            <h3 className="text-lg font-semibold text-gray-900 ">
-                                Filter Jurnal
-                            </h3>
-                        )}
+                        <h3 className="text-lg font-semibold text-gray-900 ">
+                            Filter Jurnal
+                        </h3>
                         <div className="grid gap-4 mb-4 grid-cols-1">
                             <div className="">
                                 <InputLabel value={"Marking"} />

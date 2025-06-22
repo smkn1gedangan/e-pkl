@@ -23,7 +23,7 @@ export default function ForgotPassword({ status }) {
         >
             <Head title="Forgot Password" />
 
-            <div className="h-full rounded-md bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-10 border border-gray-100 w-11/12 sm:w-3/4 md:w-1/2 max-w-sm ">
+            <div className="h-full rounded-md bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-10 border border-gray-100 w-11/12 sm:w-3/4 md:w-1/2 max-w-sm">
                 <div className="border-b rounded-b-[150%] h-auto p-2 border-b-black bg-blue-600">
                     <a className="flex w-full justify-center " href="/">
                         <img
@@ -38,11 +38,14 @@ export default function ForgotPassword({ status }) {
                         {status}
                     </div>
                 )}
-                <div className="mb-4 text-sm text-gray-50 p-4 text-center">
-                    Lupa kata sandi? Tidak masalah. Cukup beri tahu kami alamat
-                    email Anda dan kami akan mengirimkan tautan untuk menyetel
-                    ulang kata sandi yang akan memungkinkan Anda memilih kata
-                    sandi baru.
+                <div className="p-3">
+                    {" "}
+                    <div className="mb-4 text-sm text-slate-800 bg-white p-4 text-center rounded-md">
+                        Lupa kata sandi? Tidak masalah. Cukup beri tahu kami
+                        alamat email Anda dan kami akan mengirimkan tautan untuk
+                        menyetel ulang kata sandi yang akan memungkinkan Anda
+                        memilih kata sandi baru.
+                    </div>
                 </div>
                 <div className="w-full sm:max-w-md mt-6 px-6 py-4 shadow-md overflow-hidden sm:rounded-lg ">
                     <form onSubmit={submit}>
@@ -56,7 +59,10 @@ export default function ForgotPassword({ status }) {
                             onChange={(e) => setData("email", e.target.value)}
                         />
 
-                        <InputError message={errors.email} className="mt-2 bg-red-50 p-1 text-center" />
+                        <InputError
+                            message={errors.email}
+                            className="mt-2 bg-red-50 p-1 text-center"
+                        />
 
                         <div className="mt-4 flex items-center justify-end">
                             <PrimaryButton

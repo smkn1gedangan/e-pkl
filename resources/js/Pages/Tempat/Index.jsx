@@ -69,7 +69,6 @@ const Index = () => {
         setError("nama", "");
         const filtered = tempats.data.find((tempat) => tempat.id === id);
         if (filtered) {
-            console.log(filtered);
             setData("nama", filtered.nama);
             setData("kontak", filtered.kontak);
             setData("lokasi", filtered.lokasi);
@@ -182,254 +181,260 @@ const Index = () => {
                                             }`}
                                         </td>
 
-                                        <td className="px-4 text-center py-4 flex justify-center gap-2">
-                                            <div
-                                                onClick={(e) =>
-                                                    handleEdit(e, tempat.id)
-                                                }
-                                                className="font-medium text-blue-600 hover:text-blue-500 cursor-pointer"
-                                            >
-                                                <Edit />
-                                            </div>
-                                            <Modal
-                                                show={
-                                                    editModal?.id === tempat.id
-                                                }
-                                                onClose={() =>
-                                                    seteditModal(null)
-                                                }
-                                            >
-                                                <div className="relative bg-white rounded-lg shadow-sm ">
-                                                    <TitleModal
-                                                        icon={<X />}
-                                                        title={`Edit Du/Di ${tempat.nama}`}
-                                                        onClick={() =>
-                                                            seteditModal(
-                                                                !editModal
-                                                            )
-                                                        }
-                                                    ></TitleModal>
-                                                    <form
-                                                        onSubmit={handleUpdate}
-                                                        className="p-4 md:p-5"
-                                                    >
-                                                        <div className="grid gap-4 mb-4 grid-cols-2">
-                                                            <div className="col-span-2">
-                                                                <InputLabel
-                                                                    value={
-                                                                        "Nama Jurusan"
-                                                                    }
-                                                                />
-                                                                <TextInput
-                                                                    id="nama"
-                                                                    type="text"
-                                                                    name="nama"
-                                                                    value={
-                                                                        data.nama
-                                                                    }
-                                                                    className="mt-1 block w-full"
-                                                                    onChange={(
-                                                                        e
-                                                                    ) =>
-                                                                        setData(
-                                                                            "nama",
-                                                                            e
-                                                                                .target
-                                                                                .value
-                                                                        )
-                                                                    }
-                                                                />
-                                                                <InputError
-                                                                    message={
-                                                                        errors.nama
-                                                                    }
-                                                                    className="mt-2"
-                                                                />
-                                                            </div>
-                                                            <div className="col-span-2">
-                                                                <InputLabel
-                                                                    value={
-                                                                        "Kontak"
-                                                                    }
-                                                                />
-                                                                <TextInput
-                                                                    id="kontak"
-                                                                    type="text"
-                                                                    name="kontak"
-                                                                    value={
-                                                                        data.kontak
-                                                                    }
-                                                                    className="mt-1 block w-full"
-                                                                    onChange={(
-                                                                        e
-                                                                    ) =>
-                                                                        setData(
-                                                                            "kontak",
-                                                                            e
-                                                                                .target
-                                                                                .value
-                                                                        )
-                                                                    }
-                                                                />
-                                                                <InputError
-                                                                    message={
-                                                                        errors.kontak
-                                                                    }
-                                                                    className="mt-2"
-                                                                />
-                                                            </div>
-                                                            <div className="col-span-2">
-                                                                <InputLabel
-                                                                    value={
-                                                                        "Bidang Usaha"
-                                                                    }
-                                                                />
-                                                                <TextInput
-                                                                    id="bidang_usaha"
-                                                                    type="text"
-                                                                    name="bidang_usaha"
-                                                                    value={
-                                                                        data.bidang_usaha
-                                                                    }
-                                                                    className="mt-1 block w-full"
-                                                                    onChange={(
-                                                                        e
-                                                                    ) =>
-                                                                        setData(
-                                                                            "bidang_usaha",
-                                                                            e
-                                                                                .target
-                                                                                .value
-                                                                        )
-                                                                    }
-                                                                />
-                                                                <InputError
-                                                                    message={
-                                                                        errors.bidang_usaha
-                                                                    }
-                                                                    className="mt-2"
-                                                                />
-                                                            </div>
-                                                            <div className="col-span-2">
-                                                                <InputLabel
-                                                                    value={
-                                                                        "Lokasi Du/Di"
-                                                                    }
-                                                                />
-                                                                <TextInput
-                                                                    id="lokasi"
-                                                                    type="text"
-                                                                    name="lokasi"
-                                                                    value={
-                                                                        data.lokasi
-                                                                    }
-                                                                    className="mt-1 block w-full"
-                                                                    onChange={(
-                                                                        e
-                                                                    ) =>
-                                                                        setData(
-                                                                            "lokasi",
-                                                                            e
-                                                                                .target
-                                                                                .value
-                                                                        )
-                                                                    }
-                                                                />
-                                                                <InputError
-                                                                    message={
-                                                                        errors.lokasi
-                                                                    }
-                                                                    className="mt-2"
-                                                                />
-                                                            </div>
-                                                            <div className="col-span-2">
-                                                                <InputLabel
-                                                                    value={
-                                                                        "Pilih Pembimbing"
-                                                                    }
-                                                                />
-                                                                <select
-                                                                    onChange={(
-                                                                        e
-                                                                    ) =>
-                                                                        setData(
-                                                                            "pembimbing_id",
-                                                                            e
-                                                                                .target
-                                                                                .value
-                                                                        )
-                                                                    }
-                                                                    value={
-                                                                        data.pembimbing_id
-                                                                    }
-                                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-1"
-                                                                >
-                                                                    <option value="">
-                                                                        Default
-                                                                    </option>
-
-                                                                    {pembimbings.length >
-                                                                        0 &&
-                                                                        pembimbings.map(
-                                                                            (
-                                                                                pb
-                                                                            ) => (
-                                                                                <option
-                                                                                    key={
-                                                                                        pb.id
-                                                                                    }
-                                                                                    value={
-                                                                                        pb.id
-                                                                                    }
-                                                                                >
-                                                                                    {`${
-                                                                                        pb.name
-                                                                                    } - ${
-                                                                                        pb
-                                                                                            ?.tempat_yang_dibimbing
-                                                                                            ?.nama ??
-                                                                                        "belum membimbing"
-                                                                                    }`}
-                                                                                </option>
-                                                                            )
-                                                                        )}
-                                                                </select>
-
-                                                                <InputError
-                                                                    message={
-                                                                        errors.pembimbing_id
-                                                                    }
-                                                                    className="mt-2"
-                                                                />
-                                                            </div>
-                                                        </div>
-
-                                                        <PrimaryButton
-                                                            type="submit"
-                                                            className="gap-2"
-                                                            disabled={
-                                                                processing
-                                                            }
-                                                        >
-                                                            <Edit />
-                                                            {processing
-                                                                ? "Proses..."
-                                                                : "Ubah Data"}
-                                                        </PrimaryButton>
-                                                    </form>
+                                        <td className="px-4 text-center py-4">
+                                            <div className="flex justify-center gap-2">
+                                                {" "}
+                                                <div
+                                                    onClick={(e) =>
+                                                        handleEdit(e, tempat.id)
+                                                    }
+                                                    className="font-medium text-blue-600 hover:text-blue-500 cursor-pointer"
+                                                >
+                                                    <Edit />
                                                 </div>
-                                            </Modal>
-                                            <div
-                                                onClick={(e) =>
-                                                    handleDelete(
-                                                        e,
-                                                        tempat.id,
-                                                        tempat.nama
-                                                    )
-                                                }
-                                                className="font-medium text-red-800 hover:text-red-700 transition-all cursor-pointer"
-                                            >
-                                                <Trash />
+                                                <Modal
+                                                    show={
+                                                        editModal?.id ===
+                                                        tempat.id
+                                                    }
+                                                    onClose={() =>
+                                                        seteditModal(null)
+                                                    }
+                                                >
+                                                    <div className="relative bg-white rounded-lg shadow-sm ">
+                                                        <TitleModal
+                                                            icon={<X />}
+                                                            title={`Edit Du/Di ${tempat.nama}`}
+                                                            onClick={() =>
+                                                                seteditModal(
+                                                                    !editModal
+                                                                )
+                                                            }
+                                                        ></TitleModal>
+                                                        <form
+                                                            onSubmit={
+                                                                handleUpdate
+                                                            }
+                                                            className="p-4 md:p-5"
+                                                        >
+                                                            <div className="grid gap-4 mb-4 grid-cols-2">
+                                                                <div className="col-span-2">
+                                                                    <InputLabel
+                                                                        value={
+                                                                            "Nama Jurusan"
+                                                                        }
+                                                                    />
+                                                                    <TextInput
+                                                                        id="nama"
+                                                                        type="text"
+                                                                        name="nama"
+                                                                        value={
+                                                                            data.nama
+                                                                        }
+                                                                        className="mt-1 block w-full"
+                                                                        onChange={(
+                                                                            e
+                                                                        ) =>
+                                                                            setData(
+                                                                                "nama",
+                                                                                e
+                                                                                    .target
+                                                                                    .value
+                                                                            )
+                                                                        }
+                                                                    />
+                                                                    <InputError
+                                                                        message={
+                                                                            errors.nama
+                                                                        }
+                                                                        className="mt-2"
+                                                                    />
+                                                                </div>
+                                                                <div className="col-span-2">
+                                                                    <InputLabel
+                                                                        value={
+                                                                            "Kontak"
+                                                                        }
+                                                                    />
+                                                                    <TextInput
+                                                                        id="kontak"
+                                                                        type="text"
+                                                                        name="kontak"
+                                                                        value={
+                                                                            data.kontak
+                                                                        }
+                                                                        className="mt-1 block w-full"
+                                                                        onChange={(
+                                                                            e
+                                                                        ) =>
+                                                                            setData(
+                                                                                "kontak",
+                                                                                e
+                                                                                    .target
+                                                                                    .value
+                                                                            )
+                                                                        }
+                                                                    />
+                                                                    <InputError
+                                                                        message={
+                                                                            errors.kontak
+                                                                        }
+                                                                        className="mt-2"
+                                                                    />
+                                                                </div>
+                                                                <div className="col-span-2">
+                                                                    <InputLabel
+                                                                        value={
+                                                                            "Bidang Usaha"
+                                                                        }
+                                                                    />
+                                                                    <TextInput
+                                                                        id="bidang_usaha"
+                                                                        type="text"
+                                                                        name="bidang_usaha"
+                                                                        value={
+                                                                            data.bidang_usaha
+                                                                        }
+                                                                        className="mt-1 block w-full"
+                                                                        onChange={(
+                                                                            e
+                                                                        ) =>
+                                                                            setData(
+                                                                                "bidang_usaha",
+                                                                                e
+                                                                                    .target
+                                                                                    .value
+                                                                            )
+                                                                        }
+                                                                    />
+                                                                    <InputError
+                                                                        message={
+                                                                            errors.bidang_usaha
+                                                                        }
+                                                                        className="mt-2"
+                                                                    />
+                                                                </div>
+                                                                <div className="col-span-2">
+                                                                    <InputLabel
+                                                                        value={
+                                                                            "Lokasi Du/Di"
+                                                                        }
+                                                                    />
+                                                                    <TextInput
+                                                                        id="lokasi"
+                                                                        type="text"
+                                                                        name="lokasi"
+                                                                        value={
+                                                                            data.lokasi
+                                                                        }
+                                                                        className="mt-1 block w-full"
+                                                                        onChange={(
+                                                                            e
+                                                                        ) =>
+                                                                            setData(
+                                                                                "lokasi",
+                                                                                e
+                                                                                    .target
+                                                                                    .value
+                                                                            )
+                                                                        }
+                                                                    />
+                                                                    <InputError
+                                                                        message={
+                                                                            errors.lokasi
+                                                                        }
+                                                                        className="mt-2"
+                                                                    />
+                                                                </div>
+                                                                <div className="col-span-2">
+                                                                    <InputLabel
+                                                                        value={
+                                                                            "Pilih Pembimbing"
+                                                                        }
+                                                                    />
+                                                                    <select
+                                                                        onChange={(
+                                                                            e
+                                                                        ) =>
+                                                                            setData(
+                                                                                "pembimbing_id",
+                                                                                e
+                                                                                    .target
+                                                                                    .value
+                                                                            )
+                                                                        }
+                                                                        value={
+                                                                            data.pembimbing_id
+                                                                        }
+                                                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-1"
+                                                                    >
+                                                                        <option value="">
+                                                                            Default
+                                                                        </option>
+
+                                                                        {pembimbings.length >
+                                                                            0 &&
+                                                                            pembimbings.map(
+                                                                                (
+                                                                                    pb
+                                                                                ) => (
+                                                                                    <option
+                                                                                        key={
+                                                                                            pb.id
+                                                                                        }
+                                                                                        value={
+                                                                                            pb.id
+                                                                                        }
+                                                                                    >
+                                                                                        {`${
+                                                                                            pb.name
+                                                                                        } - ${
+                                                                                            pb
+                                                                                                ?.tempat_yang_dibimbing
+                                                                                                ?.nama ??
+                                                                                            "belum membimbing"
+                                                                                        }`}
+                                                                                    </option>
+                                                                                )
+                                                                            )}
+                                                                    </select>
+
+                                                                    <InputError
+                                                                        message={
+                                                                            errors.pembimbing_id
+                                                                        }
+                                                                        className="mt-2"
+                                                                    />
+                                                                </div>
+                                                            </div>
+
+                                                            <PrimaryButton
+                                                                type="submit"
+                                                                className="gap-2"
+                                                                disabled={
+                                                                    processing
+                                                                }
+                                                            >
+                                                                <Edit />
+                                                                {processing
+                                                                    ? "Proses..."
+                                                                    : "Ubah Data"}
+                                                            </PrimaryButton>
+                                                        </form>
+                                                    </div>
+                                                </Modal>
+                                                <div
+                                                    onClick={(e) =>
+                                                        handleDelete(
+                                                            e,
+                                                            tempat.id,
+                                                            tempat.nama
+                                                        )
+                                                    }
+                                                    className="font-medium text-red-800 hover:text-red-700 transition-all cursor-pointer"
+                                                >
+                                                    <Trash />
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>
@@ -566,7 +571,7 @@ const Index = () => {
                             disabled={processing}
                         >
                             <Plus />
-                            <span className="hidden sm:block">
+                            <span className="block">
                                 {processing ? "Proses..." : "Tambah Tempat"}
                             </span>
                         </PrimaryButton>

@@ -48,7 +48,7 @@ const Welcome = ({ gambars }) => {
                         <Link
                             as="button"
                             href={route("login")}
-                            className="text-white bg-gradient-to-br from-emerald-700 to-sky-700  hover:bg-emerald-800 focus:ring-4 focus:outline-none focus:ring-emerald-300 rounded-lg text-sm px-4 py-2 text-center border border-white capitalize font-bold"
+                            className="text-white bg-gradient-to-br from-emerald-700 to-sky-700  hover:bg-emerald-800 focus:ring-2 focus:outline-none focus:ring-emerald-300 rounded-lg text-sm px-4 py-2 text-center border border-white capitalize font-bold"
                         >
                             Log in
                         </Link>

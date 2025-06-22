@@ -20,7 +20,7 @@ export default function Login({ status, canResetPassword }) {
             onFinish: () => reset("password"),
         });
     };
-
+    
     return (
         <div
             style={{ background: "url(./header2.avif)" }}
@@ -132,14 +132,14 @@ export default function Login({ status, canResetPassword }) {
                         </div>
 
                         <div className="mt-4 flex items-center justify-end">
-                            {/* {canResetPassword && (
+                            {canResetPassword && (
                                 <Link
                                     href={route("password.request")}
                                     className="rounded-md text-sm text-gray-50 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                 >
                                     Forgot your password?
                                 </Link>
-                            )} */}
+                            )}
 
                             <PrimaryButton
                                 className="ms-4 bg-gradient-to-br from-emerald-700 to-sky-700  hover:bg-emerald-800 border border-white focus:border-emerald-400"

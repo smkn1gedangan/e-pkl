@@ -61,8 +61,8 @@ const Index = () => {
             setError("jurusan", "");
             setError("nama", "");
             setData("nama", filtered.nama);
-            setData("jurusan", filtered.jurusan);
-            setData("induk", filtered.induk);
+            setData("jurusan", filtered.nisn.slice(4));
+            setData("induk", filtered.nisn.slice(0,4));
             seteditModal(filtered);
         }
     };
@@ -278,6 +278,7 @@ const Index = () => {
                                                                                     .value
                                                                             )
                                                                         }
+                                                                        readOnly={editModal?.isActive}
                                                                     />
                                                                     <InputError
                                                                         message={
@@ -309,6 +310,7 @@ const Index = () => {
                                                                                     .value
                                                                             )
                                                                         }
+                                                                        readOnly={editModal?.isActive}
                                                                     />
                                                                     <InputError
                                                                         message={
@@ -356,10 +358,10 @@ const Index = () => {
                                                                     }
                                                                 >
                                                                     <Edit />
-                                                                    <span className="hidden sm:block">
+                                                                    <span className="block">
                                                                         {processing
                                                                             ? "Proses..."
-                                                                            : "Ubah Register Siswa"}
+                                                                            : "Ubah Data Siswa"}
                                                                     </span>
                                                                 </PrimaryButton>
                                                             </form>
@@ -575,8 +577,8 @@ const Index = () => {
                             disabled={processing}
                         >
                             <Plus />
-                            <span className="hidden sm:block">
-                                {processing ? "Proses..." : "Tambah Registrasi"}
+                            <span className="block">
+                                {processing ? "Proses..." : "Tambah Data Siswa"}
                             </span>
                         </PrimaryButton>
                     </form>
