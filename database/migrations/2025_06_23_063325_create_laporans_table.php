@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('laporans', function (Blueprint $table) {
             $table->id();
             $table->string("judul")->unique();
-            $table->enum("status",["pending","tolak","terima"])->default("pending");
+            $table->enum("isActive",["pending","tolak","terima"])->default("pending");
             $table->foreignId("user_id")->nullable()->constrained()->onDelete("cascade");
             $table->timestamps();
         });
