@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Data Siswa</title>
+    <title>Data {{ $siswa->name }}</title>
     <style>
         body {
             font-family: sans-serif;
@@ -25,100 +25,120 @@
         <table style="margin-top: 1rem;">
             <tbody>
                 <tr>
-                    <td align="left" style="padding: 1rem 3rem;" class="label">     
+                    <td align="left" style="padding: 0.5rem 3rem;" class="label">     
                         Nama Siswa       
                     </td>
-                    <td align="left" style="padding: 1rem 3rem;">
+                    <td align="left" style="padding: 0.5rem 3rem;">
                         <div>{{ $siswa->name }}</div>
                     </td>
                 </tr>
                 <tr>
-                    <td align="left" style="padding: 1rem 3rem;" class="label">     
+                    <td align="left" style="padding: 0.5rem 3rem;" class="label">     
                         Email       
                     </td>
-                    <td align="left" style="padding: 1rem 3rem;">
+                    <td align="left" style="padding: 0.5rem 3rem;">
                         <div>{{ $siswa->email }}</div>
                     </td>
                 </tr>
                 <tr>
-                    <td align="left" style="padding: 1rem 3rem;" class="label">     
+                    <td align="left" style="padding: 0.5rem 3rem;" class="label">     
                         Kontak       
                     </td>
-                    <td align="left" style="padding: 1rem 3rem;">
+                    <td align="left" style="padding: 0.5rem 3rem;">
                         <div>{{ $siswa->kontak }}</div>
                     </td>
                 </tr>
                 <tr>
-                    <td align="left" style="padding: 1rem 3rem;" class="label">     
+                    <td align="left" style="padding: 0.5rem 3rem;" class="label">     
                         Tempat , Tanggal Lahir       
                     </td>
-                    <td align="left" style="padding: 1rem 3rem;">
+                    <td align="left" style="padding: 0.5rem 3rem;">
                         <div>{{ $siswa->tempat_lahir }},
                             {{ $siswa->tanggal_lahir }}</div>
                     </td>
                 </tr>
                 <tr>
-                    <td align="left" style="padding: 1rem 3rem;" class="label">     
+                    <td align="left" style="padding: 0.5rem 3rem;" class="label">     
                         Jurusan       
                     </td>
-                    <td align="left" style="padding: 1rem 3rem;">
+                    <td align="left" style="padding: 0.5rem 3rem;">
                         <div>{{ $siswa->jurusan?->nama ?? "Belum Diisi"}}</div>
                     </td>
                 </tr>
                 <tr>
-                    <td align="left" style="padding: 1rem 3rem;" class="label">     
+                    <td align="left" style="padding: 0.5rem 3rem;" class="label">     
                         Tahun Ajaran       
                     </td>
-                    <td align="left" style="padding: 1rem 3rem;">
-                        <div>{{ $siswa->tahun_ajaran?->tahun?? "Belum Diisi"}}</div>
+                    <td align="left" style="padding: 0.5rem 3rem;">
+                        <div>{{ $siswa->tahunAjaran?->tahun?? "Belum Diisi"}}</div>
                     </td>
                 </tr>
                 <tr>
-                    <td align="left" style="padding: 1rem 3rem;" class="label">     
+                    <td align="left" style="padding: 0.5rem 3rem;" class="label">     
                         Tempat Pkl       
                     </td>
-                    <td align="left" style="padding: 1rem 3rem;">
+                    <td align="left" style="padding: 0.5rem 3rem;">
                         <div>{{ $siswa->tempat?->nama ?? "Belum Diisi"}}</div>
                     </td>
                 </tr>
                 <tr>
-                    <td align="left" style="padding: 1rem 3rem;" class="label">     
+                    <td align="left" style="padding: 0.5rem 3rem;" class="label">     
                         Pembimbing Pkl       
                     </td>
-                    <td align="left" style="padding: 1rem 3rem;">
+                    <td align="left" style="padding: 0.5rem 3rem;">
                         <div>{{ $siswa->tempat?->user?->name ?? "Belum Diisi"}}</div>
                     </td>
                 </tr>
                 <tr>
-                    <td align="left" style="padding: 1rem 3rem;" class="label">     
+                    <td align="left" style="padding: 0.5rem 3rem;" class="label">     
+                        Pembimbing Sekolah       
+                    </td>
+                    <td align="left" style="padding: 0.5rem 3rem;">
+                        <div>{{ $siswa->pbSkl?->name ?? "Belum Diisi"}}</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left" style="padding: 0.5rem 3rem;" class="label">     
                         Jumlah Jurnal       
                     </td>
-                    <td align="left" style="padding: 1rem 3rem;">
+                    <td align="left" style="padding: 0.5rem 3rem;">
                         <div>{{ $siswa->jurnals_count ?? "Belum Pernah" }}</div>
                     </td>
                 </tr>
                 <tr>
-                    <td align="left" style="padding: 1rem 3rem;" class="label">     
+                    <td align="left" style="padding: 0.5rem 3rem;" class="label">     
                         Jumlah Hadir Pkl       
                     </td>
-                    <td align="left" style="padding: 1rem 3rem;">
+                    <td align="left" style="padding: 0.5rem 3rem;">
                         <div>{{ $hadirs ?? "Belum Pernah" }}</div>
                     </td>
                 </tr>
                 <tr>
-                    <td align="left" style="padding: 1rem 3rem;" class="label">     
+                    <td align="left" style="padding: 0.5rem 3rem;" class="label">     
                         Jumlah Sakit Saat Pkl       
                     </td>
-                    <td align="left" style="padding: 1rem 3rem;">
+                    <td align="left" style="padding: 0.5rem 3rem;">
                         <div>{{ $sakits ?? "Belum Pernah" }}</div>
                     </td>
                 </tr>
                 <tr>
-                    <td align="left" style="padding: 1rem 3rem;" class="label">     
+                    <td align="left" style="padding: 0.5rem 3rem;" class="label">     
                         Jumlah Izin Saat Pkl       
                     </td>
-                    <td align="left" style="padding: 1rem 3rem;">
+                    <td align="left" style="padding: 0.5rem 3rem;">
                         <div>{{ $izins ?? "Belum Pernah" }}</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left" style="padding: 0.5rem 3rem;" class="label">     
+                        Nilai     
+                    </td>
+                    <td align="left" style="padding: 0.5rem 3rem;">
+                        @if (count($siswa->nilai) > 0)
+                            @foreach ($siswa->nilai as $n)
+                                <div>{{ $n->nilai ?? "Belum Diisi" }}</div>
+                            @endforeach
+                        @endif
                     </td>
                 </tr>
             </tbody>

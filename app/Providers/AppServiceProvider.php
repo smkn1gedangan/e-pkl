@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Laporan;
 use App\Models\PengajuanTempat;
-use App\Models\User;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
@@ -27,7 +27,10 @@ class AppServiceProvider extends ServiceProvider
         Inertia::share([
             "ptCount"=>function(){
                 return PengajuanTempat::count();
-            }
+            },
+            "lpCount"=>function(){
+                return Laporan::where("status","=","pending")->count();
+            },
         ]);
     }
 }

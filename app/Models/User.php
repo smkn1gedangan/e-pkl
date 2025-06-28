@@ -93,4 +93,7 @@ class User extends Authenticatable
     public function jurnals() : HasMany {
         return $this->hasMany(Jurnal::class,"user_id","id");
     }
+    public function laporan() : hasOne {
+        return $this->hasOne(Laporan::class,"user_id","id");
+    }
 }

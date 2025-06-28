@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use App\Models\Datasiswa;
 use App\Models\Jurusan;
+use App\Models\StepLaporan;
 use App\Models\TahunAjaran;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -50,7 +51,7 @@ class RegisteredUserController extends Controller
         return Inertia::render('Auth/Register', [
             "siswa" => $siswa,
             "jurusans"=>Jurusan::where("isActive","=","aktif")->get(),
-            "tahunAjarans" => TahunAjaran::get(),
+            "tahunAjarans" => TahunAjaran::where("isActive","=","aktif")->get(),
         ]);
     }
 

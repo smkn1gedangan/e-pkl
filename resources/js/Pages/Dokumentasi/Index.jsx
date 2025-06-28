@@ -45,10 +45,29 @@ const Dashboard = () => {
                                 setiap hari di halaman dashboard
                             </li>
                             <li>
-                                {auth.user.name} juga bisa membuat laporan
-                                otomatis dari dashboard di website{" "}
+                                {auth.user.name} juga bisa mendapatkan panduan
+                                laporan dan halaman awal di website{" "}
                                 <b>e-pkl-v2</b> mendatang
                             </li>
+                            <li>
+                                <b>
+                                    {auth.user.name} juga bisa membuat judul
+                                    laporan yeng bersifat unik , yang artinya
+                                    judul tidak boleh sama dengan siswa lainnya{" "}
+                                    <b>(semakin cepat semakin baik)</b>
+                                </b>
+                            </li>
+                            <li>
+                                jika judul di tolak oleh pembimbing ,maka siswa
+                                akan di arahkan ke halaman revisi
+                            </li>
+
+                            <li>
+                                jika judul di terima oleh pembimbing ,maka siswa
+                                bisa memulai membuat laporan dengan referensi
+                                yang ada pada website <b>epkl</b>
+                            </li>
+
                             <li>
                                 {auth.user.name} bisa mengajukan lokasi pkl jika
                                 dirasa saat ini tidak cocok dengan diri pribadi.
@@ -113,7 +132,28 @@ const Dashboard = () => {
                                     data siswa yang di bimbing
                                 </b>
                             </li>
-
+                            <li>
+                                <b>
+                                    Admin ,Pembimbing Pt DuDi , dan Pembimbing
+                                    Sekolah berhak menyetujui / menolak Judul
+                                    laporan yang di buat oleh siswa
+                                </b>
+                            </li>
+                            <li>
+                                <b>
+                                    Jika disetujui , siswa dapat memulai membuat
+                                    laporan , dan jika ditolak maka siswa harus
+                                    membuat revisi judul
+                                </b>
+                            </li>
+                            <li>
+                                <img
+                                    src="./img/sampleLaporan.png"
+                                    className="w-full h-auto"
+                                    alt=""
+                                    srcset=""
+                                />
+                            </li>
                             <li>
                                 <b>
                                     {auth.role.replace(/_/g, " ")} mengetahui
@@ -175,7 +215,28 @@ const Dashboard = () => {
                                     data siswa yang di bimbing
                                 </b>
                             </li>
-
+                            <li>
+                                <b>
+                                    Admin ,Pembimbing Pt DuDi , dan Pembimbing
+                                    Sekolah berhak menyetujui / menolak Judul
+                                    laporan yang di buat oleh siswa
+                                </b>
+                            </li>
+                            <li>
+                                <b>
+                                    Jika disetujui , siswa dapat memulai membuat
+                                    laporan , dan jika ditolak maka siswa harus
+                                    membuat revisi judul
+                                </b>
+                            </li>
+                            <li>
+                                <img
+                                    src="./img/sampleLaporan.png"
+                                    className="w-full h-auto"
+                                    alt=""
+                                    srcset=""
+                                />
+                            </li>
                             <li>
                                 <b>
                                     {auth.role.replace(/_/g, " ")} mengetahui
@@ -254,6 +315,28 @@ const Dashboard = () => {
                             </li>
                             <li>
                                 <b>
+                                    Admin ,Pembimbing Pt DuDi , dan Pembimbing
+                                    Sekolah berhak menyetujui / menolak Judul
+                                    laporan yang di buat oleh siswa
+                                </b>
+                            </li>
+                            <li>
+                                <b>
+                                    Jika disetujui , siswa dapat memulai membuat
+                                    laporan , dan jika ditolak maka siswa harus
+                                    membuat revisi judul
+                                </b>
+                            </li>
+                            <li>
+                                <img
+                                    src="./img/sampleLaporan.png"
+                                    className="w-full h-auto"
+                                    alt=""
+                                    srcset=""
+                                />
+                            </li>
+                            <li>
+                                <b>
                                     {auth.role.replace(/_/g, " ")} berhak
                                     menyetujui / menolak pengajuan tempat dan
                                     dilakukan oleh siswa
@@ -315,9 +398,10 @@ const Dashboard = () => {
                                 </b>
                             </li>
                             <li>
-                                {auth.role.replace(/_/g, " ")} {" "}
+                                {auth.role.replace(/_/g, " ")}{" "}
                                 <b>
-                                  tak bisa mengubah  nama siswa kecuali dari halaman data siswa
+                                    tak bisa mengubah nama siswa kecuali dari
+                                    halaman data siswa
                                 </b>
                             </li>
                             <li>

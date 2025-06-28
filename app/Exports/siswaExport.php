@@ -3,10 +3,11 @@
 namespace App\Exports;
 
 use App\Models\User;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\FromView;
 
-class siswaExport implements FromCollection
+class siswaExport implements FromView
 {
     public function __construct(public $request)  {
         
@@ -14,7 +15,7 @@ class siswaExport implements FromCollection
     /**
     * @return \Illuminate\Support\Collection
     */
-    public function collection()
+    public function view():View
     {
         
         $sortableRelations = [
@@ -26,7 +27,7 @@ class siswaExport implements FromCollection
         $sortOrder = $this->request->input('sort_order')?: 'asc';
 
 
-        $datas = User::query()->with(["jurusan","tahunAjaran","pbSkl","tempat.user","nilai.pembimbing","nilai"])
+        $datas = User::query()->with(["jurusan","tahunAjaran","pbSkl","tempat.user","nilai.pembimbing","nilai","laporan","dataSiswa"])->withCount("jurnals")
         ->when(Auth::user()->getRoleNames()->first() === "pembimbing_sekolah",function($query){
             $query->where("pembimbing_sekolah_id","=",Auth::user()->id);
         })
@@ -83,20 +84,9 @@ class siswaExport implements FromCollection
         })
 
         ->orderBy($this->request->input("sort_by")?: "users.created_at",$this->request->input("sort_order")?: "desc")
-        ->role("siswa")->get()->map(function($query){
-            return [        
-                "nama"=>$query->name,
-                "email"=>$query->email,
-                "kontak"=>$query->kontak,
-                "jurusan"=>$query->jurusan->nama,
-                "tempat"=>$query->tempat?->nama,
-                "pembimbing_pt"=>$query->tempat?->user?->name,
-                "pembimbing_sekolah"=>$query->pbSkl?->name,
-                "nilai" => $query->nilai instanceof \Illuminate\Support\Collection 
-                ? $query->nilai->pluck('nilai')->implode(', ') 
-                : ($query->nilai?->nilai ?? "-"),
-                ];
-        });
-        return $datas;
+        ->role("siswa")->get();
+        return view("excel.siswas",[
+            "siswas"=>$datas
+        ]);
     }
 }

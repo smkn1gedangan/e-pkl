@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import TitlePage from "@/Components/TitlePage";
 import Modal from "@/Components/Modal";
@@ -20,6 +20,7 @@ const Index = () => {
     const [editModal, seteditModal] = useState(false);
     const { data, setData, errors, post, processing, reset, put } = useForm({
         nama: "",
+        kepala: "",
         isActive: "tidak",
     });
     const { data: dataSearch, setData: setDataSearch } = useForm({
@@ -57,6 +58,7 @@ const Index = () => {
         const filtered = jurusans.data.find((jurusan) => jurusan.id === id);
         if (filtered) {
             setData("nama", filtered.nama);
+            setData("kepala", filtered?.kepala ?? "");
             setData("isActive", filtered.isActive);
             seteditModal(filtered);
         }
@@ -104,6 +106,7 @@ const Index = () => {
                 onClick={() => {
                     setCreateModal(true);
                     setData("nama", "");
+                    setData("kepala", "");
                 }}
             ></TitlePage>
             <Filter
@@ -117,6 +120,7 @@ const Index = () => {
                         headers={[
                             { nama: "#" },
                             { nama: "Nama Jurusan" },
+                            { nama: "Kepala Konsentrasi" },
                             { nama: "Keaktifan" },
                             { nama: "Opsi" },
                         ]}
@@ -126,7 +130,11 @@ const Index = () => {
                                 jurusans.data.map((jurusan, index) => (
                                     <tr
                                         key={index}
-                                        className="bg-white border-b  border-gray-200"
+                                        className={`${
+                                            jurusan.isActive === "aktif"
+                                                ? "bg-blue-700 text-white border-white"
+                                                : "bg-white border-b  border-gray-200"
+                                        } border`}
                                     >
                                         <td className="px-4 text-center py-4">
                                             {index + jurusans.from}
@@ -134,6 +142,9 @@ const Index = () => {
 
                                         <td className="px-4 text-center py-4">
                                             {jurusan.nama}
+                                        </td>
+                                        <td className="px-4 text-center py-4">
+                                            {jurusan.kepala}
                                         </td>
                                         <td className="px-4 text-center py-4">
                                             {jurusan.isActive === "aktif"
@@ -150,7 +161,12 @@ const Index = () => {
                                                             jurusan.id
                                                         )
                                                     }
-                                                    className="font-medium text-blue-600 hover:text-blue-500 cursor-pointer"
+                                                    className={`${
+                                                        jurusan.isActive ===
+                                                        "aktif"
+                                                            ? "text-white"
+                                                            : " text-blue-600 hover:text-blue-500 "
+                                                    } font-medium cursor-pointer`}
                                                 >
                                                     <Edit />
                                                 </div>
@@ -208,6 +224,38 @@ const Index = () => {
                                                                     <InputError
                                                                         message={
                                                                             errors.nama
+                                                                        }
+                                                                        className="mt-2"
+                                                                    />
+                                                                </div>
+                                                                <div className="col-span-2">
+                                                                    <InputLabel
+                                                                        value={
+                                                                            "Nama Kepala Konsentrasi Keahlian Dan Gelar (Jika Ada)"
+                                                                        }
+                                                                    />
+                                                                    <TextInput
+                                                                        id="kepala"
+                                                                        type="text"
+                                                                        name="kepala"
+                                                                        value={
+                                                                            data.kepala
+                                                                        }
+                                                                        className="mt-1 block w-full"
+                                                                        onChange={(
+                                                                            e
+                                                                        ) =>
+                                                                            setData(
+                                                                                "kepala",
+                                                                                e
+                                                                                    .target
+                                                                                    .value
+                                                                            )
+                                                                        }
+                                                                    />
+                                                                    <InputError
+                                                                        message={
+                                                                            errors.kepala
                                                                         }
                                                                         className="mt-2"
                                                                     />
@@ -285,7 +333,12 @@ const Index = () => {
                                                             jurusan.nama
                                                         )
                                                     }
-                                                    className="font-medium text-red-800 hover:text-red-700 transition-all cursor-pointer"
+                                                    className={`${
+                                                        jurusan.isActive ===
+                                                        "aktif"
+                                                            ? "text-white"
+                                                            : " text-red-800 hover:text-red-700 "
+                                                    } font-medium cursor-pointer`}
                                                 >
                                                     <Trash />
                                                 </div>
@@ -338,6 +391,27 @@ const Index = () => {
                                 />
                                 <InputError
                                     message={errors.nama}
+                                    className="mt-2"
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <InputLabel
+                                    value={
+                                        "Nama Kepala Konsentrasi Keahlian Dan Gelar (Jika Ada)"
+                                    }
+                                />
+                                <TextInput
+                                    id="kepala"
+                                    type="text"
+                                    name="kepala"
+                                    value={data.kepala}
+                                    className="mt-1 block w-full"
+                                    onChange={(e) =>
+                                        setData("kepala", e.target.value)
+                                    }
+                                />
+                                <InputError
+                                    message={errors.kepala}
                                     className="mt-2"
                                 />
                             </div>

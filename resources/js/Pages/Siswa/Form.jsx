@@ -59,6 +59,7 @@ const Form = ({
                         setData("pembimbing_sekolah_id", "");
                         setData("tempat_id", "");
                         setData("kontak", "");
+                        setData("tanggal_lahir", "");
                         setData("password", "");
                         setData("password_confirmation", "");
                         toast.success(`${sccs.props.auth.flash?.success}`);

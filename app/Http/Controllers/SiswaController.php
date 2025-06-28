@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SiswaRequest;
 use App\Models\Datasiswa;
 use App\Models\Jurusan;
+use App\Models\StepLaporan;
 use App\Models\TahunAjaran;
 use App\Models\Tempat;
 use App\Models\User;
@@ -31,15 +32,15 @@ class SiswaController extends Controller
         $sortBy = $request->input('sort_by');
         $sortOrder = $request->input('sort_order', 'asc');
         $datas = User::query()->with(["jurusan","tahunAjaran","pbSkl","tempat.user","nilai.pembimbing","dataSiswa"])
-        ->when(Auth::user()->getRoleNames()->first() === "pembimbing_sekolah",function($query){
+        ->when(Auth::user()->getRoleNames()->contains("pembimbing_sekolah"),function($query){
             $query->where("pembimbing_sekolah_id","=",Auth::user()->id);
         })
-        ->when(Auth::user()->getRoleNames()->first() === "pembimbing_pt",function($query){
+        ->when(Auth::user()->getRoleNames()->contains("pembimbing_pt"),function($query){
             $query->whereHas("tempat",function($q2){
                 $q2->where("pembimbing_id","=",Auth::user()->id);
             });
         })
-        ->when(Auth::user()->getRoleNames()->first() === "siswa",function($query){
+        ->when(Auth::user()->getRoleNames()->contains("siswa"),function($query){
             $query->where("id","=",Auth::user()->id);
         })
         ->when($request->filled("jurusan"),function($query)use($request){
@@ -87,7 +88,7 @@ class SiswaController extends Controller
         })
 
         ->orderBy($request->input("sort_by","users.created_at"),$request->input("sort_order","desc"))
-        ->role("siswa")->paginate(10);
+        ->role("siswa")->paginate(10)->withQueryString();
         return Inertia::render("Siswa/Index",[
             "siswas"=> $datas,
             "filters"=> $request->only(["search","sort_by","sort_order","tahunAjaran","tempat","jurusan"]),
@@ -107,7 +108,7 @@ class SiswaController extends Controller
             "jurusans"=>Jurusan::where("isActive","=","aktif")->get(),
             "tempats"=>Tempat::get(),
             "dataSiswas"=>Datasiswa::where("isActive","=",false)->get(),
-            "tahunAjarans"=>TahunAjaran::get(),
+            "tahunAjarans"=>TahunAjaran::where("isActive","=","aktif")->get(),
         ]);
     }
 
@@ -139,6 +140,7 @@ class SiswaController extends Controller
             "password"=> Hash::make($validate["password"]),
         ]);
         $siswa->syncRoles("siswa");
+
         return redirect()->route("siswa.create")->with("success","Sukses Menambah Data Siswa Baru");
     }
 
@@ -161,7 +163,7 @@ class SiswaController extends Controller
             "dataSiswas"=>Datasiswa::get(),
             "jurusans"=>Jurusan::where("isActive","=","aktif")->get(),
             "tempats"=>Tempat::get(),
-            "tahunAjarans"=>TahunAjaran::get(),
+            "tahunAjarans"=>TahunAjaran::where("isActive","=","aktif")->get(),
             "isEdit"=>true
         ]);
     }

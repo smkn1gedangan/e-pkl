@@ -52,7 +52,7 @@ class PembimbingController extends Controller
         })
         ->orderBy($request->input("sort_by","users.created_at"),$request->input("sort_order","desc"))
         
-        ->role(["pembimbing_pt","pembimbing_sekolah"])->paginate(10);
+        ->role(["pembimbing_pt","pembimbing_sekolah"])->paginate(10)->withQueryString();
         
         return Inertia::render("Pembimbing/Index",[
             "pembimbings"=> $datas,
@@ -69,7 +69,7 @@ class PembimbingController extends Controller
     {
         return Inertia::render("Pembimbing/Form",[
             "jurusans"=>Jurusan::where("isActive","=","aktif")->get(),
-            "tahunAjarans"=>TahunAjaran::get(),
+            "tahunAjarans"=>TahunAjaran::where("isActive","=","aktif")->get(),
             "tempats"=>Tempat::get(),
         ]);
     }
@@ -126,7 +126,7 @@ class PembimbingController extends Controller
          return Inertia::render("Pembimbing/Form",[
             "user"=> User::with(["tahunAjaran","jurusan","roles"])->where("id",'=',$id)->first(),
             "jurusans"=>Jurusan::where("isActive","=","aktif")->get(),
-            "tahunAjarans"=>TahunAjaran::get(),
+            "tahunAjarans"=>TahunAjaran::where("isActive","=","aktif")->get(),
             "tempats"=>Tempat::get(),
             "isEdit"=>true
         ]);

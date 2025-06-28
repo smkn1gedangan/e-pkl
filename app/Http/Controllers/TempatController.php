@@ -26,7 +26,7 @@ class TempatController extends Controller
             });
         })
         ->orderBy($request->input("sort_by","created_at"),$request->input("sort_order","desc"))
-        ->paginate(10);
+        ->paginate(10)->withQueryString();
 
 
         return Inertia::render("Tempat/Index",[

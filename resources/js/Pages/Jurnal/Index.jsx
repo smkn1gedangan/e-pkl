@@ -175,7 +175,7 @@ const Index = () => {
                             { nama: "Kegiatan" },
                             { nama: "Photo" },
                             { nama: "Dibuat Pada" },
-                            { nama: "Mark" },
+                            { nama: "Tanda" },
                             { nama: "Opsi" },
                         ]}
                     >

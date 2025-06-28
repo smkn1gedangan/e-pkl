@@ -34,12 +34,13 @@ class TahunAjaranController extends Controller
     public function store(Request $request)
     {
         $validate = $request->validate([
-            "tahun"=>["string","min:3","max:30","unique:tahun_ajarans,tahun",new TahunValidation]
+            "tahun"=>["string","min:3","max:20","unique:tahun_ajarans,tahun",new TahunValidation],
+            "isActive"=>"required|in:aktif,tidak"
         ],[
-            "tahun.string"=>"Tahun Ajaran Wajib Diisi 3 - 30 Karakter Huruf",
+            "tahun.string"=>"Tahun Ajaran Wajib Diisi 3 - 20 Karakter Huruf",
             "tahun.unique"=>"Tahun Ajaran Telah Ada"
         ]);
-        TahunAjaran::create(["tahun" => preg_replace("/\s*-\s*/"," - ",$validate["tahun"])]);
+        TahunAjaran::create(["tahun" => preg_replace("/\s*-\s*/"," - ",$validate["tahun"]),"isActive"=>$validate["isActive"]]);
 
         return redirect()->route("tahunAjaran.index")->with("success","Sukses Menambah Tahun Ajaran Baru");
     }
@@ -69,13 +70,15 @@ class TahunAjaranController extends Controller
         $taId = TahunAjaran::findOrFail($id);
         
         $validate = $request->validate([
-            "tahun"=>["string","min:3","max:30",Rule::unique("tahun_ajarans","tahun")->ignore($id) , new TahunValidation]
+            "tahun"=>["string","min:3","max:30",Rule::unique("tahun_ajarans","tahun")->ignore($id) , new TahunValidation],
+            "isActive"=>"required|in:aktif,tidak"
         ],[
             "tahun.string"=>"Tahun Ajaran Wajib Diisi 3 - 30 Karakter Huruf",
             "tahun.unique"=>"Tahun Ajaran Telah Ada"
         ]);
 
         $taId->tahun = preg_replace("/\s*-\s*/"," - ",$validate["tahun"]);
+        $taId->isActive = $validate["isActive"];
 
         $taId->save();
         return redirect()->route("tahunAjaran.index")->with("success","Sukses Mengubah Tahun Ajaran");

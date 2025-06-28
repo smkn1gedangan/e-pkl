@@ -8,6 +8,7 @@ use App\Imports\DataSiswaImport;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ImportController extends Controller
@@ -32,15 +33,15 @@ class ImportController extends Controller
     }
 
     public function exportDataSiswa(Request $request) {
-        return Excel::download(new DataSiswaExport($request), 'data-siswa.xlsx');
+        return Excel::download(new DataSiswaExport($request), 'data-siswa-'. now()->format("d-m-Y h-i-s") . '.xlsx');
     }
     
     public function exportSiswa(Request $request) {
-        return Excel::download(new siswaExport($request), 'siswa.xlsx');
+        return Excel::download(new siswaExport($request), 'siswa-'.now().'xlsx');
     }
 
     public function exportSiswaToPdf($id)  {
-        $siswa = User::with(["jurusan","tahunAjaran","pbSkl","tempat.user","nilai.pembimbing","dataSiswa","jurnals"])->withCount("jurnals")->findOrFail($id);
+        $siswa = User::with(["jurusan","tahunAjaran","pbSkl","tempat.user","nilai.pembimbing","dataSiswa","jurnals","nilai"])->withCount("jurnals")->findOrFail($id);
 
         $hadirs =$siswa->jurnals->where("keterangan","hadir")->count();
         $sakits =$siswa->jurnals->where("keterangan","sakit")->count();
@@ -48,6 +49,20 @@ class ImportController extends Controller
         // view PDF dengan data $siswa
         $pdf = Pdf::loadView('pdf.siswa', compact('siswa','hadirs','sakits','izins'));
 
-        return $pdf->download('siswa-' . $siswa->name . '.pdf');
+        return $pdf->stream('siswa-' . $siswa->name . '.pdf');
+    }
+
+    public function exportFormatlaporan()  {
+        $public_path = public_path("pdf/formatLaporan.pdf");
+        
+        return response()->download($public_path);
+    }
+    public function exportLaporan()  {
+        $user = User::with(["jurusan","tahunAjaran","pbSkl","tempat.user","nilai.pembimbing","dataSiswa","laporan","nilai"])->where("id","=",Auth::user()->id)->first();
+
+        $pdf = Pdf::loadView("pdf.laporan",compact("user"))->setPaper("a4","potrait");
+
+        return $pdf->stream("laporan-". $user->name . ".pdf");
+
     }
 }

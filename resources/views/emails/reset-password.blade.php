@@ -1,14 +1,16 @@
 <x-mail::message>
 
 halo {{ $nama }}, {{ config("app.name") }} menerima permintaan untuk mereset password akun ini.
+<img src="{{ public_path("img/logo.png") }}" alt="logo smknega">
 
 <x-mail::button :url="$url">
 Klik Disini Untuk Reset Password
 </x-mail::button>
 
-<a href="$url">Jika button tidak bisa di klik , klik link ini</a>
+<p>Jika button tidak bisa di klik , klik link dibawah ini</p>
+<a class="text-xs" href="$url">$url</a>
 
-Jika Anda tidak meminta reset ini, abaikan email saja ini. <br>
-Thanks Smkn 1 Gedangan,<br>
+<p class="text-xs">Jika Anda tidak meminta reset ini, abaikan saja email ini.</p> <br>
+Terima Kasih<br>
 {{ config('app.name') }}
 </x-mail::message>

@@ -15,6 +15,20 @@ export const AlertConfirm = (text, icon, cb, confirmBtn) => {
         }
     });
 };
+export const AlertConfirmTwoOption = (text, icon, cb, confirmBtn) => {
+    Swal.fire({
+        title: "Apakah Yakin?",
+        text: `${text}!`,
+        icon: `${icon}`,
+        showCancelButton: true,
+        showDenyButton:true,
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: confirmBtn ?? "Ya, Hapus!",
+        denyButtonText:  "Tolak",
+    }).then((result) => {
+        cb(result);
+    });
+};
 
 export const Alert = (text, icon, timer) => {
     Swal.fire({

@@ -74,7 +74,7 @@ const Form = ({ jurusans, tahunAjarans, tempats, isEdit, user }) => {
                     <div className="grid gap-4 mb-4 grid-cols-1 md:grid-cols-2 p-2">
                         <div className="col-span-1 space-y-3">
                             <div className="">
-                                <InputLabel value={" Nama (wajib)"} />
+                                <InputLabel value={" Nama dan Gelarnya (Jika Ada)(wajib)"} />
                                 <TextInput
                                     id="name"
                                     type="text"

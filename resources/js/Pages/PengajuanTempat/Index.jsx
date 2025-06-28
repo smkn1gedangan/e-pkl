@@ -141,7 +141,7 @@ const Index = () => {
                                         className="p-2 text-sm font-medium text-center"
                                         colSpan={3}
                                     >
-                                        Tidak ada Tahun Ajaran Di tambahkan
+                                        Tidak ada Pengajuan Tempat Di tambahkan
                                     </td>
                                 </tr>
                             )}

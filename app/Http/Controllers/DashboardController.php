@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Gambar;
 use App\Models\Jurnal;
+use App\Models\Jurusan;
+use App\Models\Laporan;
+use App\Models\PengajuanTempat;
+use App\Models\TahunAjaran;
 use App\Models\Tempat;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -20,10 +25,10 @@ class DashboardController extends Controller
         $rekapSiswa = Jurnal::where("user_id","=",Auth::user()->id)->select("keterangan",DB::raw("count(*) as total"))->groupBy("keterangan")->pluck("total","keterangan");
 
         $rekapPb = User::query()->with(["tempat","roles"])
-        ->when(Auth::user()->getRoleNames()->first() === "pembimbing_sekolah",function($query){
+        ->when(Auth::user()->getRoleNames()->contains("pembimbing_sekolah"),function($query){
             $query->withCount("jurnals")->where("pembimbing_sekolah_id","=",Auth::user()->id);
         })
-        ->when(Auth::user()->getRoleNames()->first() === "pembimbing_pt",function($query){
+        ->when(Auth::user()->getRoleNames()->contains("pembimbing_pt"),function($query){
             $query->withCount("jurnals")->whereHas("tempat",function($q2){
                     $q2->where("pembimbing_id",Auth::user()->id);
                 });
@@ -35,6 +40,12 @@ class DashboardController extends Controller
             "siswa"=>User::with("roles")->role("siswa")->count(),
             "pembimbingPt"=>User::with("roles")->role("pembimbing_pt")->count(),
             "pembimbingSekolah"=>User::with("roles")->role("pembimbing_sekolah")->count(),
+            "pengajuanTempat"=>PengajuanTempat::count(),
+            "slider"=>Gambar::count(),
+            "jurusan"=>Jurusan::count(),
+            "tahunAjaran"=>TahunAjaran::count(),
+            "jurnal"=>Jurnal::count(),
+            "laporan"=>Laporan::count(),
         ];
 
         return Inertia::render("Dashboard",[

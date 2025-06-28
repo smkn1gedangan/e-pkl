@@ -15,14 +15,14 @@ import {
     LayoutIcon,
     ListStartIcon,
     LogOut,
+    Newspaper,
     User,
     UserPen,
     Users,
 } from "lucide-react";
-import { useEffect } from "react";
 
 const SideMenu = ({ children, ...props }) => {
-    const { auth, ptCount } = usePage().props;
+    const { auth, ptCount, lpCount } = usePage().props;
     const routes = [
         {
             id: 1,
@@ -39,7 +39,29 @@ const SideMenu = ({ children, ...props }) => {
             ],
         },
         {
-            id: 20,
+            id: 1200,
+            nama: "Laporan",
+            pathname:
+                window.location.pathname.split("/", 3)[1] === "laporan"
+                    ? window.location.pathname.replace("/", "")
+                    : "",
+            route:
+                auth.role === "siswa"
+                    ? route("laporan.create")
+                    : route("laporan.index"),
+            icon: <Newspaper />,
+            rolePermision: [
+                "siswa",
+                "admin",
+                "pembimbing_pt",
+                "pembimbing_sekolah",
+            ],
+            isLink: true,
+            isAlert: true,
+            alert: auth.role !== "siswa" ? lpCount : 0,
+        },
+        {
+            id: 2,
             nama: "User Terdata",
             pathname: "data_siswa",
             route: route("data_siswa.index"),
@@ -48,10 +70,10 @@ const SideMenu = ({ children, ...props }) => {
             isLink: true,
         },
         {
-            id: 100,
+            id: 3,
             nama: auth.role === "admin" ? "Ajuan Tempat" : "Ajukan Tempat",
             pathname:
-                window.location.pathname.split("/",3)[1] === "pengajuanTempat"
+                window.location.pathname.split("/", 3)[1] === "pengajuanTempat"
                     ? window.location.pathname.replace("/", "")
                     : "",
             route:
@@ -65,7 +87,7 @@ const SideMenu = ({ children, ...props }) => {
             alert: auth.role === "admin" ? ptCount : 0,
         },
         {
-            id: 25,
+            id: 4,
             nama: "Slider",
             pathname: "gambar",
             route: route("gambar.index"),
@@ -83,7 +105,7 @@ const SideMenu = ({ children, ...props }) => {
             isLink: true,
         },
         {
-            id: 3,
+            id: 6,
             nama: "Tahun Ajaran",
             pathname: "tahunAjaran",
             route: route("tahunAjaran.index"),
@@ -92,7 +114,7 @@ const SideMenu = ({ children, ...props }) => {
             isLink: true,
         },
         {
-            id: 4,
+            id: 7,
             nama: "Tempat Du/Di",
             pathname: "tempat",
             route: route("tempat.index"),
@@ -101,7 +123,7 @@ const SideMenu = ({ children, ...props }) => {
             isLink: true,
         },
         {
-            id: 2,
+            id: 8,
             nama: "Pembimbing",
             pathname: "pembimbing",
             route: route("pembimbing.index"),
@@ -110,7 +132,7 @@ const SideMenu = ({ children, ...props }) => {
             isLink: true,
         },
         {
-            id: 10,
+            id: 9,
             nama: "Siswa",
             pathname: "siswa",
             route: route("siswa.index"),
@@ -124,7 +146,7 @@ const SideMenu = ({ children, ...props }) => {
             isLink: true,
         },
         {
-            id: 11,
+            id: 10,
             nama: "Jurnal",
             pathname: "rekap",
             route: route("rekap.index"),
@@ -139,7 +161,7 @@ const SideMenu = ({ children, ...props }) => {
         },
 
         {
-            id: 6,
+            id: 11,
             nama: "Edit Akun",
             pathname: "profile",
             route: route("profile.edit"),
@@ -153,7 +175,7 @@ const SideMenu = ({ children, ...props }) => {
             ],
         },
         {
-            id: 1202,
+            id: 12,
             nama: "Dokumentasi",
             pathname: "dokumentasi",
             route: route("dokumentasi"),
@@ -167,7 +189,7 @@ const SideMenu = ({ children, ...props }) => {
             ],
         },
         {
-            id: 7,
+            id: 13,
             nama: "Logout",
             icon: <LogOut />,
             isLink: false,
@@ -175,11 +197,9 @@ const SideMenu = ({ children, ...props }) => {
     ];
     const handleLogout = (e) => {
         e.preventDefault();
-
         AlertConfirm(
             "Anda Akan Logout!",
             "question",
-
             () => {
                 router.post(route("logout"));
             },
@@ -205,7 +225,7 @@ const SideMenu = ({ children, ...props }) => {
                                 } w-full flex items-center p-2 rounded-lg   group`}
                             >
                                 <span className="">{route.icon}</span>
-                                <span className="ms-3 hidden sm:text-xs md:text-base sm:block">
+                                <span className="ms-1 sm:ms-3 text-xs md:text-base sm:block">
                                     {route.nama}
                                 </span>
                                 {route.isAlert && route.alert !== 0 && (
@@ -217,11 +237,11 @@ const SideMenu = ({ children, ...props }) => {
                         )
                     ) : (
                         <div
-                            onClick={handleLogout}
+                            onClick={(e) => handleLogout(e)}
                             className="flex items-center p-2 text-gray-900 rounded-lg dark:text-slate-800 hover:bg-stone-300 group cursor-pointer"
                         >
                             <span className="">{route.icon}</span>
-                            <span className="ms-3 hidden sm:text-xs sm:block md:text-base">
+                            <span className="ms-1 sm:ms-3 text-xs md:text-base sm:block">
                                 {route.nama}
                             </span>
                         </div>

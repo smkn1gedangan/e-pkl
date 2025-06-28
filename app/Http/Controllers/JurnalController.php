@@ -19,16 +19,16 @@ class JurnalController extends Controller
     public function index(Request $request)
     {
         $jurnal = Jurnal::query()->with("user")
-        ->when(Auth::user()->getRoleNames()->first() === "siswa",function($query){
+        ->when(Auth::user()->getRoleNames()->contains("siswa"),function($query){
             $query->where("user_id",'=', Auth::user()->id);
         })
-       ->when(Auth::user()->getRoleNames()->first() === "pembimbing_pt", function ($query) {
+       ->when(Auth::user()->getRoleNames()->contains("pembimbing_pt"), function ($query) {
         $query->whereHas('user.tempat', function ($q2) {
            
             $q2->where('pembimbing_id', Auth::id());
         });
         })
-       ->when(Auth::user()->getRoleNames()->first() === "pembimbing_sekolah", function ($query) {
+       ->when(Auth::user()->getRoleNames()->contains("pembimbing_sekolah"), function ($query) {
             $query->whereHas('user.pbSkl', function ($q2) {
                 $q2->where('id', Auth::id());
             });

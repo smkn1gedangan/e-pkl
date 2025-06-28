@@ -19,16 +19,16 @@ export default function AuthenticatedLayout({ children }) {
         };
     }, []);
     return (
-        <div className="p-4 bg-stone-200">
-            <button
-                aria-controls="default-sidebar"
-                type="button"
-                onClick={() => setOpenSideMenu(!openSideMenu)}
-                className="inline-flex items-center p-2 mt-2 ms-0 sm:ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 "
-            >
-                <span className="sr-only">Open sidebar</span>
-                <List />
-            </button>
+        <div className="p-2 sm:p-4 bg-stone-200">
+                <button
+                    aria-controls="default-sidebar"
+                    type="button"
+                    onClick={() => setOpenSideMenu(!openSideMenu)}
+                    className="inline-flex items-center p-2 mt-2 ms-0 sm:ms-3 text-sm text-gray-500 rounded-lg sm:hidden bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 "
+                >
+                    <span className="sr-only">Open sidebar</span>
+                    <List />
+                </button>
 
             <div className="flex gap-2">
                 {" "}
@@ -40,14 +40,14 @@ export default function AuthenticatedLayout({ children }) {
                     leave="transition ease-in duration-200"
                     leaveFrom="translate-x-0"
                     leaveTo="-translate-x-full"
-                    className={`sm:block z-40 w-16 sm:w-64 min-h-auto transition-transform sm:translate-x-0`}
+                    className={`sm:block z-40 sm:w-64 min-h-auto transition-transform sm:translate-x-0 bg-stone-200 border-r max-sm:border-r-black`}
                     aria-label="Sidebar"
                 >
-                    <div className="h-full sm:p-3 py-4 overflow-y-auto">
-                        <h1 className="text-center font-medium uppercase my-4 invisible sm:visible">
+                    <div className="h-full p-2 mt-2 sm:p-3 py-4 overflow-y-auto max-sm:fixed">
+                        <h1 className="text-center font-medium uppercase my-4 visible">
                             Main Menu
                         </h1>{" "}
-                        <ul className="space-y-2 font-medium ">
+                        <ul className="space-y-2 font-medium min-h-screen">
                             <SideMenu />
                         </ul>
                     </div>

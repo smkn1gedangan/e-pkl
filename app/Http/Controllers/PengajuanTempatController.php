@@ -16,7 +16,7 @@ class PengajuanTempatController extends Controller
     public function index()
     {
          return Inertia::render("PengajuanTempat/Index",[
-            "pengajuanTempats"=>PengajuanTempat::with("user")->latest()->paginate()
+            "pengajuanTempats"=>PengajuanTempat::with("user")->latest()->paginate()->withQueryString()
         ]);
     }
 

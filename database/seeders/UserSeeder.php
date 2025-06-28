@@ -24,15 +24,6 @@ class UserSeeder extends Seeder
             "role"=>"admin",
             "kontak"=>"0123457890"
             ],
-            [
-            "name"=>"siswa",
-            "email"=>"siswa@gmail.com",
-            "email_verified_at"=>now(),
-            "password"=>env("SEED_ADMIN_PASSWORD","password"),
-            "remember_token"=>Str::random(10),   
-            "role"=>"siswa",
-            "kontak"=>"0123457890"
-            ],
         ];
         foreach ($datas as $data) {
             $user = User::create([

@@ -7,6 +7,7 @@ use App\Http\Controllers\GambarController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\JurnalController;
 use App\Http\Controllers\JurusanController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\NilaiController;
 use App\Http\Controllers\PembimbingController;
 use App\Http\Controllers\PengajuanTempatController;
@@ -25,11 +26,17 @@ Route::get('/', [FeController::class,"welcome"])->name("welcome");
 
 Route::get('data_siswa/export/', [ImportController::class, 'exportDataSiswa'])->name('data_siswa.export')->middleware(["role:admin"]);
 
-Route::get('siswa/export/', [ImportController::class, 'exportSiswa'])->name('siswa.export')->middleware(["role:admin|pembimbing_pt|pembimbing|sekolah"]);
+Route::get('siswa/export/', [ImportController::class, 'exportSiswa'])->name('exportSiswa')->middleware(["role:admin|pembimbing_pt|pembimbing|sekolah"]);
 
-Route::get('siswa/export/{id}', [ImportController::class, 'exportSiswaToPdf'])->name('export_siswa');
+
+
 
 Route::middleware(['auth', 'verified'])->group(function(){
+    
+
+    Route::get('siswa/export/{id}', [ImportController::class, 'exportSiswaToPdf'])->name('exportSiswaToPdf');
+
+    
     Route::get('/dashboard', [DashboardController::class,"index"])->middleware("role:admin|pembimbing_sekolah|pembimbing_pt|siswa")->name("dashboard");
     Route::get('/dokumentasi', function(){
         return Inertia::render("Dokumentasi/Index");
@@ -37,9 +44,14 @@ Route::middleware(['auth', 'verified'])->group(function(){
     
     Route::resource("data_siswa",DataSiswaController::class)->middleware(["role:admin"]);
     
-
     Route::post('data_siswa/import', [ImportController::class, 'importRegisterUser'])->name('data_siswa.import')->middleware(["role:admin"]);
 
+
+    Route::resource("laporan",LaporanController::class)->middleware(["role:siswa|admin|pembimbing_pt|pembimbing_sekolah"]);
+
+    Route::get('laporan/export/format_penulisan_laporan', [ImportController::class, 'exportFormatlaporan'])->name('exportFormatlaporan')->middleware(['role:siswa','throttle:6,1']);
+
+    Route::get('laporan/export/laporan', [ImportController::class, 'exportLaporan'])->name('exportLaporan')->middleware(['role:siswa','throttle:6,1']);
 
     Route::resource("jurusan",JurusanController::class)->middleware(["role:admin"]);
     Route::resource("gambar",GambarController::class)->middleware(["role:admin"]);

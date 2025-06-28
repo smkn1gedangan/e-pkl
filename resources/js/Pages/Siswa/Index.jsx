@@ -120,29 +120,6 @@ const Index = () => {
             preserveScroll: true,
         });
     };
-    const handleExport = (e) => {
-        e.preventDefault();
-        AlertConfirm(
-            `Apakah anda yakin ingin export data siswa`,
-            "question",
-            () => {
-                window.location.href = route(
-                    "siswa.export",
-                    {
-                        search: dataSearch.search,
-                        sort_by: dataSearch.sort_by,
-                        sort_order: dataSearch.sort_order,
-                        jurusan: dataSearch.jurusan,
-                        tahunAjaran: dataSearch.tahunAjaran,
-                        tempat: dataSearch.tempat,
-                    },
-                    true
-                );
-                toast.success(`sukses meng export data siswa ke excel`);
-            },
-            "Ya, Export!"
-        );
-    };
     const handleShow = (e, id) => {
         e.preventDefault();
         const filtered = siswas.data.find((s) => s.id === id);
@@ -175,10 +152,30 @@ const Index = () => {
                     toast.error(`${sccs.props.auth.flash?.error}`);
                 }
             },
-            onError: (e) => {
-                console.log(e);
-            },
         });
+    };
+    const handleExportSiswas = (e) => {
+        e.preventDefault();
+        AlertConfirm(
+            "Apakah Anda Yakin Ingin Export Data Seluruh Sswa Ke Excel",
+            "question",
+            () => {
+                window.location.href = route(
+                    "exportSiswa",
+                    {
+                        search: dataSearch.search,
+                        sort_by: dataSearch.sort_by,
+                        sort_order: dataSearch.sort_order,
+                        jurusan: dataSearch.jurusan,
+                        tahunAjaran: dataSearch.tahunAjaran,
+                        tempat: dataSearch.tempat,
+                    },
+                    true
+                );
+                toast.success(`sukses meng export data ke excel`);
+            },
+            "Ya ,Export"
+        );
     };
     return (
         <AuthenticatedLayout>
@@ -192,8 +189,8 @@ const Index = () => {
                 onClick={() => (window.location.href = route("siswa.create"))}
             >
                 <SecondaryButton
-                    className="bg-blue-700 text-white"
-                    onClick={(e) => handleExport(e)}
+                    onClick={(e) => handleExportSiswas(e)}
+                    className="bg-blue-700 text-white px-3 py-1 rounded-md"
                 >
                     Export
                 </SecondaryButton>
@@ -861,9 +858,10 @@ const Index = () => {
                                                                 </div>
                                                                 {showModal?.id && (
                                                                     <a
-                                                                        className="flex justify-center items-center rounded-md border border-gray-300 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-100 bg-gray-900 shadow-sm transition duration-150 ease-in-out hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-25 gap-2 cursor-pointer mt-4"
+                                                                        className="bg-blue-700 px-4 py-2 rounded-md ms-4 text-white flex justify-center gap-4 items-center"
+                                                                        target="_blank"
                                                                         href={route(
-                                                                            "export_siswa",
+                                                                            "exportSiswaToPdf",
                                                                             showModal?.id
                                                                         )}
                                                                     >

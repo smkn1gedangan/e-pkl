@@ -1,3 +1,5 @@
+import { Head } from "@inertiajs/react";
+
 export default function NotFound({ status }) {
     const title = {
         404: "404: Page Not Found",
@@ -11,6 +13,7 @@ export default function NotFound({ status }) {
 
     return (
         <div className="space-y-5">
+            <Head title="Not Found Page"/>
             <h1 className="text-center font-extrabold text-3xl text-slate-900 mt-4">
                 {title}
             </h1>
