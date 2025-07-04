@@ -153,7 +153,7 @@ const Index = () => {
                                         </td>
 
                                         <td className="px-4">
-                                            <div className="flex justify-center gap-2">
+                                            <div className="flex justify-center items-center gap-2">
                                                 <div
                                                     onClick={(e) =>
                                                         handleEdit(

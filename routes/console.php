@@ -1,5 +1,7 @@
 <?php
 
+use App\Console\Commands\SessionDeleted;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 

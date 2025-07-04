@@ -30,7 +30,7 @@ export default function AuthenticatedLayout({ children }) {
                     <List />
                 </button>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 relative">
                 {" "}
                 <Transition
                     show={openSideMenu}
@@ -40,14 +40,14 @@ export default function AuthenticatedLayout({ children }) {
                     leave="transition ease-in duration-200"
                     leaveFrom="translate-x-0"
                     leaveTo="-translate-x-full"
-                    className={`sm:block z-40 sm:w-64 min-h-auto transition-transform sm:translate-x-0 bg-stone-200 border-r max-sm:border-r-black`}
+                    className={`sm:block z-40 sm:w-64 min-h-auto transition-transform sm:translate-x-0 bg-stone-200 border-r max-sm:border-r-black max-sm:absolute`}
                     aria-label="Sidebar"
                 >
-                    <div className="h-full p-2 mt-2 sm:p-3 py-4 overflow-y-auto max-sm:fixed">
+                    <div className="h-full p-2 mt-2 sm:p-3 py-4 overflow-y-auto">
                         <h1 className="text-center font-medium uppercase my-4 visible">
                             Main Menu
                         </h1>{" "}
-                        <ul className="space-y-2 font-medium min-h-screen">
+                        <ul className="space-y-2 font-medium">
                             <SideMenu />
                         </ul>
                     </div>

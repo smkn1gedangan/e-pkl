@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\DataSiswaExport;
+use App\Exports\JurnalExport;
 use App\Exports\siswaExport;
 use App\Imports\DataSiswaImport;
 use App\Models\User;
@@ -37,7 +38,11 @@ class ImportController extends Controller
     }
     
     public function exportSiswa(Request $request) {
-        return Excel::download(new siswaExport($request), 'siswa-'.now().'xlsx');
+        return Excel::download(new siswaExport($request), 'siswa-'.now().'.xlsx');
+    }
+
+    public function exportJurnal(Request $request) {
+        return Excel::download(new JurnalExport($request), 'jurnal-'.now().'.xlsx');
     }
 
     public function exportSiswaToPdf($id)  {

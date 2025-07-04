@@ -69,6 +69,11 @@ return [
             'path' => storage_path('logs/session.log'),
             'level' => env('LOG_LEVEL', 'info'),
         ],
+        'deleteSession' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/delSession.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+        ],
 
         'daily' => [
             'driver' => 'daily',

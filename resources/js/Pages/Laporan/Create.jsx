@@ -91,7 +91,7 @@ const Form = () => {
                     "Jika Diterima (accept) Oleh Pembimbing , Anda Akan Berada Di Tahap Selanjutnya"}
             </p>
 
-            <ol className="p-3 flex items-center w-full text-sm font-medium text-center text-gray-900 sm:text-base">
+            <ol className="p-3 overflow-x-auto flex items-center w-full text-sm font-medium text-center text-gray-900 sm:text-base">
                 <li
                     className={`${
                         step === null &&
@@ -101,7 +101,7 @@ const Form = () => {
                     <span
                         className={`${
                             step === null &&
-                            "rounded-full bg-white text-black w-6 h-6"
+                            "rounded-full bg-white text-black w-6 h-6 grid place-content-center"
                         } me-2`}
                     >
                         1
@@ -127,14 +127,13 @@ const Form = () => {
                     <span
                         className={`${
                             step === 2 &&
-                            "rounded-full bg-white text-black w-6 h-6"
+                            "rounded-full bg-white text-black w-6 h-6 grid place-content-center"
                         } me-2`}
                     >
                         2
                     </span>
                     Konfirmasi
                 </li>
-
                 <div className="h-1 border border-b-black w-full mx-4"></div>
                 <li
                     className={`${
@@ -145,7 +144,7 @@ const Form = () => {
                     <span
                         className={`${
                             step === 3 &&
-                            "rounded-full bg-white text-black w-6 h-6"
+                            "rounded-full bg-white text-black w-6 h-6 grid place-content-center"
                         } me-2`}
                     >
                         3
@@ -337,7 +336,7 @@ const Form = () => {
                             </tr>
                         </tbody>
                     </table>
-                    <div className="mt-6 flex justify-center sm:justify-start flex-wrap gap-2">
+                    <div className="mt-6 flex justify-start flex-wrap gap-2">
                         <a
                             href={route("exportFormatlaporan")}
                             className="bg-blue-700 px-4 py-2 rounded-md ms-4 text-white flex justify-center gap-2 max-w-xs"

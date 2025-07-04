@@ -17,10 +17,12 @@ import { OptionSorting } from "@/Components/Option";
 import Textarea from "@/Components/Textarea";
 import { toast, ToastContainer, Zoom } from "react-toastify";
 import moment from "moment";
+import SecondaryButton from "@/Components/SecondaryButton";
 const Index = () => {
     const { jurnals, auth, user, filters } = usePage().props;
     const [currentDate, setCurrentDate] = useState("");
     const [createModal, setCreateModal] = useState(false);
+    const [editModal, seteditModal] = useState(null);
     const [sortModal, setSortModal] = useState(false);
     const [resizeImg, setResizeImg] = useState(null);
     const [img, setImg] = useState(null);
@@ -51,6 +53,7 @@ const Index = () => {
     };
     const handleStore = (e) => {
         e.preventDefault();
+        dd(data);
         post(route("rekap.store"), {
             onSuccess: (sccs) => {
                 if (sccs.props.auth.flash.success) {
@@ -65,7 +68,39 @@ const Index = () => {
             },
         });
     };
+    const handleEdit = (e, id) => {
+        e.preventDefault();
+        const filtered = jurnals.data.find((j) => j.id === id);
+        if (filtered) {
+            setData("kegiatan", filtered.kegiatan);
+            setData("keterangan", filtered?.keterangan ?? "");
+            setData("photo", filtered.photo);
+            seteditModal(filtered);
+        }
+    };
+    const handleUpdate = (e) => {
+        e.preventDefault();
+        router.post(
+            route("rekap.update", editModal.id),
+            {
+                ...data,
+                _method: "put",
+            },
+            {
+                onSuccess: (sccs) => {
+                    if (sccs.props.auth.flash?.success) {
+                        toast.success(`${sccs.props.auth.flash?.success}`);
+                        reset();
+                        seteditModal(null);
+                    } else {
+                        toast.success(`${sccs.props.auth.flash?.error}`);
+                        seteditModal(null);
+                    }
+                },
 
+            }
+        );
+    };
     const handleMarkJurnal = (e, id) => {
         e.preventDefault();
         router.put(route("nilai.update", id), {
@@ -122,6 +157,30 @@ const Index = () => {
             seconds: String(duration.seconds()).padStart(2, "0"),
         };
     };
+    const handleExportJurnal = (e) => {
+        e.preventDefault();
+        AlertConfirm(
+            `Apakah anda yakin ingin export jurnal, data yang di export adalah data yang belum di filter dan sorting`,
+            "question",
+            () => {
+                window.location.href = route(
+                    "jurnal.export",
+                    {
+                        search: filters?.search,
+                        sort_by: filters?.sort_by,
+                        sort_order: filters?.sort_order,
+                        keterangan: filters?.keterangan,
+                        marking: filters?.marking,
+                        start_date: filters?.start_date,
+                        end_date: filters?.end_date,
+                    },
+                    true
+                );
+                toast.success(`sukses meng export data ke excel`);
+            },
+            "Ya, Export!"
+        );
+    };
     useEffect(() => {
         const interval = setInterval(() => {
             const t = handleTimeLeft();
@@ -137,7 +196,7 @@ const Index = () => {
             <Head title="Jurnal" />
             <ToastContainer transition={Zoom} className={`w-96`} />
             <TitlePage
-                nameRoute={`${auth.role === "siswa" ? "Tambah Jurnal" : ""}`}
+                nameRoute={`Tambah Jurnal`}
                 quote={`${
                     auth.role === "siswa" && user
                         ? `Pembimbing Sekolah : ${
@@ -155,7 +214,15 @@ const Index = () => {
                     setData("keterangan", "");
                     setData("photo", "");
                 }}
-            ></TitlePage>
+                disabled={auth.role !== "siswa"}
+            >
+                <SecondaryButton
+                    onClick={(e) => handleExportJurnal(e)}
+                    className="bg-blue-700 text-white px-3 py-1 rounded-md"
+                >
+                    Export
+                </SecondaryButton>
+            </TitlePage>
             <span className="block text-sm text-gray-700 text-center">
                 Batas Pengumpulan Jurnal Hari Ini : {currentDate}
             </span>
@@ -175,7 +242,7 @@ const Index = () => {
                             { nama: "Kegiatan" },
                             { nama: "Photo" },
                             { nama: "Dibuat Pada" },
-                            { nama: "Tanda" },
+                            { nama: "Status" },
                             { nama: "Opsi" },
                         ]}
                     >
@@ -234,6 +301,7 @@ const Index = () => {
                                                     onClose={() =>
                                                         setResizeImg(null)
                                                     }
+                                                    maxWidth="md"
                                                 >
                                                     <div className="rounded-lg bg-white shadow-sm">
                                                         <TitleModal
@@ -247,9 +315,9 @@ const Index = () => {
                                                                 );
                                                             }}
                                                         ></TitleModal>
-                                                        <div className="p-2 flex justify-center">
+                                                        <div className="p-6 flex justify-center">
                                                             <img
-                                                                className="max-w-sm rounded-md h-auto object-cover object-center"
+                                                                className="max-w-xs md:max-w-sm p-2 rounded-md h-auto object-cover object-center"
                                                                 src={`./storage/${jurnal.photo}`}
                                                                 alt=""
                                                             />
@@ -303,19 +371,225 @@ const Index = () => {
                                                 </div>
                                             )}
                                         </td>
-                                        <td className="px-4 text-center py-4 ">
+                                        <td className="px-4 py-4 ">
                                             {auth.role === "siswa" && (
-                                                <div
-                                                    onClick={(e) =>
-                                                        handleDelete(
-                                                            e,
-                                                            jurnal.id,
-                                                            jurnal.id,
-                                                        )
-                                                    }
-                                                    className="font-medium text-red-800 hover:text-red-700 transition-all cursor-pointer flex justify-center gap-2"
-                                                >
-                                                    <Trash />
+                                                <div className="flex justify-center items-center gap-2">
+                                                    {!jurnal?.mark && (
+                                                        <div
+                                                            onClick={(e) =>
+                                                                handleEdit(
+                                                                    e,
+                                                                    jurnal.id
+                                                                )
+                                                            }
+                                                            className={`text-blue-600 hover:text-blue-500 font-medium cursor-pointer`}
+                                                        >
+                                                            <Edit />
+                                                        </div>
+                                                    )}
+                                                    <Modal
+                                                        show={
+                                                            editModal?.id ===
+                                                            jurnal.id
+                                                        }
+                                                        onClose={() =>
+                                                            seteditModal(null)
+                                                        }
+                                                    >
+                                                        <div className="relative bg-white rounded-lg shadow-sm ">
+                                                            <TitleModal
+                                                                icon={<X />}
+                                                                title={
+                                                                    "Edit Jurnal"
+                                                                }
+                                                                onClick={() => {
+                                                                    seteditModal(
+                                                                        null
+                                                                    );
+                                                                }}
+                                                            ></TitleModal>
+                                                            <form
+                                                                onSubmit={
+                                                                    handleUpdate
+                                                                }
+                                                                className="p-4 md:p-5"
+                                                            >
+                                                                <div className="grid gap-4 mb-4 grid-cols-2">
+                                                                    <div className="col-span-2">
+                                                                        <InputLabel
+                                                                            value={
+                                                                                "Keterangan"
+                                                                            }
+                                                                        />
+                                                                        <select
+                                                                            onChange={(
+                                                                                e
+                                                                            ) =>
+                                                                                setData(
+                                                                                    "keterangan",
+                                                                                    e
+                                                                                        .target
+                                                                                        .value
+                                                                                )
+                                                                            }
+                                                                            value={
+                                                                                data?.keterangan
+                                                                            }
+                                                                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-1"
+                                                                        >
+                                                                            <option
+                                                                                disabled
+                                                                                value=""
+                                                                            >
+                                                                                Default
+                                                                            </option>
+                                                                            <option value="hadir">
+                                                                                Hadir
+                                                                            </option>
+                                                                            <option value="sakit">
+                                                                                Sakit
+                                                                            </option>
+                                                                            <option value="izin">
+                                                                                Izin
+                                                                            </option>
+                                                                        </select>
+
+                                                                        <InputError
+                                                                            message={
+                                                                                errors.keterangan
+                                                                            }
+                                                                            className="mt-2"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="col-span-2">
+                                                                        <InputLabel
+                                                                            value={
+                                                                                "Kegiatan"
+                                                                            }
+                                                                        />
+                                                                        <Textarea
+                                                                            id="kegiatan"
+                                                                            value={
+                                                                                data?.kegiatan
+                                                                            }
+                                                                            onChange={(
+                                                                                e
+                                                                            ) =>
+                                                                                setData(
+                                                                                    "kegiatan",
+                                                                                    e
+                                                                                        .target
+                                                                                        .value
+                                                                                )
+                                                                            }
+                                                                            name="kegiatan"
+                                                                            placeholder={`Deskripsikan Kegiatan Anda`}
+                                                                        />
+                                                                        <InputError
+                                                                            message={
+                                                                                errors.kegiatan
+                                                                            }
+                                                                            className="mt-2"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="col-span-2">
+                                                                        <InputLabel
+                                                                            value={
+                                                                                "Bukti Photo"
+                                                                            }
+                                                                        />
+                                                                        <TextInput
+                                                                            id="photo"
+                                                                            type="file"
+                                                                            name="photo"
+                                                                            accept="image/*"
+                                                                            className="mt-1 block w-full border border-gray-300 px-4 py-1.5"
+                                                                            onChange={(
+                                                                                e
+                                                                            ) => {
+                                                                                const file =
+                                                                                    e
+                                                                                        .target
+                                                                                        .files?.[0];
+                                                                                setData(
+                                                                                    "photo",
+                                                                                    file
+                                                                                );
+                                                                                setImg(
+                                                                                    file
+                                                                                );
+                                                                            }}
+                                                                        />
+                                                                        <InputError
+                                                                            message={
+                                                                                errors.photo
+                                                                            }
+                                                                            className="mt-2"
+                                                                        />
+                                                                    </div>
+                                                                    {editModal?.photo ? (
+                                                                        <img
+                                                                            className={`h-28 mt-4 w-28 object-center object-cover`}
+                                                                            src={`${
+                                                                                data?.photo instanceof
+                                                                                File
+                                                                                    ? URL.createObjectURL(
+                                                                                          data?.photo
+                                                                                      )
+                                                                                    : `./storage/${data.photo}`
+                                                                            }`}
+                                                                            alt={
+                                                                                "No file Store"
+                                                                            }
+                                                                        />
+                                                                    ) : img ? (
+                                                                        <img
+                                                                            className={`h-28 mt-4 w-28 object-center object-cover`}
+                                                                            src={URL.createObjectURL(
+                                                                                img
+                                                                            )}
+                                                                            alt={
+                                                                                "No file Store"
+                                                                            }
+                                                                        />
+                                                                    ) : (
+                                                                        <div className="w-28 h-28 text-center grid place-content-center bg-gray-200 mt-4">
+                                                                            <p className="font-medium  text-xs text-slate-900">
+                                                                                No
+                                                                                File
+                                                                                Uploaded
+                                                                            </p>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                                <PrimaryButton
+                                                                    type="submit"
+                                                                    className="gap-2"
+                                                                    disabled={
+                                                                        processing
+                                                                    }
+                                                                >
+                                                                    <Edit />
+                                                                    <span className="block">
+                                                                        {processing
+                                                                            ? "Proses..."
+                                                                            : "Ubah Jurnal"}
+                                                                    </span>
+                                                                </PrimaryButton>
+                                                            </form>
+                                                        </div>
+                                                    </Modal>
+                                                    <div
+                                                        onClick={(e) =>
+                                                            handleDelete(
+                                                                e,
+                                                                jurnal.id
+                                                            )
+                                                        }
+                                                        className="font-medium text-red-800 hover:text-red-700 transition-all cursor-pointer flex justify-center gap-2"
+                                                    >
+                                                        <Trash />
+                                                    </div>
                                                 </div>
                                             )}
                                         </td>

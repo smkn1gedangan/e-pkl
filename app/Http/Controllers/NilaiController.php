@@ -77,7 +77,7 @@ class NilaiController extends Controller
             $jurnalId->mark = true;
             $jurnalId->save();
        }
-       return redirect()->route("rekap.index")->with("success","Sukses Menandai Jurnal");
+       return redirect()->back()->with("success","Sukses Menandai Jurnal");
     }
 
     /**

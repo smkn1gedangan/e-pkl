@@ -1,6 +1,8 @@
 <?php
 
+use App\Console\Commands\SessionDeleted;
 use App\Http\Middleware\RoleMiddleware;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,6 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withSchedule(function(Schedule $schedule){
+        $schedule->command("session:prune-custom")->everyTwoHours();
+    })
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
@@ -36,4 +41,5 @@ return Application::configure(basePath: dirname(__DIR__))
         }
         return $response;
     });
-    })->create();
+    })
+    ->create();

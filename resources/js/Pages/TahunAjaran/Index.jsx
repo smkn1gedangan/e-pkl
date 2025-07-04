@@ -97,6 +97,7 @@ const Index = () => {
                         headers={[
                             { nama: "#" },
                             { nama: "Tahun Ajaran" },
+                            { nama: "Keaktifan" },
                             { nama: "Opsi" },
                         ]}
                     >
@@ -117,6 +118,11 @@ const Index = () => {
 
                                         <td className="px-4 text-center py-4">
                                             {ta.tahun}
+                                        </td>
+                                        <td className="px-4 text-center py-4">
+                                            {ta.isActive === "aktif"
+                                                ? "Aktif"
+                                                : "Tidak Aktif"}
                                         </td>
 
                                         <td className="px-4 text-center py-4">

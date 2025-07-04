@@ -111,14 +111,12 @@ class JurnalController extends Controller
             $backupPath = env("BACKUP_PHOTOS") .  $sourcePath;
 
             // upload to public
-
-
             if(!file_exists(dirname($backupPath))) {
                 mkdir(dirname($backupPath), 0777, true);
             }
             // Simpan juga ke folder backup
             if(!copy(storage_path("app/public/".$sourcePath), $backupPath)){
-                return Inertia::render("Buku/Form")->with("error","Gambar gagal disimpan");
+                return Inertia::render("Jurnal/Index")->with("error","Gambar gagal disimpan");
             };
             $validate["photo"] = $sourcePath ?? null;
         }
@@ -153,7 +151,53 @@ class JurnalController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validate = $request->validate([
+            "keterangan"=>"required",
+            "kegiatan"=>"required|max:150",
+            "photo"=>"nullable"
+        ],[
+            "photo.max"=>"File Gambar Maksimal 2400 Kb (2,4 mb)",
+            "kegiatan.max"=>"Kegiatan Wajib Diisi 1 - 150 karakter Huruf",
+            "photo.mimes"=>"Gambar harus Bertipe Jpg,Jpeg,Avif,Png"
+        ]);
+
+        $jrnlId = Jurnal::findOrFail($id);
+
+            if($request->hasFile("photo")){
+                if($jrnlId->photo){
+                    $backupPath = env("BACKUP_PHOTOS"). $jrnlId->photo;
+
+                // hapus file jika ada
+                if(fileExists(storage_path("app/public/".$jrnlId->photo))){
+                    File::delete(storage_path("app/public/".$jrnlId->photo));
+                }
+
+                if(fileExists($backupPath)){
+                    File::delete($backupPath);
+                }
+            }
+
+            $sourcePath = $request->file("photo")->store("jurnals","public");
+            $backupPath = env("BACKUP_PHOTOS"). $sourcePath;
+
+
+            if(!file_exists(dirname($backupPath))) {
+                mkdir(dirname($backupPath), 0777, true);
+            }
+            
+            // Simpan juga ke folder backup
+            if(!copy(storage_path("app/public/".$sourcePath), $backupPath)){
+                return Inertia::render("Jurnal/Index")->with("error","Gambar gagal disimpan");
+            };
+            
+            $validate["photo"] = $sourcePath ?? null;
+        }
+
+        $jrnlId->keterangan = $validate["keterangan"];
+        $jrnlId->kegiatan = $validate["kegiatan"];
+        $jrnlId->photo = $validate["photo"] ?? $jrnlId->photo;
+        $jrnlId->save();
+        return redirect()->back()->with("success","Sukses Mengubah Jurnal");
     }
 
     /**

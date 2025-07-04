@@ -19,6 +19,7 @@ const Index = () => {
     const { gambars } = usePage().props;
     const [createModal, setCreateModal] = useState(false);
     const [img, setImg] = useState(null);
+    const [resizeImg, setResizeImg] = useState(null);
     const [editModal, seteditModal] = useState(false);
     const { data, setData, errors, post, processing, reset, put } = useForm({
         url: "",
@@ -81,6 +82,13 @@ const Index = () => {
             }
         );
     };
+    const handleResizeImg = (e, id) => {
+        e.preventDefault();
+        const filtered = gambars.data.find((j) => j.id === id);
+        if (filtered) {
+            setResizeImg(filtered);
+        }
+    };
     return (
         <AuthenticatedLayout>
             <Head title="Slider" />
@@ -120,11 +128,43 @@ const Index = () => {
 
                                         <td className="px-4 py-4">
                                             <img
+                                                onClick={(e) =>
+                                                    handleResizeImg(
+                                                        e,
+                                                        gambar.id
+                                                    )
+                                                }
                                                 className="w-32 h-32 object-cover object-center rounded-md left-1/2 -translate-x-1/2 relative"
                                                 src={`./storage/${gambar.url}`}
                                                 alt=""
                                                 srcSet=""
                                             />
+                                            <Modal
+                                                show={
+                                                    resizeImg?.id === gambar.id
+                                                }
+                                                onClose={() =>
+                                                    setResizeImg(null)
+                                                }
+                                                maxWidth="md"
+                                            >
+                                                <div className="rounded-lg bg-white shadow-sm">
+                                                    <TitleModal
+                                                        icon={<X />}
+                                                        title={"Detail Foto"}
+                                                        onClick={() => {
+                                                            setResizeImg(null);
+                                                        }}
+                                                    ></TitleModal>
+                                                    <div className="p-6 flex justify-center">
+                                                        <img
+                                                            className="max-w-xs p-2 rounded-md h-auto object-cover object-center"
+                                                            src={`./storage/${gambar.url}`}
+                                                            alt=""
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </Modal>
                                         </td>
 
                                         <td className="px-4 text-center py-4">

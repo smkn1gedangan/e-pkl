@@ -26,9 +26,9 @@ Route::get('/', [FeController::class,"welcome"])->name("welcome");
 
 Route::get('data_siswa/export/', [ImportController::class, 'exportDataSiswa'])->name('data_siswa.export')->middleware(["role:admin"]);
 
-Route::get('siswa/export/', [ImportController::class, 'exportSiswa'])->name('exportSiswa')->middleware(["role:admin|pembimbing_pt|pembimbing|sekolah"]);
+Route::get('jurnal/export/', [ImportController::class, 'exportJurnal'])->name('jurnal.export')->middleware(["role:admin|pembimbing_pt|pembimbing_sekolah|siswa"]);
 
-
+Route::get('siswa/export/', [ImportController::class, 'exportSiswa'])->name('exportSiswa')->middleware(["role:admin|pembimbing_pt|pembimbing_sekolah"]);
 
 
 Route::middleware(['auth', 'verified'])->group(function(){
