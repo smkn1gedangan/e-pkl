@@ -1,21 +1,13 @@
-import React, { useEffect, useRef } from "react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { Head, Link } from "@inertiajs/react";
 import Footer from "@/Components/Footer";
-import InputLabel from "@/Components/InputLabel";
-import TextInput from "@/Components/TextInput";
-import ReCAPTCHA from "react-google-recaptcha";
-import InputError from "@/Components/InputError";
-import PrimaryButton from "@/Components/PrimaryButton";
 const Welcome = ({ gambars }) => {
-    let sliderRef = useRef(null);
 
     const settings = {
         infinite: true,
         fade: true,
-        dots: true,
         slidesToShow: 1,
         slidesToScroll: 1,
         autoplay: true,
@@ -27,7 +19,7 @@ const Welcome = ({ gambars }) => {
             className="h-screen object-cover object-center w-full shadow-2xl"
             style={{ background: "url(./header2.avif)" }}
         >
-            <Head title="WELCOME" />
+            <Head title="Selamat Datang" />
             <nav className="bg-transparent relative w-full z-20 top-0 start-0 ">
                 <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
                     <a
@@ -39,6 +31,7 @@ const Welcome = ({ gambars }) => {
                             src="./img/logo.png"
                             className="h-8"
                             alt="Logo"
+                            loading="lazy"
                         />
                         <span className="hidden md:block self-center text-2xl font-semibold whitespace-nowrap text-slate-900 md:text-white">
                             E-PKL
@@ -71,13 +64,15 @@ const Welcome = ({ gambars }) => {
             <div className=" flex mt-4 md:mt-10 justify-center gap-2 p-2 items-center flex-wrap md:p-8">
                 <div className="slider-container w-full mt-8">
                     <Slider
-                        ref={(slider) => (sliderRef = slider)}
                         {...settings}
                         className=""
                     >
                         {gambars.length > 0
                             ? gambars.map((gambar) => (
-                                  <div key={gambar.id} className="relative max-w-md left-1/2 -translate-x-1/2">
+                                  <div
+                                      key={gambar.id}
+                                      className="relative max-w-md left-1/2 -translate-x-1/2"
+                                  >
                                       <img
                                           className="object-center object-cover rounded-md"
                                           src={`./storage/${gambar.url}`}
@@ -96,7 +91,7 @@ const Welcome = ({ gambars }) => {
                     </Slider>
                 </div>
             </div>
-           
+
             <Footer />
         </div>
     );

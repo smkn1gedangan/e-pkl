@@ -105,12 +105,13 @@ class JurnalController extends Controller
         ]);
 
         if($request->hasFile("photo")){
-             // upload to public
-            $sourcePath = $request->file('photo')->store('jurnals', 'public');
+            // upload to storage
+            $sourcePath = $request->file('photo')->store('jurnals/'.now()->format("Y")."-".Auth::user()->jurusan->nama."-".Auth::user()->name."/" , 'public');
+            
 
             $backupPath = env("BACKUP_PHOTOS") .  $sourcePath;
 
-            // upload to public
+            // buat folder jika belum ada
             if(!file_exists(dirname($backupPath))) {
                 mkdir(dirname($backupPath), 0777, true);
             }
@@ -135,7 +136,6 @@ class JurnalController extends Controller
      */
     public function show(string $id)
     {
-        //
     }
 
     /**
@@ -177,10 +177,12 @@ class JurnalController extends Controller
                 }
             }
 
-            $sourcePath = $request->file("photo")->store("jurnals","public");
+            // simpan ke folder public
+            $sourcePath = $request->file('photo')->store('jurnals/'.now()->format("Y")."-".Auth::user()->jurusan->nama."-".Auth::user()->name."/" , 'public');
             $backupPath = env("BACKUP_PHOTOS"). $sourcePath;
 
 
+            // buat folder backup jika belum ada
             if(!file_exists(dirname($backupPath))) {
                 mkdir(dirname($backupPath), 0777, true);
             }
@@ -207,16 +209,7 @@ class JurnalController extends Controller
     {
         $jrnlId = Jurnal::findOrFail($id);
         
-        if($jrnlId->photo){
-            $backupPath = env("BACKUP_PHOTOS") . "jurnal/" . $jrnlId->photo;
 
-            if(fileExists(storage_path("app/public/".$jrnlId->photo))){
-                File::delete(storage_path("app/public/".$jrnlId->photo));
-            }
-            if(fileExists($backupPath)){
-                File::delete($backupPath);
-            }
-        }
         $jrnlId->delete();
         return redirect()->back()->with("success","Sukses Menghapus Jurnal");
     }

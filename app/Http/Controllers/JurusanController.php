@@ -42,12 +42,12 @@ class JurusanController extends Controller
     {
         $validate = $request->validate([
             "nama"=>"string|min:3|max:40|unique:jurusans,nama",
-            "kepala"=>"required|string|min:3|max:40",
+            "kepala"=>"required|min:3|max:40",
             "isActive"=>"required"
         ],[
             "nama.string"=>"Nama Jurusan Wajib Diisi 3 - 40 Karakter Huruf",
             "nama.unique"=>"Nama Jurusan Telah Ada",
-            "kepala.string"=>"Nama Kepala Konsentrasi Jurusan Harus Diisi 3 - 40 Karakter Huruf",
+            "kepala.required"=>"Nama Kepala Konsentrasi Jurusan Harus Diisi 3 - 40 Karakter Huruf",
         ]);
         
         Jurusan::create($validate);
@@ -82,12 +82,11 @@ class JurusanController extends Controller
         if($jurusanId){
              $validate = $request->validate([
             "nama"=>["string","min:3","max:50",Rule::unique("jurusans","nama")->ignore($id)],
-            "kepala"=>["required","string","min:3","max:50"],
+            "kepala"=>["nullable"],
             "isActive"=>"required"
         ],[
             "nama.string"=>"Nama Jurusan Wajib Diisi 3 - 50 Karakter Huruf",
             "nama.unique"=>"Nama Jurusan Telah Ada",
-            "kepala.string"=>"Nama Kepala Konsentrasi Jurusan Harus Diisi 3 - 40 Karakter Huruf",
         ]);
         
         $jurusanId ->nama = $validate["nama"]; 

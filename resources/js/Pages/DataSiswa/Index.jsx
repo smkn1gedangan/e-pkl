@@ -110,7 +110,7 @@ const Index = () => {
             "question",
             () => {
                 window.location.href = route(
-                    "data_siswa.export",
+                    "data_siswas.export",
                     {
                         search: dataSearch.search,
                         sort_by: dataSearch.sort_by,
@@ -128,7 +128,7 @@ const Index = () => {
     const handleStore = (e) => {
         e.preventDefault();
         if (type === "import") {
-            post(route("data_siswa.import"), {
+            post(route("data_siswas.import"), {
                 forceFormData: true,
                 onSuccess: (sccs) => {
                     if (sccs.props.auth.flash.success) {

@@ -6,6 +6,8 @@ use App\Models\PengajuanTempat;
 use App\Models\Tempat;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class PengajuanTempatController extends Controller
@@ -43,7 +45,7 @@ class PengajuanTempatController extends Controller
             if (
                 $request->input("is") === "siswa" && Tempat::where('nama', $value)->exists()
             ) {
-                $fail('Nama Tempat Telah Terdaftar.');
+                $fail('Nama Tempat Telah Terdaftar Dari Sekolah.');
             }
             }],
             "kontak"=>['required',"regex:/^0[0-9]{9,12}$/"],
@@ -84,23 +86,29 @@ class PengajuanTempatController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        
-        $tempatId =Tempat::where("nama","=",$request->nama)->first();
-        if($tempatId){
-            PengajuanTempat::findOrFail($id)->delete();
-        }else{
-            $tempatId =  Tempat::create([
-            "nama"=>$request->nama,
-            "kontak"=>$request->kontak,
-            "bidang_usaha"=>$request->bidang_usaha,
-            "lokasi"=>$request->lokasi,
+       try {
+         DB::transaction(function() use($request,$id){
+            $tempatId =Tempat::where("nama","=",$request->nama)->first();
+            if($tempatId){
+                PengajuanTempat::findOrFail($id)->delete();
+            }else{
+                $tempatId =  Tempat::create([
+                "nama"=>$request->nama,
+                "kontak"=>$request->kontak,
+                "bidang_usaha"=>$request->bidang_usaha,
+                "lokasi"=>$request->lokasi,
+                ]);
+
+                PengajuanTempat::findOrFail($id)->delete();
+            }
+            User::with("pengajuanTempat")->where("id","=",$request->user_id)->update([
+                "tempat_id"=>$tempatId->id
             ]);
-        PengajuanTempat::findOrFail($id)->delete();
-        }
-        
-        User::with("pengajuanTempat")->where("id","=",$request->user_id)->update([
-            "tempat_id"=>$tempatId->id
-        ]);
+        });
+       } catch (\Exception $e) {
+            Log::error("Transaction Pengajuan Tempat gagal: " . $e->getMessage());
+            return redirect()->back()->with("error", "Terjadi kesalahan: " . $e->getMessage());
+       }
 
         return redirect()->back()->with("success","Berhasil Mengubah Tempat Du/Di Dan Mengubah Data Siswa");
     }

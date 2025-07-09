@@ -7,6 +7,7 @@ use App\Models\StepLaporan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
@@ -63,15 +64,21 @@ class LaporanController extends Controller
             "judul.min"=>"Judul Wajib Diisi Minimal 10 Karakter Huruf",
             "judul.unique"=>"Judul Telah Digunakan"
         ]);
-        Laporan::create($data);
+        try {
+          DB::transaction(function()use ($data){
+              Laporan::create($data);
 
-        StepLaporan::updateOrcreate([
-            "user_id"=>$data["user_id"],
-            
-        ],[
-            "user_id"=>$data["user_id"],
-            "step"=> 2
-        ]);
+            StepLaporan::updateOrcreate([
+                "user_id"=>$data["user_id"],
+                
+            ],[
+                "user_id"=>$data["user_id"],
+                "step"=> 2
+            ]);
+          });
+        } catch (\Throwable $th) {
+            return redirect()->back()->with("error","Terjadi Kesalahan :". $th->getMessage());
+        }
 
         return redirect()->back()->with("success","Sukses Menambah Judul Baru");
     }
@@ -100,24 +107,30 @@ class LaporanController extends Controller
             "status"=>["sometimes","in:terima,tolak"],
         ]);
 
-        $laporanId = Laporan::findOrFail($id);
-        if($laporanId){
-            $laporanId->status = $data["status"];
-            $laporanId->save();
-        }
-        
-        $stepLaporanId = StepLaporan::where("user_id","=",$laporanId->user_id)->first();
+            try {
+                DB::transaction(function() use($data,$id){
+                    $laporanId = Laporan::findOrFail($id);
+                if($laporanId){
+                    $laporanId->status = $data["status"];
+                    $laporanId->save();
+                }
+                
+                $stepLaporanId = StepLaporan::where("user_id","=",$laporanId->user_id)->first();
 
-        if($data["status"] === "terima"){
-            $stepLaporanId->update([
-                "step"=>3
-            ]);
-        }else{
-            $stepLaporanId->update([
-                "step"=>1
-            ]);
-        }
-        $stepLaporanId->save();
+                if($data["status"] === "terima"){
+                    $stepLaporanId->update([
+                        "step"=>3
+                    ]);
+                }else{
+                    $stepLaporanId->update([
+                        "step"=>1
+                    ]);
+                }
+                $stepLaporanId->save();
+                });
+            } catch (\Throwable $th) {
+                return redirect()->back()->with("error","Terjadi Kesalahan :". $th->getMessage());
+            }           
         return redirect()->back()->with("success","Berhasil Mengubah Data");
 
     }

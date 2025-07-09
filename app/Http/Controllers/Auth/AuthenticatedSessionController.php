@@ -37,7 +37,7 @@ class AuthenticatedSessionController extends Controller
      
         $request->session()->regenerate();
 
-        Log::channel("authSession")->info($request->email . "Telah Login Pada " . now()->format("d-m-Y h-i-s A"));
+        Log::channel("authSession")->info($request->email . "Telah Login Pada " . now()->format("d-m-Y h-i-s"));
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

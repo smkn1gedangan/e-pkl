@@ -6,6 +6,7 @@ use App\Exports\DataSiswaExport;
 use App\Exports\JurnalExport;
 use App\Exports\siswaExport;
 use App\Imports\DataSiswaImport;
+use App\Models\Tempat;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -33,15 +34,15 @@ class ImportController extends Controller
         return redirect()->back()->with('success', 'Data siswa berhasil diimport!');
     }
 
-    public function exportDataSiswa(Request $request) {
+    public function exportDataSiswas(Request $request) {
         return Excel::download(new DataSiswaExport($request), 'data-siswa-'. now()->format("d-m-Y h-i-s") . '.xlsx');
     }
     
-    public function exportSiswa(Request $request) {
+    public function exportSiswas(Request $request) {
         return Excel::download(new siswaExport($request), 'siswa-'.now().'.xlsx');
     }
 
-    public function exportJurnal(Request $request) {
+    public function exportJurnals(Request $request) {
         return Excel::download(new JurnalExport($request), 'jurnal-'.now().'.xlsx');
     }
 
@@ -69,5 +70,13 @@ class ImportController extends Controller
 
         return $pdf->stream("laporan-". $user->name . ".pdf");
 
+    }
+
+    public function exportTempat(string $id) {
+        $tempat = Tempat::with("siswas","user.jurusan","user.dataSiswa")->where("id","=",$id)->first();
+
+        $pdf =Pdf::loadView("pdf.tempat",compact("tempat"));
+
+        return $pdf->stream("$tempat->nama".".pdf");
     }
 }

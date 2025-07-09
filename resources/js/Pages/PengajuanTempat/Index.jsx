@@ -31,19 +31,18 @@ const Index = () => {
             const text = `Jika Disetujui , Tempat Du/Di akan Otomatis Terdaftar Dan User Akan Otomatis Ditempatkan Di Pt Tersebut.`;
             AlertConfirm(
                 text,
-                "warning",
-                async () => {
-                    await new Promise((resolve) => {
-                        router.put(route("pengajuanTempat.update", id), datas, {
-                            onSuccess: (sccs) => {
-                                if (sccs.props.auth.flash?.success) {
-                                    toast.success(`${sccs.props.auth.flash?.success}`);
-                                } else {
-                                    toast.error(`${sccs.props.auth.flash?.error}`);
-                                }
-                                resolve();
-                            },
-                        });
+                "question",
+                () => {
+                    router.put(route("pengajuanTempat.update", id), datas, {
+                        onSuccess: (sccs) => {
+                            if (sccs.props.auth.flash?.success) {
+                                toast.success(
+                                    `${sccs.props.auth.flash?.success}`
+                                );
+                            } else {
+                                toast.error(`${sccs.props.auth.flash?.error}`);
+                            }
+                        },
                     });
                 },
                 "Ya Terima"
@@ -54,7 +53,7 @@ const Index = () => {
     return (
         <AuthenticatedLayout>
             <Head title="Pengajuan tempat" />
-                        <ToastContainer className={`w-96`} />
+            <ToastContainer className={`w-96`} />
 
             <TitlePage
                 quote={"list tempat yang diajukan oleh siswa "}
@@ -139,7 +138,7 @@ const Index = () => {
                                 <tr>
                                     <td
                                         className="p-2 text-sm font-medium text-center"
-                                        colSpan={3}
+                                        colSpan={7}
                                     >
                                         Tidak ada Pengajuan Tempat Di tambahkan
                                     </td>

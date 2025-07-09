@@ -68,9 +68,7 @@ const Form = () => {
                         toast.error(`${sccs.props.auth.flash?.error}`);
                     }
                 },
-                onError: (e) => {
-                    console.log(e);
-                },
+         
             });
         }
     };
@@ -166,9 +164,10 @@ const Form = () => {
                                     id="judul"
                                     type="text"
                                     name="judul"
+                                    placeholder="Sistem ... Menggunakan Teknologi ..."
                                     autoComplete="off"
                                     value={data.judul}
-                                    className="mt-1 block w-full"
+                                    className="mt-1 block w-full placeholder:text-gray-700"
                                     onChange={(e) =>
                                         setData("judul", e.target.value)
                                     }
@@ -211,6 +210,7 @@ const Form = () => {
                                     type="text"
                                     name="judul"
                                     autoComplete="off"
+                                    
                                     value={data.judul}
                                     className="mt-1 block w-full"
                                     onChange={(e) =>

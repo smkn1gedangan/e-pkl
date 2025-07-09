@@ -3,7 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import TitlePage from "@/Components/TitlePage";
 import Modal from "@/Components/Modal";
 import { Head, router, useForm, usePage } from "@inertiajs/react";
-import { Edit, Plus, Trash, X } from "lucide-react";
+import { ArchiveRestore, Download, Edit, Plus, Trash, X } from "lucide-react";
 import TextInput from "@/Components/TextInput";
 import InputLabel from "@/Components/InputLabel";
 import InputError from "@/Components/InputError";
@@ -184,6 +184,16 @@ const Index = () => {
                                         <td className="px-4 text-center py-4">
                                             <div className="flex justify-center gap-2">
                                                 {" "}
+                                                <a
+                                                    href={route(
+                                                        "tempat.export",
+                                                        tempat?.id
+                                                    )}
+                                                    target="_blank"
+                                                    className="font-medium text-green-600 hover:text-green-500 cursor-pointer"
+                                                >
+                                                    <ArchiveRestore />
+                                                </a>
                                                 <div
                                                     onClick={(e) =>
                                                         handleEdit(e, tempat.id)

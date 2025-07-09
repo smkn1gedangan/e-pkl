@@ -15,8 +15,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\TahunAjaranController;
 use App\Http\Controllers\TempatController;
-use App\Models\PengajuanTempat;
-use App\Models\User;
+use App\Http\Controllers\TrashJurnalController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -24,11 +23,13 @@ use Inertia\Inertia;
 Route::get('/', [FeController::class,"welcome"])->name("welcome");
 
 
-Route::get('data_siswa/export/', [ImportController::class, 'exportDataSiswa'])->name('data_siswa.export')->middleware(["role:admin"]);
 
-Route::get('jurnal/export/', [ImportController::class, 'exportJurnal'])->name('jurnal.export')->middleware(["role:admin|pembimbing_pt|pembimbing_sekolah|siswa"]);
+// excel diluar middlewre auth dan verified ,sementara pdf di dalam middleware auth
+Route::get('data_siswa/export/', [ImportController::class, 'exportDataSiswas'])->name('data_siswas.export')->middleware(["role:admin",'throttle:6,1']);
 
-Route::get('siswa/export/', [ImportController::class, 'exportSiswa'])->name('exportSiswa')->middleware(["role:admin|pembimbing_pt|pembimbing_sekolah"]);
+Route::get('jurnals/export/', [ImportController::class, 'exportJurnals'])->name('jurnals.export')->middleware(["role:admin|pembimbing_pt|pembimbing_sekolah|siswa",'throttle:6,1']);
+
+Route::get('siswas/export/', [ImportController::class, 'exportSiswas'])->name('exportSiswas')->middleware(["role:admin|pembimbing_pt|pembimbing_sekolah",'throttle:6,1']);
 
 
 Route::middleware(['auth', 'verified'])->group(function(){
@@ -38,13 +39,15 @@ Route::middleware(['auth', 'verified'])->group(function(){
 
     
     Route::get('/dashboard', [DashboardController::class,"index"])->middleware("role:admin|pembimbing_sekolah|pembimbing_pt|siswa")->name("dashboard");
+    
+    Route::put('/dashboard/update/{id}', [DashboardController::class,"update"])->middleware("role:admin|pembimbing_sekolah|pembimbing_pt|siswa")->name("dashboard.update");
     Route::get('/dokumentasi', function(){
         return Inertia::render("Dokumentasi/Index");
     })->middleware("role:admin|pembimbing_sekolah|pembimbing_pt|siswa")->name("dokumentasi");
     
     Route::resource("data_siswa",DataSiswaController::class)->middleware(["role:admin"]);
     
-    Route::post('data_siswa/import', [ImportController::class, 'importRegisterUser'])->name('data_siswa.import')->middleware(["role:admin"]);
+    Route::post('data_siswa/import', [ImportController::class, 'importRegisterUser'])->name('data_siswas.import')->middleware(["role:admin"]);
 
 
     Route::resource("laporan",LaporanController::class)->middleware(["role:siswa|admin|pembimbing_pt|pembimbing_sekolah"]);
@@ -56,10 +59,16 @@ Route::middleware(['auth', 'verified'])->group(function(){
     Route::resource("jurusan",JurusanController::class)->middleware(["role:admin"]);
     Route::resource("gambar",GambarController::class)->middleware(["role:admin"]);
     Route::resource("tahunAjaran",TahunAjaranController::class)->middleware(["role:admin"]);
+    
     Route::resource("tempat",TempatController::class)->middleware(["role:admin"]);
+    Route::get("tempat/export/{id}",[ImportController::class,"exportTempat"])->name("tempat.export")->middleware(['role:admin','throttle:20,1']);
+
+    
     Route::resource("pembimbing",PembimbingController::class)->middleware(["role:admin"]);
     Route::resource("siswa",SiswaController::class)->middleware(["role:admin|pembimbing_pt|pembimbing_sekolah|siswa"]);
-    Route::resource("rekap",JurnalController::class)->middleware(["role:admin|pembimbing_pt|pembimbing_sekolah|siswa"]);
+
+    Route::resource("jurnal",JurnalController::class)->middleware(["role:admin|pembimbing_pt|pembimbing_sekolah|siswa"]);
+    Route::resource("trashJurnal",TrashJurnalController::class)->middleware(["role:siswa"]);
    
     Route::resource("pengajuanTempat",PengajuanTempatController::class)->middleware(["role:siswa|admin"]);
     Route::resource("nilai",NilaiController::class);

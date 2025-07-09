@@ -3,7 +3,7 @@ import React from "react";
 
 const TitlePage = ({ title, quote, nameRoute, icon, children, ...props }) => {
     return (
-        <div className="flex justify-between mt-4 p-2 items-center">
+        <div className="flex justify-between mt-4 p-2 items-center overflow-x-auto">
             <div className="p-2 md:p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 ">
                 {title}
                 <p className="mt-1 text-xs sm:text-sm font-normal text-gray-500 ">

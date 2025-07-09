@@ -1,7 +1,7 @@
 <table>
     <thead>
     <tr>
-        <th colspan="15" style="font-weight: bold;" align="center">Data Absensi Smkn 1 Gedangan</th>
+        <th colspan="15" style="font-weight: bold; text-transform: uppercase;" align="center">Data Absensi Smkn 1 Gedangan</th>
     </tr>
     <tr>
         <th align="center" style="font-weight: bold;" >No</th>

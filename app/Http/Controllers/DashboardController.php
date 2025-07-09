@@ -48,10 +48,14 @@ class DashboardController extends Controller
             "laporan"=>Laporan::count(),
         ];
 
+        $userActives = User::with(["roles","datasiswa","jurusan"])->where("isVisibilityJurnal",true)->where("jurusan_id","=",Auth::user()->jurusan_id)->whereNot("id",'=',Auth::user()->id)->paginate(10);
+
         return Inertia::render("Dashboard",[
             "rekapSiswa"=>$rekapSiswa ?? [],
             "rekapPb"=>$rekapPb,
-            "statistik"=>$statistik
+            "statistik"=>$statistik,
+            "userActives"=>$userActives,
+            "users"=>User::with(["jurnals","jurnals.user"])->get()
         ]);
     }
 
@@ -92,7 +96,12 @@ class DashboardController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $user =User::findOrFail($id);
+        $user->isVisibilityJurnal = $request->isVisibilityJurnal;
+
+        $user->save();
+
+        return back()->with('success', 'Data berhasil diperbarui');
     }
 
     /**

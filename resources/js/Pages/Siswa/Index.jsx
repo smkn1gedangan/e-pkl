@@ -161,7 +161,7 @@ const Index = () => {
             "question",
             () => {
                 window.location.href = route(
-                    "exportSiswa",
+                    "exportSiswas",
                     {
                         search: dataSearch.search,
                         sort_by: dataSearch.sort_by,

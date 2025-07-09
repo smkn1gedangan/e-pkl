@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DataSiswaRequest;
 use App\Models\Datasiswa;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -85,17 +86,25 @@ class DataSiswaController extends Controller
     public function update(DataSiswaRequest $request, string $id)
     {
 
-       
         $dataId = Datasiswa::findOrFail($id);
 
         $validate = $request->validated();
+        $nisn = $validate["induk"].$validate["jurusan"];
 
-        $dataId->nisn = $validate["induk"].$validate["jurusan"];
+        $dataId->nisn = $nisn;
         $dataId->nama = $validate["nama"];
 
 
         $dataId->save();
-        return redirect()->route("data_siswa.index")->with("success","Sukses Menghapus Data Registrasi User");
+
+        $siswaId = User::where("nisn_id","=",$id)->first();
+
+        if($siswaId){
+            $siswaId->name = $validate["nama"];
+            $siswaId->save();
+        }
+
+        return redirect()->route("data_siswa.index")->with("success","Sukses Mengubah Data Registrasi User");
     }
 
     /**

@@ -16,13 +16,14 @@ import {
     ListStartIcon,
     LogOut,
     Newspaper,
+    Trash,
     User,
     UserPen,
     Users,
 } from "lucide-react";
 
 const SideMenu = ({ children, ...props }) => {
-    const { auth, ptCount, lpCount } = usePage().props;
+    const { auth, ptCount, lpCount, trashJurnalCount } = usePage().props;
     const routes = [
         {
             id: 1,
@@ -37,6 +38,16 @@ const SideMenu = ({ children, ...props }) => {
                 "pembimbing_pt",
                 "siswa",
             ],
+        },
+
+        {
+            id: 2,
+            nama: "User Terdata",
+            pathname: "data_siswa",
+            route: route("data_siswa.index"),
+            icon: <IdCard />,
+            rolePermision: ["admin"],
+            isLink: true,
         },
         {
             id: 1200,
@@ -59,15 +70,6 @@ const SideMenu = ({ children, ...props }) => {
             isLink: true,
             isAlert: true,
             alert: auth.role !== "siswa" ? lpCount : 0,
-        },
-        {
-            id: 2,
-            nama: "User Terdata",
-            pathname: "data_siswa",
-            route: route("data_siswa.index"),
-            icon: <IdCard />,
-            rolePermision: ["admin"],
-            isLink: true,
         },
         {
             id: 3,
@@ -148,8 +150,8 @@ const SideMenu = ({ children, ...props }) => {
         {
             id: 10,
             nama: "Jurnal",
-            pathname: "rekap",
-            route: route("rekap.index"),
+            pathname: "jurnal",
+            route: route("jurnal.index"),
             icon: <BookCopy />,
             isLink: true,
             rolePermision: [
@@ -159,7 +161,17 @@ const SideMenu = ({ children, ...props }) => {
                 "pembimbing_sekolah",
             ],
         },
-
+        {
+            id: 13,
+            nama: "Trash",
+            pathname: "trashJurnal",
+            route: route("trashJurnal.index"),
+            icon: <Trash />,
+            isLink: true,
+            rolePermision: ["siswa"],
+            isAlert: true,
+            alert: auth.role === "siswa" ? trashJurnalCount : 0,
+        },
         {
             id: 11,
             nama: "Edit Akun",
@@ -174,6 +186,7 @@ const SideMenu = ({ children, ...props }) => {
                 "admin",
             ],
         },
+
         {
             id: 12,
             nama: "Dokumentasi",
@@ -188,8 +201,9 @@ const SideMenu = ({ children, ...props }) => {
                 "admin",
             ],
         },
+
         {
-            id: 13,
+            id: 14,
             nama: "Logout",
             icon: <LogOut />,
             isLink: false,

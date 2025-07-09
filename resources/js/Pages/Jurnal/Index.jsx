@@ -44,7 +44,7 @@ const Index = () => {
         e.preventDefault();
         const text = `Apakah Anda Yakin Ingin Menghapus Jurnal Ini ?`;
         const cb = () =>
-            router.delete(route("rekap.destroy", id), {
+            router.delete(route("jurnal.destroy", id), {
                 onSuccess: (sccs) => {
                     toast.success(`${sccs.props.auth.flash?.success}`);
                 },
@@ -53,8 +53,7 @@ const Index = () => {
     };
     const handleStore = (e) => {
         e.preventDefault();
-        dd(data);
-        post(route("rekap.store"), {
+        post(route("jurnal.store"), {
             onSuccess: (sccs) => {
                 if (sccs.props.auth.flash.success) {
                     toast.success(`${sccs.props.auth.flash?.success}`);
@@ -81,7 +80,7 @@ const Index = () => {
     const handleUpdate = (e) => {
         e.preventDefault();
         router.post(
-            route("rekap.update", editModal.id),
+            route("jurnal.update", editModal.id),
             {
                 ...data,
                 _method: "put",
@@ -93,11 +92,10 @@ const Index = () => {
                         reset();
                         seteditModal(null);
                     } else {
-                        toast.success(`${sccs.props.auth.flash?.error}`);
+                        toast.error(`${sccs.props.auth.flash?.error}`);
                         seteditModal(null);
                     }
                 },
-
             }
         );
     };
@@ -126,7 +124,7 @@ const Index = () => {
         if (update.start_date !== "" && update.end_date !== "")
             params.end_date = update.end_date;
 
-        router.get(route("rekap.index"), params, {
+        router.get(route("jurnal.index"), params, {
             preserveState: true,
             preserveScroll: true,
         });
@@ -164,7 +162,7 @@ const Index = () => {
             "question",
             () => {
                 window.location.href = route(
-                    "jurnal.export",
+                    "jurnals.export",
                     {
                         search: filters?.search,
                         sort_by: filters?.sort_by,
@@ -197,16 +195,7 @@ const Index = () => {
             <ToastContainer transition={Zoom} className={`w-96`} />
             <TitlePage
                 nameRoute={`Tambah Jurnal`}
-                quote={`${
-                    auth.role === "siswa" && user
-                        ? `Pembimbing Sekolah : ${
-                              user?.user.pb_skl?.name ?? "Belum Diisi"
-                          } Pembimbing PT ${
-                              user?.user.tempat?.user?.name ?? "Belum Diisi"
-                          } Dari Pt ${user?.user.tempat?.nama ?? "Belum Diisi"}
-                `
-                        : `list jurnal sistem rekap kegiatan pkl secara digital`
-                }`}
+                quote={``}
                 title={`Jurnal Milik ${auth.user.name}`}
                 onClick={() => {
                     setCreateModal(true);
@@ -289,9 +278,10 @@ const Index = () => {
                                                             jurnal.id
                                                         )
                                                     }
+                                                    loading="lazy"
                                                     className="w-12 rounded-md h-12 object-cover object-center"
                                                     src={`./storage/${jurnal.photo}`}
-                                                    alt=""
+                                                    alt="jurnal Photo"
                                                 />
                                                 <Modal
                                                     show={

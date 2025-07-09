@@ -45,7 +45,7 @@ const Index = () => {
                     reset();
                     setCreateModal(false);
                 } else {
-                    toast.success(`${sccs.props.auth.flash?.error}`);
+                    toast.error(`${sccs.props.auth.flash?.error}`);
                     setCreateModal(false);
                 }
             },
@@ -75,7 +75,7 @@ const Index = () => {
                         reset();
                         seteditModal(null);
                     } else {
-                        toast.success(`${sccs.props.auth.flash?.error}`);
+                        toast.error(`${sccs.props.auth.flash?.error}`);
                         seteditModal(null);
                     }
                 },

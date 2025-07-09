@@ -8,7 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -21,10 +21,10 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(
-                    <QueryClientProvider client={queryClient}>
+            <QueryClientProvider client={queryClient}>
                 <App {...props} />
             </QueryClientProvider>
-);
+        );
     },
     progress: {
         color: "#4B5563",

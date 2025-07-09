@@ -33,7 +33,7 @@ class SessionDeleted extends Command
 
         $deleted = DB::table("sessions")->where("last_activity","<",$expiredTimestamp)->delete();
 
-        Log::channel("deleteSession")->info("Sesi dihapus Pada " . now()->format("d-m-Y h-i-s A"));
+        Log::channel("deleteSession")->info("Sesi dihapus Pada " . now()->format("d-m-Y h-i-s"));
 
         $this->info("{$deleted} expired session(s) deleted.");
     }

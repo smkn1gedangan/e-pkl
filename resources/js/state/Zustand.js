@@ -31,13 +31,13 @@ export const useTypeImportSiswa = create(
 export const useTypeDashbard = create(
     persist(
         (set, get) => ({
-            type: "panduan",
+            type: "grafik",
             setType: (type) => {
                 set({ type });
             },
         }),
         {
-            name: "grafik",
+            name: "typeDashbord",
             storage: createJSONStorage(() => localStorage),
         }
     )
