@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Gambar;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Inertia\Inertia;
 use function PHPUnit\Framework\fileExists;
@@ -13,11 +15,29 @@ class GambarController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-       return Inertia::render("Gambar/Index",[
-        "gambars"=>Gambar::paginate(10)
-       ]);
+        
+
+        $allGambars = Cache::remember('welcome_gambars', 3600, function () {
+        return Gambar::latest()->get(); // Ambil semua data
+    });
+
+    // Step 2: Pagination manual
+        $perPage = 10;
+        $page = $request->input('page', 1);
+        $pagedGambars = new LengthAwarePaginator(
+            $allGambars->forPage($page, $perPage),
+            $allGambars->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        // Step 3: Kirim ke Inertia
+        return Inertia::render('Gambar/Index', [
+            'gambars' => $pagedGambars
+        ]);
     }
 
     /**
@@ -41,9 +61,8 @@ class GambarController extends Controller
             "url.max"=>"File Gambar Maksimal 2400 Kb (2,4 mb)"
         ]);
 
-        if($request->hasFile("url")){
 
-            
+        if($request->hasFile("url")){
             // upload to public
             $sourcePath = $request->file('url')->store('headers', 'public');
 
@@ -60,6 +79,7 @@ class GambarController extends Controller
             $validate["url"] =  $sourcePath ?? null;
         }
         Gambar::create($validate);
+        Cache::forget('welcome_gambars');
         return redirect()->back()->with("success","Sukses Menambah Slider / Gambar Baru");
     }
 
@@ -127,6 +147,8 @@ class GambarController extends Controller
             $gambarId->url =  $sourcePath ?? null;
         }
         $gambarId->save();
+        Cache::forget('welcome_gambars');
+
         return redirect()->back()->with("success","Sukses Mengubah Gambar");
     }
 

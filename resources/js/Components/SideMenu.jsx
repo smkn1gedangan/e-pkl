@@ -69,7 +69,7 @@ const SideMenu = ({ children, ...props }) => {
             ],
             isLink: true,
             isAlert: true,
-            alert: auth.role !== "siswa" ? lpCount : 0,
+            alert: auth.role === "admin" ? lpCount : 0,
         },
         {
             id: 3,

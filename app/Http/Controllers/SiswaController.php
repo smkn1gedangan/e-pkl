@@ -11,7 +11,9 @@ use App\Models\Tempat;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -31,6 +33,32 @@ class SiswaController extends Controller
         ];
         $sortBy = $request->input('sort_by');
         $sortOrder = $request->input('sort_order', 'asc');
+
+        if(Auth::user()->getRoleNames()->contains('siswa'))  {
+            $cachedUsers = Cache::remember("siswa_" . Auth::id(), 3600 * 24 * 7, function () {
+                return User::with([
+                    "jurusan",
+                    "tahunAjaran",
+                    "pbSkl",
+                    "tempat.user",
+                    "nilai.pembimbing",
+                    "dataSiswa"
+                ])->where("id", Auth::user()->id)->get(); // pakai get(), karena bisa lebih dari 1 record (walau jarang)
+            });
+
+            // Manual pagination (meski hanya 1 data)
+            $perPage = 10;
+            $page = $request->input('page', 1);
+            $pagedUsers = new LengthAwarePaginator(
+                $cachedUsers->forPage($page, $perPage),
+                $cachedUsers->count(),
+                $perPage,
+                $page,
+                ['path' => $request->url(), 'query' => $request->query()]
+            );
+
+            $datas = $pagedUsers;
+        }else{      
         $datas = User::query()->with(["jurusan","tahunAjaran","pbSkl","tempat.user","nilai.pembimbing","dataSiswa"])
         ->when(Auth::user()->getRoleNames()->contains("pembimbing_sekolah"),function($query){
             $query->where("pembimbing_sekolah_id","=",Auth::user()->id);
@@ -89,6 +117,8 @@ class SiswaController extends Controller
 
         ->orderBy($request->input("sort_by","users.created_at"),$request->input("sort_order","desc"))
         ->role("siswa")->paginate(10)->withQueryString();
+        }
+
         return Inertia::render("Siswa/Index",[
             "siswas"=> $datas,
             "filters"=> $request->only(["search","sort_by","sort_order","tahunAjaran","tempat","jurusan"]),
@@ -189,6 +219,7 @@ class SiswaController extends Controller
         $siswaId->kontak = $validate["kontak"];
         
         $siswaId->save();
+        Cache::forget("siswa_" . $siswaId->id);
         return redirect()->back()->with("success","Sukses Mengubah Data Milik $siswaId->name");
     }
 
@@ -198,14 +229,16 @@ class SiswaController extends Controller
     public function destroy(string $id)
     {
         $siswaId = User::findOrFail($id);
+        $dataSiswaId = Datasiswa::findOrFail($id);
 
         if($siswaId){
-            $siswaId->dataSiswa->isActive = false;
-            $siswaId->save();
 
+            $dataSiswaId->isActive =false;
+            $dataSiswaId->save();
 
             $siswaId->delete();
         }
-         return redirect()->route("siswa.index")->with("success","Sukses Menghapus Data Siswa");
+        Cache::forget("siswa_" . $siswaId->id);
+        return redirect()->route("siswa.index")->with("success","Sukses Menghapus Data Siswa");
     }
 }

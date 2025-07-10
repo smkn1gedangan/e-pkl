@@ -22,6 +22,7 @@ const Dashboard = () => {
     const { data, setData, put } = useForm({
         isVisibilityJurnal: auth.user.isVisibilityJurnal,
     });
+
     const [resizeImg, setResizeImg] = useState(null);
     const [isModalJurnal, setIsModalJurnal] = useState(false);
     const [panduan, setPanduan] = useState(false);
