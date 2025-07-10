@@ -20,8 +20,8 @@ class GambarController extends Controller
         
 
         $allGambars = Cache::remember('welcome_gambars', 3600, function () {
-        return Gambar::latest()->get(); // Ambil semua data
-    });
+            return Gambar::latest()->get(); // Ambil semua data
+        });
 
     // Step 2: Pagination manual
         $perPage = 10;
@@ -170,6 +170,7 @@ class GambarController extends Controller
             }
         }
         $gmbrId->delete();
+        Cache::forget('welcome_gambars');
         return redirect()->back()->with("success","Sukses Menghapus Gambar");
     }
 }

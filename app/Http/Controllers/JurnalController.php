@@ -6,6 +6,7 @@ use App\Models\Jurnal;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Inertia\Inertia;
 
@@ -128,6 +129,7 @@ class JurnalController extends Controller
                 "kegiatan"=>$validate["kegiatan"],
                 "photo"=>$validate["photo"],
             ]);
+        Cache::forget("jurnals". Auth::user()->id);
         return redirect()->back()->with("success","Sukses Menambah Jurnal");
     }
 
@@ -200,6 +202,7 @@ class JurnalController extends Controller
         $jrnlId->kegiatan = $validate["kegiatan"];
         $jrnlId->photo = $validate["photo"] ?? $jrnlId->photo;
         $jrnlId->save();
+        Cache::forget("jurnals". $jrnlId->user_id);
         return redirect()->back()->with("success","Sukses Mengubah Jurnal");
     }
 
@@ -212,6 +215,7 @@ class JurnalController extends Controller
         
 
         $jrnlId->delete();
+        Cache::forget("jurnals". $jrnlId->user_id);
         return redirect()->back()->with("success","Sukses Menghapus Jurnal");
     }
 }

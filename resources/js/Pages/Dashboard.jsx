@@ -23,6 +23,8 @@ const Dashboard = () => {
         isVisibilityJurnal: auth.user.isVisibilityJurnal,
     });
 
+
+    console.log(jurnals)
     const [resizeImg, setResizeImg] = useState(null);
     const [isModalJurnal, setIsModalJurnal] = useState(false);
     const [panduan, setPanduan] = useState(false);
@@ -203,13 +205,11 @@ const Dashboard = () => {
                 <div className="mt-8">
                     {isModalJurnal ? (
                         <div className="">
-                            <p className="text-center my-4">
-                                Jurnal Milik {jurnals?.data[0].user.name}
-                            </p>
                             <div className="overflow-x-auto">
                                 <Table
                                     headers={[
                                         { nama: "No" },
+                                        { nama: "Nama" },
                                         { nama: "Keterangan" },
                                         { nama: "Kegiatan" },
                                         { nama: "Photo" },
@@ -218,7 +218,7 @@ const Dashboard = () => {
                                 >
                                     <tbody>
                                         {jurnals?.data?.length > 0 ? (
-                                            jurnals?.data?.map((u, index) => (
+                                            jurnals?.data?.map((j, index) => (
                                                 <tr
                                                     key={index}
                                                     className={`border`}
@@ -226,29 +226,32 @@ const Dashboard = () => {
                                                     <td className="px-4 text-center py-4">
                                                         {index + jurnals.from}
                                                     </td>
+                                                    <td className="px-4 text-center py-4">
+                                                        {j.user?.name}
+                                                    </td>
 
                                                     <td className="px-4 text-center py-4">
-                                                        {u.keterangan ===
+                                                        {j.keterangan ===
                                                             "hadir" && (
                                                             <span className="bg-green-100 text-green-800 text-sm font-medium ring-2 me-2 px-2.5 py-0.5 rounded-md ring-green-500">
-                                                                {u.keterangan}
+                                                                {j.keterangan}
                                                             </span>
                                                         )}
-                                                        {u.keterangan ===
+                                                        {j.keterangan ===
                                                             "sakit" && (
                                                             <span className="bg-blue-100 text-blue-800 text-sm font-medium ring-2 me-2 px-2.5 py-0.5 rounded-md ring-blue-500">
-                                                                {u.keterangan}
+                                                                {j.keterangan}
                                                             </span>
                                                         )}
-                                                        {u.keterangan ===
+                                                        {j.keterangan ===
                                                             "izin" && (
                                                             <span className="bg-red-100 text-red-800 text-sm font-medium ring-2 ring-red-500 me-2 px-2.5 py-0.5 rounded-md">
-                                                                {u.keterangan}
+                                                                {j.keterangan}
                                                             </span>
                                                         )}
                                                     </td>
                                                     <td className="px-4 text-center py-4">
-                                                        {u.kegiatan}
+                                                        {j.kegiatan}
                                                     </td>
                                                     <td className="px-4 text-center py-4">
                                                         <div className="flex justify-center items-center">
@@ -256,18 +259,18 @@ const Dashboard = () => {
                                                                 onClick={(e) =>
                                                                     handleResizeImg(
                                                                         e,
-                                                                        u.id
+                                                                        j.id
                                                                     )
                                                                 }
                                                                 loading="lazy"
                                                                 className="w-12 rounded-md h-12 object-cover object-center"
-                                                                src={`./storage/${u.photo}`}
+                                                                src={`./storage/${j.photo}`}
                                                                 alt="jurnal Photo"
                                                             />
                                                             <Modal
                                                                 show={
                                                                     resizeImg?.id ===
-                                                                    u.id
+                                                                    j.id
                                                                 }
                                                                 onClose={() =>
                                                                     setResizeImg(
@@ -293,7 +296,7 @@ const Dashboard = () => {
                                                                     <div className="p-6 flex justify-center">
                                                                         <img
                                                                             className="max-w-xs md:max-w-sm p-2 rounded-md h-auto object-cover object-center"
-                                                                            src={`./storage/${u.photo}`}
+                                                                            src={`./storage/${j.photo}`}
                                                                             alt="jurnal"
                                                                         />
                                                                     </div>

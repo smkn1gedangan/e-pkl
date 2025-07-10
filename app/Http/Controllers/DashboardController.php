@@ -24,9 +24,16 @@ class DashboardController extends Controller
      */
     public function index(Request $request )
     {
+
+         // lalu baru paginasi manual di controller
+        $page = request()->get('page', 1);
+        $perPage = 10;
+
+
+        // statistik siswa
         $rekapSiswa = Jurnal::where("user_id","=",Auth::user()->id)->select("keterangan",DB::raw("count(*) as total"))->groupBy("keterangan")->pluck("total","keterangan");
 
-
+        // statistik pembimbing
         $rekapPb = collect();
         if(Auth::user()->getRoleNames()->contains("pembimbing_pt") || Auth::user()->getRoleNames()->contains("pembimbing_sekolah")){
             $rekapPb = User::query()->with(["tempat","roles"])
@@ -40,6 +47,8 @@ class DashboardController extends Controller
                 })
             ->get();
         }
+
+        // statistik admin
         $statistik = collect();      
         if(Auth::user()->getRoleNames()->contains("admin")){
             $statistik = [
@@ -58,20 +67,17 @@ class DashboardController extends Controller
 
 
 
-        $cacheKey = 'user_active_base_' . Auth::user()->jurusan_id;
-
-        $users = Cache::remember($cacheKey, 10, function () {
+        // get users aktif and set to cache
+        $cacheKeyUsers = 'user_active' . Auth::user()->jurusan_id;
+        $users = Cache::remember($cacheKeyUsers, 3600 * 24, function () {
             return User::with(['roles', 'datasiswa', 'jurusan'])
                 ->where('isVisibilityJurnal', true)
                 ->where('jurusan_id', Auth::user()->jurusan_id)
-                ->where('id', '!=', Auth::id())
                 ->orderBy('name')
                 ->get(); // ambil semua, cache dulu
         });
 
-        // lalu baru paginasi manual di controller
-        $page = request()->get('page', 1);
-        $perPage = 10;
+       
 
         $userActives = collect();
         if(Auth::user()->getRoleNames()->contains("siswa")){
@@ -84,13 +90,25 @@ class DashboardController extends Controller
         );
         }
 
-        $jurnals = collect(); // default kosong
 
+        // jurnals by user_id and set to cache
+        $getJurnals = Cache::remember("jurnals" . $request->user_id,3600,function() use($request){
+                return Jurnal::with('user')
+                    ->where('user_id', $request->user_id)
+                    ->latest()
+                    ->get();
+            });
+
+
+        $jurnals = collect(); // default kosong
         if ($request->filled('user_id') && Auth::user()->isVisibilityJurnal) {
-            $jurnals = Jurnal::with('user')
-                ->where('user_id', $request->user_id)
-                ->latest()
-                ->paginate(10);
+            $jurnals = new LengthAwarePaginator(
+            $getJurnals->forPage($page, $perPage),
+            $getJurnals->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+            );
         }
 
 
@@ -144,7 +162,7 @@ class DashboardController extends Controller
         $user->isVisibilityJurnal = $request->isVisibilityJurnal;
 
         $user->save();
-
+        Cache::forget('user_active' . Auth::user()->jurusan_id);
         return back()->with('success', 'Data berhasil diperbarui');
     }
 
