@@ -136,6 +136,7 @@ class JurnalController extends Controller
      */
     public function show(string $id)
     {
+       
     }
 
     /**

@@ -1,27 +1,29 @@
 import { BarChart, DoughnutChart, LineChart } from "@/Components/Chart";
+import Filter from "@/Components/Filter";
 import InputLabel from "@/Components/InputLabel";
 import Modal from "@/Components/Modal";
+import Pagination from "@/Components/Pagination";
 import SecondaryButton from "@/Components/SecondaryButton";
 import Table from "@/Components/Table";
 import TitleModal from "@/Components/TitleModal";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { useTypeDashbard } from "@/state/Zustand";
-import { Head, useForm, usePage } from "@inertiajs/react";
+import { Head, router, useForm, usePage } from "@inertiajs/react";
 import { debounce } from "lodash";
 import { Info, Search, X } from "lucide-react";
 import React, { use, useEffect, useRef, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
 const Dashboard = () => {
-    const { auth, rekapSiswa, rekapPb, statistik, userActives, users } =
+    const { auth, rekapSiswa, rekapPb, statistik, userActives, jurnals } =
         usePage().props;
     const isFirstRender = useRef(true);
     const { type: typeDb, setType: setTypeDb } = useTypeDashbard();
-    const [modalJurnals, setModalJurnals] = useState(null);
-    const [resizeImg, setResizeImg] = useState(null);
     const { data, setData, put } = useForm({
         isVisibilityJurnal: auth.user.isVisibilityJurnal,
     });
+    const [resizeImg, setResizeImg] = useState(null);
+    const [isModalJurnal, setIsModalJurnal] = useState(false);
     const [panduan, setPanduan] = useState(false);
     const datas = [
         {
@@ -57,14 +59,22 @@ const Dashboard = () => {
     ];
     const handleShowJurnal = (e, id) => {
         e.preventDefault();
-        const filtered = users.find((u) => u.id === id);
-        if (filtered) {
-            setModalJurnals(filtered);
-        }
+
+        router.get(
+            route("dashboard"),
+            { user_id: id },
+            {
+                preserveScroll: true,
+                preserveState: true,
+                onSuccess: () => {
+                    setIsModalJurnal(true);
+                },
+            }
+        );
     };
     const handleResizeImg = (e, id) => {
         e.preventDefault();
-        const filtered = modalJurnals?.jurnals.find((j) => j.id === id);
+        const filtered = jurnals?.data.find((j) => j.id === id);
         if (filtered) {
             setResizeImg(filtered);
         }
@@ -189,26 +199,33 @@ const Dashboard = () => {
                 Halo {auth.user?.name}, Semoga Hari mu Menyenangkan 🤗
             </h1>
             {typeDb === "users" && auth.user.isVisibilityJurnal === 1 ? (
-                <div className="mt-8 overflow-x-auto">
-                    {modalJurnals ? (
-                        <>
-                            <p className="text-center my-4">Jurnal Milik {modalJurnals?.name}</p>
-                            <Table
-                                headers={[
-                                    { nama: "Keterangan" },
-                                    { nama: "Kegiatan" },
-                                    { nama: "Photo" },
-                                    { nama: "Opsi" },
-                                ]}
-                            >
-                                <tbody>
-                                    {modalJurnals?.jurnals?.length > 0 ? (
-                                        modalJurnals?.jurnals?.map(
-                                            (u, index) => (
+                <div className="mt-8">
+                    {isModalJurnal ? (
+                        <div className="">
+                            <p className="text-center my-4">
+                                Jurnal Milik {jurnals?.data[0].user.name}
+                            </p>
+                            <div className="overflow-x-auto">
+                                <Table
+                                    headers={[
+                                        { nama: "No" },
+                                        { nama: "Keterangan" },
+                                        { nama: "Kegiatan" },
+                                        { nama: "Photo" },
+                                        { nama: "Opsi" },
+                                    ]}
+                                >
+                                    <tbody>
+                                        {jurnals?.data?.length > 0 ? (
+                                            jurnals?.data?.map((u, index) => (
                                                 <tr
                                                     key={index}
                                                     className={`border`}
                                                 >
+                                                    <td className="px-4 text-center py-4">
+                                                        {index + jurnals.from}
+                                                    </td>
+
                                                     <td className="px-4 text-center py-4">
                                                         {u.keterangan ===
                                                             "hadir" && (
@@ -276,7 +293,7 @@ const Dashboard = () => {
                                                                         <img
                                                                             className="max-w-xs md:max-w-sm p-2 rounded-md h-auto object-cover object-center"
                                                                             src={`./storage/${u.photo}`}
-                                                                            alt=""
+                                                                            alt="jurnal"
                                                                         />
                                                                     </div>
                                                                 </div>
@@ -286,11 +303,26 @@ const Dashboard = () => {
                                                     <td className="px-4 text-center py-4">
                                                         <div className="flex justify-center">
                                                             <span
-                                                                onClick={(e) =>
-                                                                    setModalJurnals(
-                                                                        null
-                                                                    )
-                                                                }
+                                                                onClick={(
+                                                                    e
+                                                                ) => {
+                                                                    const url =
+                                                                        new URL(
+                                                                            window.location.href
+                                                                        );
+                                                                    url.searchParams.delete(
+                                                                        "user_id"
+                                                                    );
+                                                                    window.history.replaceState(
+                                                                        {},
+                                                                        "",
+                                                                        url.toString()
+                                                                    );
+
+                                                                    setIsModalJurnal(
+                                                                        false
+                                                                    );
+                                                                }}
                                                                 className="bg-red-100 text-red-800 text-sm font-medium ring-2 ring-red-500 me-2 px-2.5 py-0.5 rounded-md cursor-pointer"
                                                             >
                                                                 Back
@@ -298,77 +330,105 @@ const Dashboard = () => {
                                                         </div>
                                                     </td>
                                                 </tr>
-                                            )
-                                        )
-                                    ) : (
-                                        <tr>
-                                            <td
-                                                className="py-4 text-center"
-                                                colSpan={4}
-                                            >
-                                                Tidak Ada Jurnal Ditambahkan
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </Table>
-                        </>
-                    ) : (
-                        <Table
-                            headers={[
-                                { nama: "No" },
-                                { nama: "Nama" },
-                                { nama: "Jurusan" },
-                                { nama: "Nisn" },
-                                { nama: "Opsi" },
-                            ]}
-                        >
-                            <tbody>
-                                {userActives?.data.length > 0 ? (
-                                    userActives?.data.map((u, index) => (
-                                        <tr key={index} className={`border`}>
-                                            <td className="px-4 text-center py-4">
-                                                {index + userActives.from}
-                                            </td>
-                                            <td className="px-4 text-center py-4">
-                                                {u.name}
-                                            </td>
-                                            <td className="px-4 text-center py-4">
-                                                {u.jurusan.nama}
-                                            </td>
-                                            <td className="px-4 text-center py-4">
-                                                {u.datasiswa.nisn}
-                                            </td>
-                                            <td className="px-4 text-center py-4">
-                                                <div className="flex justify-center">
-                                                    <span
-                                                        onClick={(e) =>
-                                                            handleShowJurnal(
-                                                                e,
-                                                                u.id
-                                                            )
-                                                        }
-                                                        className="bg-blue-100 text-blue-800 text-sm font-medium ring-2 ring-blue-500 me-2 px-2.5 py-0.5 rounded-md cursor-pointer"
-                                                    >
-                                                        Lihat
-                                                    </span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td
-                                            className="py-4 text-center"
-                                            colSpan={4}
-                                        >
-                                            Tidak Ada User Yang Mengaktifkan
-                                            Visibilitas Jurnal
-                                        </td>
-                                    </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td
+                                                    className="py-4 text-center"
+                                                    colSpan={4}
+                                                >
+                                                    Tidak Ada Jurnal Ditambahkan
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </Table>
+                            </div>
+                            <div>
+                                {jurnals.data.length > 0 && (
+                                    <Pagination datas={jurnals}></Pagination>
                                 )}
-                            </tbody>
-                        </Table>
+                            </div>
+                        </div>
+                    ) : (
+                        <div>
+                            <p className="text-center my-4">
+                                Visibilitas akun aktif saat ini :
+                            </p>
+                            <div className=" overflow-x-auto">
+                                <Table
+                                    headers={[
+                                        { nama: "No" },
+                                        { nama: "Nama" },
+                                        { nama: "Jurusan" },
+                                        { nama: "Nisn" },
+                                        { nama: "Opsi" },
+                                    ]}
+                                >
+                                    <tbody>
+                                        {userActives?.data.length > 0 ? (
+                                            userActives?.data.map(
+                                                (u, index) => (
+                                                    <tr
+                                                        key={index}
+                                                        className={`border`}
+                                                    >
+                                                        <td className="px-4 text-center py-4">
+                                                            {index +
+                                                                userActives.from}
+                                                        </td>
+                                                        <td className="px-4 text-center py-4">
+                                                            {u.name}
+                                                        </td>
+                                                        <td className="px-4 text-center py-4">
+                                                            {u.jurusan.nama}
+                                                        </td>
+                                                        <td className="px-4 text-center py-4">
+                                                            {u.datasiswa.nisn}
+                                                        </td>
+                                                        <td className="px-4 text-center py-4">
+                                                            <div className="flex justify-center">
+                                                                <span
+                                                                    onClick={(
+                                                                        e
+                                                                    ) =>
+                                                                        handleShowJurnal(
+                                                                            e,
+                                                                            u.id
+                                                                        )
+                                                                    }
+                                                                    className="bg-blue-100 text-blue-800 text-sm font-medium ring-2 ring-blue-500 me-2 px-2.5 py-0.5 rounded-md cursor-pointer"
+                                                                >
+                                                                    Lihat
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            )
+                                        ) : (
+                                            <tr>
+                                                <td
+                                                    className="py-4 text-center"
+                                                    colSpan={4}
+                                                >
+                                                    Tidak Ada User Yang
+                                                    Mengaktifkan Visibilitas
+                                                    Jurnal
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </Table>
+                            </div>
+                            <div>
+                                {userActives.data.length > 0 && (
+                                    <Pagination
+                                        datas={userActives}
+                                    ></Pagination>
+                                )}
+                            </div>
+                        </div>
                     )}
                 </div>
             ) : (

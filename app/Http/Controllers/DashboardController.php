@@ -48,14 +48,19 @@ class DashboardController extends Controller
             "laporan"=>Laporan::count(),
         ];
 
-        $userActives = User::with(["roles","datasiswa","jurusan"])->where("isVisibilityJurnal",true)->where("jurusan_id","=",Auth::user()->jurusan_id)->whereNot("id",'=',Auth::user()->id)->paginate(10);
+        $userActives = User::with(["roles","datasiswa","jurusan"])->where("isVisibilityJurnal",true)->where("jurusan_id","=",Auth::user()->jurusan_id)->whereNot("id",'=',Auth::user()->id)->orderBy("name")-> paginate(10);
+
+         $jurnals = Jurnal::with("user")->when($request->filled("user_id"),function($query) use ($request){
+            $query->where("user_id","=",$request->user_id);
+         })->latest()->paginate(10);
+
 
         return Inertia::render("Dashboard",[
             "rekapSiswa"=>$rekapSiswa ?? [],
             "rekapPb"=>$rekapPb,
             "statistik"=>$statistik,
             "userActives"=>$userActives,
-            "users"=>User::with(["jurnals","jurnals.user"])->get()
+            "jurnals"=>$jurnals,
         ]);
     }
 
